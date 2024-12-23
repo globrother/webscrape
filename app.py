@@ -34,6 +34,7 @@ def webscrape():
 
 class LaunchRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        logger.info("LaunchRequestHandler can_handle invoked")
         return handler_input.request_envelope.request.type == "LaunchRequest"
 
     def handle(self, handler_input):
@@ -43,6 +44,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 class WeatherIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        logger.info("WeatherIntentHandler can_handle invoked")
         return (handler_input.request_envelope.request.type == "IntentRequest" and
                 handler_input.request_envelope.request.intent.name == "WeatherIntent")
 
@@ -51,6 +53,7 @@ class WeatherIntentHandler(AbstractRequestHandler):
         try:
             response = requests.get("https://alexawebscrape.onrender.com/webscrape")
             weather = response.json().get('weather', 'não disponível')
+            logger.info(f"Weather fetched: {weather}")
             speech_text = f"A previsão do tempo é: {weather}"
             return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
         except Exception as e:
@@ -58,6 +61,7 @@ class WeatherIntentHandler(AbstractRequestHandler):
             speech_text = "Desculpe, ocorreu um erro ao obter a previsão do tempo."
             return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
 
+# Adicionando os manipuladores ao SkillBuilder
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(WeatherIntentHandler())
 
