@@ -1,3 +1,15 @@
+import logging
+
+# Configuração básica do logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[
+                        logging.FileHandler("app.log"),
+                        logging.StreamHandler()
+                    ])
+logger = logging.getLogger(__name__)
+
+# Seu código da aplicação
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
@@ -5,18 +17,16 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 import requests
 from bs4 import BeautifulSoup
-import logging
 
 app = Flask(__name__)
 sb = SkillBuilder()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
-@app.route("/", methods=["POST"])
-def alexa_webhook():
-    logger.info("POST request to the root URL")
-    skill_response = lambda_handler(request.data, None)
-    return skill_response
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        logger.info("POST request to the root URL")
+        return jsonify({"message": "POST request received"})
+    return "Skill Alexa Webscrape está funcionando!"
 
 @app.route("/webscrape", methods=["GET"])
 def webscrape():
