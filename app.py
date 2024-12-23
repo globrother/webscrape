@@ -9,6 +9,10 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 sb = SkillBuilder()
 
+@app.route("/", methods=["GET"])
+def index():
+    return "Skill Alexa Webscrape está funcionando!"
+
 @app.route("/webscrape", methods=["GET"])
 def webscrape():
     url = "https://www.weather-forecast.com/locations/Tokyo/forecasts/latest"
@@ -31,7 +35,7 @@ class WeatherIntentHandler(AbstractRequestHandler):
                 handler_input.request_envelope.request.intent.name == "WeatherIntent")
 
     def handle(self, handler_input):
-        response = requests.get("https://alexa-webscrape-skill.onrender.com/webscrape")
+        response = requests.get("https://alexawebscrape.onrender.com/webscrape")
         weather = response.json().get('weather', 'não disponível')
         speech_text = f"A previsão do tempo é: {weather}"
         return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
