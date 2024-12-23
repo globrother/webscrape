@@ -9,8 +9,10 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 sb = SkillBuilder()
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "POST":
+        return "POST request to the root URL"
     return "Skill Alexa Webscrape está funcionando!"
 
 @app.route("/webscrape", methods=["GET"])
@@ -40,6 +42,7 @@ class WeatherIntentHandler(AbstractRequestHandler):
         speech_text = f"A previsão do tempo é: {weather}"
         return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
 
+# Adicionando os manipuladores ao SkillBuilder
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(WeatherIntentHandler())
 
