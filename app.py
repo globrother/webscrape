@@ -4,7 +4,7 @@ import ask_sdk_core as ask_sdk
 
 app = Flask(__name__)
 
-@app.route('/alexa', methods=['POST'])
+@app.route('/webscrape', methods=['POST'])
 def alexa():
     data = request.get_json()
     response = {
