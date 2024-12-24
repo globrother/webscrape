@@ -14,10 +14,30 @@ logger.setLevel(logging.INFO)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    resposta = {} # Definir a variável resposta
+    mensagem = "Skill Alexa Webscrape está funcionando!"
+
+    resposta = {
+    "version": "1.0",
+    "sessionAttributes": {
+        "key": "value"
+    },
+    "response": {
+        "outputSpeech": {
+            "type": "PlainText",
+            "text": mensagem
+        },
+        "shouldEndSession": True
+    }
+    }
+
     if request.method == "POST":
         logger.info("POST request to the root URL")
-        return jsonify({"message": "POST request received"})
-    return "Skill Alexa Webscrape está funcionando!"
+
+        
+
+        return jsonify({"message": "POST request received"})   
+    return (resposta)
 
 @app.route("/webscrape", methods=["GET"])
 def webscrape():
@@ -30,6 +50,9 @@ def webscrape():
 
         weather = {
         "version": "1.0",
+        "sessionAttributes": {
+            "key": "value"
+        },
         "response": {
             "outputSpeech": {
                 "type": "PlainText",
