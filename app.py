@@ -27,6 +27,18 @@ def webscrape():
         soup = BeautifulSoup(response.content, "html.parser")
         weather = soup.find("span", class_="phrase").text
         logger.info(f"Weather fetched: {weather}")
+
+        weather = {
+        "version": "1.0",
+        "response": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": weather
+            },
+            "shouldEndSession": True
+        }
+        }
+
         return jsonify({"weather": weather})
     except Exception as e:
         logger.error(f"Error fetching weather: {e}")
@@ -52,7 +64,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             },
             "shouldEndSession": True
         }
-    }
+        }
         return response
 
 class WeatherIntentHandler(AbstractRequestHandler):
