@@ -21,16 +21,22 @@ def handle_alexa_request(request_data):
 
 @app.route('/alexa', methods=['POST'])
 def alexa_skill():
-    request_data = request.json
-    response = handle_alexa_request(request_data)
-    
-    endpoint = "https://alexawebscrape.onrender.com/"
-    headers = {
-        "Content-Type": "application/json"
-    }
+    try:
+        request_data = request.json
+        print(f"Received request data: {request_data}")
+        response = handle_alexa_request(request_data)
+        
+        endpoint = "https://alexawebscrape.onrender.com/"
+        headers = {
+            "Content-Type": "application/json"
+        }
 
-    post_response = requests.post(endpoint, json=response, headers=headers)
-    return jsonify(post_response.json())
+        post_response = requests.post(endpoint, json=response, headers=headers)
+        print(f"Response from endpoint: {post_response.json()}")
+        return jsonify(post_response.json())
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
