@@ -42,6 +42,17 @@ class LaunchRequestHandler(AbstractRequestHandler):
         speech_text = "Bem-vindo à skill de previsão do tempo. Pergunte-me sobre o tempo."
         response = handler_input.response_builder.speak(speech_text).set_should_end_session(False).response
         logger.info(f"LaunchRequestHandler response: {response}")
+        
+        response = {
+        "version": "1.0",
+        "response": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": speech_text
+            },
+            "shouldEndSession": True
+        }
+    }
         return response
 
 class WeatherIntentHandler(AbstractRequestHandler):
