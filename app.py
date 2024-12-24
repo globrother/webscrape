@@ -1,13 +1,10 @@
-from flask import Flask, request, jsonify
+import requests
 
-app = Flask(__name__)
-
-@app.route('/alexa', methods=['POST'])
-def alexa_skill():
-    data = request.json
+def send_alexa_request():
+    endpoint = "https://alexawebscrape.onrender.com/"
     response_text = "Olá, esta é uma resposta simples em português."
 
-    response = {
+    response_data = {
         "version": "1.0",
         "response": {
             "outputSpeech": {
@@ -18,7 +15,13 @@ def alexa_skill():
         }
     }
 
-    return jsonify(response)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(endpoint, json=response_data, headers=headers)
+    return response.json()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    result = send_alexa_request()
+    print(result)
