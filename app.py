@@ -34,8 +34,6 @@ def index():
     if request.method == "POST":
         logger.info("POST request to the root URL")
 
-        
-
         return jsonify({"message": "POST request received"})   
     return (resposta)
 
@@ -62,7 +60,7 @@ def webscrape():
         }
         }
 
-        return jsonify({"weather": weather})
+        return ({"weather": weather})
     except Exception as e:
         logger.error(f"Error fetching weather: {e}")
         return jsonify({"error": "Erro ao buscar a previsão do tempo"}), 500
@@ -75,7 +73,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         logger.info("LaunchRequestHandler handle invoked")
         speech_text = "Bem-vindo à skill de previsão do tempo. Pergunte-me sobre o tempo."
-        response = handler_input.response_builder.speak(speech_text).set_should_end_session(False).response
+        #response = handler_input.response_builder.speak(speech_text).set_should_end_session(False).response
         logger.info(f"LaunchRequestHandler response: {response}")
         
         response = {
