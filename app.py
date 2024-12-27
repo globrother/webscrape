@@ -147,7 +147,7 @@ def alexa():
             "directives": [
                 {
                     "type": "Alexa.Presentation.APL.RenderDocument",
-                    "token": "documentToken",
+                    "token": "apl_document",
                     "document": {
                         "src": "doc://alexa/apl/documents/Alexawebscrape",
                         "type": "Link"
