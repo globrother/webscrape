@@ -50,17 +50,17 @@ def alexa():
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element()
 
         marcadores_voz = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>" \
-             f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
-             f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}<break time='500ms'/>"
+                         f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
+                         f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
+                         f"• Último rendimento: R$ {divpcxmpl11_16}<break time='500ms'/>"
         
         marcadores_card = f"• Valor atual da cota: R$ {xpml11_0}\n" \
-             f"• Dividend Yield: {dyxpml11_3}%\n" \
-             f"• P/VP: {pvpxpml11_6}\n" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}"
+                          f"• Dividend Yield: {dyxpml11_3}%\n" \
+                          f"• P/VP: {pvpxpml11_6}\n" \
+                          f"• Último rendimento: R$ {divpcxmpl11_16}"
 
         # Documento APL para a imagem de fundo
-        {
+        apl_document = {
             "type": "APL",
             "version": "2024.3",
             "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
@@ -75,7 +75,7 @@ def alexa():
                 "parameters": [
                     "payload"
                 ],
-                "item": [
+                "items": [
                     {
                         "type": "Container",
                         "height": "100vh",
@@ -96,22 +96,22 @@ def alexa():
                                         "headerAttributionImage": "${payload.longTextTemplateData.properties.logoUrl}"
                                     },
                                     {
-                                        "items": [
-                                            {
-                                                "textAlign": "left",
-                                                "text": " Esse é um texto de teste!",
-                                                "type": "Text",
-                                                "style": "textStyleDisplay4",
-                                                "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                                                "id": "financeContent"
-                                            }
-                                        ],
                                         "type": "ScrollView",
                                         "paddingTop": "@spacingMedium",
                                         "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
                                         "paddingLeft": "@marginHorizontal",
                                         "paddingRight": "@marginHorizontal",
-                                        "grow": 1
+                                        "grow": 1,
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": " Esse é um texto de teste!",
+                                                "style": "textStyleDisplay4",
+                                                "textAlign": "left",
+                                                "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                "id": "financeContent"
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -134,9 +134,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": f"<speak> Atualizações do Fundo XPML onze \n{marcadores_voz}</speak>"
-                    #"type": "PlainText",
-                    #"text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
+                    "ssml": f"<speak>Atualizações do Fundo XPML onze \n{marcadores_voz}</speak>"
                 },
                 "card": {
                     "type": "Simple",
@@ -144,11 +142,19 @@ def alexa():
                     "content": f"Atualizações do Fundo XPML11:\n{marcadores_card}"
                 },
                 "shouldEndSession": True
-            }
+            },
+            "directives": [
+                {
+                    "type": "Alexa.Presentation.APL.RenderDocument",
+                    "token": "welcomeDocument",
+                    "document": apl_document
+                }
+            ]
         }
         return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
