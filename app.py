@@ -70,7 +70,7 @@ def alexa():
                         "items": [
                             {
                                 "type": "Image",
-                                "source": "https://static.vecteezy.com/system/resources/previews/011/115/484/original/stock-market-and-cryptocurrency-trading-chart-concept-candlestick-and-bar-graph-with-volume-indicator-show-digital-money-or-financial-statistics-and-business-earning-management-on-blue-background-vector.jpg",
+                                "source": "https://www.hashtagtreinamentos.com/wp-content/uploads/2022/02/Capa-Para-Dashboard-no-Power-BI-3.png",
                                 "width": "100%",
                                 "height": "100%"
                             },
