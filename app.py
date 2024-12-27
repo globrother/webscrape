@@ -64,7 +64,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": "<speak> There is a three second pause here <break time='3s'/>then the speech continues.</speak>"
+                    "ssml": f"<speak> Atualizações do Fundo X P M L onze <break time='3s'/>\n{marcadores_voz}</speak>"
                     #"type": "PlainText",
                     #"text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
                 },
