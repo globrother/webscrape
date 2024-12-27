@@ -64,7 +64,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": "<speak> Bem vindo ao teste.<audio src="https://carfu.com/audio/carfu-welcome.mp3" /> \
+                    "ssml": "<speak> Bem vindo ao teste.<audio src="https://files.elfsightcdn.com/eafe4a4d-3436-495d-b748-5bdce62d911d/e3498159-3d2c-4061-aaf4-2d553ca75679/finance-alerta-future-tone.mp3" /> \
                     você pode!</speak>"
                     #"type": "PlainText",
                     #"text": f"<break>Atualizações do Fundo X P M L onze<break time="1s"/>\n{marcadores_voz}"
