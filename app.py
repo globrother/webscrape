@@ -43,7 +43,7 @@ def get_element():
 
     return xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16
 
-@app.route('/', methods=['POST'])
+@app.route('/webscrape', methods=['POST'])
 def alexa():
     try:
         data = request.get_json()
