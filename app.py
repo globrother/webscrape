@@ -105,7 +105,7 @@ def alexa():
                                         "items": [
                                             {
                                                 "type": "Text",
-                                                "text": " Esse é um texto de teste!",
+                                                "text": marcadores_card,
                                                 "style": "textStyleDisplay4",
                                                 "textAlign": "left",
                                                 "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
@@ -122,7 +122,7 @@ def alexa():
             "onMount": [
                 {
                     "type": "SpeakItem",
-                    "componentId": "plantContent",
+                    "componentId": "financeContent",
                     "highlightMode": "line",
                     "align": "center"
                 }
