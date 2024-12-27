@@ -48,17 +48,17 @@ def alexa():
         data = request.get_json()
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element()
 
-        marcadores = f"• Valor atual da cota do XPML11: R$ {xpml11_0}\n" \
-             f"• Dividend Yield: {dyxpml11_3}%\n" \
-             f"• P/VP: {pvpxpml11_6}\n" \
+        marcadores = f"• <break>Valor atual da cota: R$ {xpml11_0}\n<break time='1000ms'/>" \
+             f"• <break>Dividend Yield: {dyxpml11_3}%\n<break time='1000ms'/>" \
+             f"• <break>P/VP: {pvpxpml11_6}\n<break time='1000ms'/>" \
              f"• Último rendimento: R$ {divpcxmpl11_16}"
 
         response = {
             "version": "1.0",
             "response": {
                 "outputSpeech": {
-                    "type": "PlainText",
-                    "text": f"Atualizações do Fundo X P M L onze\n{marcadores}"
+                    "type": "SSML",
+                    "text": f"<speak>Atualizações do Fundo X P M L onze<break time='1000ms'/>\n{marcadores}"
                 },
                 "card": {
                     "type": "Simple",
