@@ -59,6 +59,35 @@ def alexa():
              f"• P/VP: {pvpxpml11_6}\n" \
              f"• Último rendimento: R$ {divpcxmpl11_16}"
 
+        # Documento APL para a imagem de fundo
+        apl_document = {
+            "type": "APL",
+            "version": "1.4",
+            "mainTemplate": {
+                "items": [
+                    {
+                        "type": "Container",
+                        "items": [
+                            {
+                                "type": "Image",
+                                "source": "https://static.vecteezy.com/system/resources/previews/011/115/484/original/stock-market-and-cryptocurrency-trading-chart-concept-candlestick-and-bar-graph-with-volume-indicator-show-digital-money-or-financial-statistics-and-business-earning-management-on-blue-background-vector.jpg",
+                                "width": "100%",
+                                "height": "100%"
+                            },
+                            {
+                                "type": "Text",
+                                "text": "Atualizações do Fundo XPML11",
+                                "fontSize": "50dp",
+                                "textAlign": "center",
+                                "textAlignVertical": "center",
+                                "color": "#FFFFFF"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+
         response = {
             "version": "1.0",
             "response": {
