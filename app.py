@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import ask_sdk_core as ask_sdk
 import requests
 from bs4 import BeautifulSoup
 
@@ -62,8 +63,11 @@ def alexa():
             "version": "1.0",
             "response": {
                 "outputSpeech": {
-                    "type": "PlainText",
-                    "text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
+                    "type": "SSML",
+                    "ssml": "<speak> Bem vindo ao teste.<audio src="https://carfu.com/audio/carfu-welcome.mp3" /> \
+                    você pode!</speak>"
+                    #"type": "PlainText",
+                    #"text": f"<break>Atualizações do Fundo X P M L onze<break time="1s"/>\n{marcadores_voz}"
                 },
                 "card": {
                     "type": "Simple",
