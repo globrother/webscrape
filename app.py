@@ -64,10 +64,9 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": "<speak> Bem vindo ao teste.<audio src="https://files.elfsightcdn.com/eafe4a4d-3436-495d-b748-5bdce62d911d/e3498159-3d2c-4061-aaf4-2d553ca75679/finance-alerta-future-tone.mp3" /> \
-                    você pode!</speak>"
+                    "ssml": "<speak> There is a three second pause here <break time='3s'/>then the speech continues.</speak>"
                     #"type": "PlainText",
-                    #"text": f"<break>Atualizações do Fundo X P M L onze<break time="1s"/>\n{marcadores_voz}"
+                    #"text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
                 },
                 "card": {
                     "type": "Simple",
