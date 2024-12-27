@@ -63,7 +63,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "SSML": f"<speak>Atualizações do Fundo X P M L onze<break time='1000ms'/>\n{marcadores_voz}"
+                    "ssml": f"<speak>Atualizações do Fundo X P M L onze<break time='1000ms'/>\n{marcadores_voz}"
                 },
                 "card": {
                     "type": "Simple",
