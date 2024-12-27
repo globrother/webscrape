@@ -64,7 +64,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": f"<speak> Atualizações do Fundo X P M L onze \n{marcadores_voz}</speak>"
+                    "ssml": f"<speak> Atualizações do Fundo XPML onze \n{marcadores_voz}</speak>"
                     #"type": "PlainText",
                     #"text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
                 },
