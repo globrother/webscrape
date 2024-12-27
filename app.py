@@ -52,7 +52,7 @@ def alexa():
     data = request.get_json()
     xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element()
 
-    marcadores = f"• Valor atual da cota: {xpml11_0}\n• Dividend Yield (12): {dyxpml11_3}\n• P/VP: {pvpxpml11_6}\n• Último rendimento: {divpcxmpl11_16}"
+    marcadores = f"• Valor atual da cota: R$ {xpml11_0}\n• Dividend Yield (12): {dyxpml11_3}%\n• P/VP: {pvpxpml11_6}\n• Último rendimento: R$ {divpcxmpl11_16}"
 
     response = {
         "version": "1.0",
@@ -63,7 +63,7 @@ def alexa():
             },
             "card": {
                 "type": "Simple",
-                "title": "Obtendo de Brasil Indicadores",
+                "title": "Obtendo de Status Invest",
                 "content": f"\n{marcadores}"
             },
             "shouldEndSession": True
