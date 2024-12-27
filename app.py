@@ -49,10 +49,10 @@ def alexa():
         data = request.get_json()
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element()
 
-        marcadores_voz = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='1s'/>" \
-             f"• Dividend Yield: {dyxpml11_3}%\n<break time='1s'/>" \
-             f"• P/VP: {pvpxpml11_6}\n" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}"
+        marcadores_voz = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>" \
+             f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
+             f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
+             f"• Último rendimento: R$ {divpcxmpl11_16}<break time='500ms'/>"
         
         marcadores_card = f"• Valor atual da cota: R$ {xpml11_0}\n" \
              f"• Dividend Yield: {dyxpml11_3}%\n" \
