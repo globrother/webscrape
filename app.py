@@ -63,7 +63,7 @@ def alexa():
             "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": f"<speak>Atualizações do Fundo X P M L onze<break time='1000ms'/>\n{marcadores_voz}"
+                    "text": f"Atualizações do Fundo X P M L onze\n{marcadores_voz}"
                 },
                 "card": {
                     "type": "Simple",
