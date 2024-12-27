@@ -130,19 +130,20 @@ def alexa():
         }
 
         response = {
-            "version": "1.0",
-            "response": {
-                "outputSpeech": {
-                    "type": "SSML",
-                    "ssml": f"<speak>Atualizações do Fundo XPML onze \n{marcadores_voz}</speak>"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Obtendo de Status Invest",
-                    "content": f"Atualizações do Fundo XPML11:\n{marcadores_card}"
-                },
-                "shouldEndSession": True
-            },
+            
+            #"version": "1.0",
+            #"response": {
+            #    "outputSpeech": {
+            #        "type": "SSML",
+            #        "ssml": f"<speak>Atualizações do Fundo XPML onze \n{marcadores_voz}</speak>"
+            #    },
+            #    "card": {
+            #        "type": "Simple",
+            #        "title": "Obtendo de Status Invest",
+            #        "content": f"Atualizações do Fundo XPML11:\n{marcadores_card}"
+            #    },
+            #    "shouldEndSession": True
+            #},
             "directives": [
                 {
                     "type": "Alexa.Presentation.APL.RenderDocument",
