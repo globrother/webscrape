@@ -60,32 +60,73 @@ def alexa():
              f"• Último rendimento: R$ {divpcxmpl11_16}"
 
         # Documento APL para a imagem de fundo
-        apl_document = {
+        {
             "type": "APL",
-            "version": "1.4",
+            "version": "2024.3",
+            "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
+            "theme": "dark",
+            "import": [
+                {
+                    "name": "alexa-layouts",
+                    "version": "1.7.0"
+                }
+            ],
             "mainTemplate": {
-                "items": [
+                "parameters": [
+                    "payload"
+                ],
+                "item": [
                     {
                         "type": "Container",
+                        "height": "100vh",
                         "items": [
                             {
-                                "type": "Image",
-                                "source": "https://www.hashtagtreinamentos.com/wp-content/uploads/2022/02/Capa-Para-Dashboard-no-Power-BI-3.png",
-                                "width": "100%",
-                                "height": "100%"
+                                "type": "AlexaBackground",
+                                "backgroundImageSource": "https://www.hashtagtreinamentos.com/wp-content/uploads/2022/02/Capa-Para-Dashboard-no-Power-BI-3.png",
+                                "backgroundScale": "best-fill"
                             },
                             {
-                                "type": "Text",
-                                "text": "Atualizações do Fundo XPML11",
-                                "fontSize": "50dp",
-                                "textAlign": "center",
-                                "textAlignVertical": "center",
-                                "color": "#FFFFFF"
+                                "type": "Container",
+                                "height": "100vh",
+                                "width": "100vw",
+                                "items": [
+                                    {
+                                        "type": "AlexaHeader",
+                                        "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
+                                        "headerAttributionImage": "${payload.longTextTemplateData.properties.logoUrl}"
+                                    },
+                                    {
+                                        "items": [
+                                            {
+                                                "textAlign": "left",
+                                                "text": " Esse é um texto de teste!",
+                                                "type": "Text",
+                                                "style": "textStyleDisplay4",
+                                                "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                "id": "financeContent"
+                                            }
+                                        ],
+                                        "type": "ScrollView",
+                                        "paddingTop": "@spacingMedium",
+                                        "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
+                                        "paddingLeft": "@marginHorizontal",
+                                        "paddingRight": "@marginHorizontal",
+                                        "grow": 1
+                                    }
+                                ]
                             }
                         ]
                     }
                 ]
-            }
+            },
+            "onMount": [
+                {
+                    "type": "SpeakItem",
+                    "componentId": "plantContent",
+                    "highlightMode": "line",
+                    "align": "center"
+                }
+            ]
         }
 
         response = {
