@@ -7,6 +7,7 @@ from ask_sdk_core.utils import is_request_type, get_supported_interfaces
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective
 from xpml11_response import alexa_xpml11
 from xpml11 import get_element
+import time
 # from xpml11 import get_element
 # from xpml11_response import get_element
 
@@ -16,10 +17,12 @@ app = Flask(__name__)
 def alexa():
     try:
         data = request.get_json()
+        #Timer(5, send_follow_up_response).start() # 5 segundos de intervalo
+        #response_knri = alexa_knri11(get_element, request, requests, BeautifulSoup)
+        response_xpml = alexa_xpml11(get_element, request, requests, BeautifulSoup)
+        #response_mxrf = alexa_mxrf11(get_element, request, requests, BeautifulSoup)
 
-        response = alexa_xpml11(get_element, request, requests, BeautifulSoup)
-
-        return jsonify(response)
+        return jsonify(response_xpml)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
