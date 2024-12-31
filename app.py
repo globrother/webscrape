@@ -27,7 +27,7 @@ def alexa():
         # Faz a chamada para a função de resposta atrasada
         with app.app_context():
             response = send_follow_up_response()
-            print(response.get_json()) # Apenas para visualizar a resposta, pode ser removido
+            #print(response.get_json()) # Apenas para visualizar a resposta, pode ser removido
 
     # Inicializa o temporizador para chamar a função após um atraso
     Timer(5, delayed_response).start()  # 5 segundos de intervalo
