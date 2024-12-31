@@ -33,7 +33,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                 "card": {
                     "type": "Simple",
                     "title": "Obtendo de Status Invest",
-                    "content": f"\n Atualizações do Fundo XPML11:\n{card_xpml11}"
+                    "content": f"Atualizações do Fundo XPML11:\n\n{card_xpml11}"
                 },
                 "shouldEndSession": False
             }
