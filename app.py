@@ -16,7 +16,7 @@ app = Flask(__name__)
 @app.route('/webscrape', methods=['POST'])
 def alexa():
     try:
-        data = request.get_json()
+        #data = request.get_json()
         #Timer(5, send_follow_up_response).start() # 5 segundos de intervalo
         #response_knri = alexa_knri11(get_element, request, requests, BeautifulSoup)
         response_xpml = alexa_xpml11(get_element, request, requests, BeautifulSoup)
