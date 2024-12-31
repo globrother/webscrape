@@ -25,7 +25,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "text": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
+                    "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
                 },
                 "card": {
                     "type": "Simple",
