@@ -2,6 +2,7 @@
 ===== ::: CONSTRUINDO RESPOSTA PARA ALEXA ::: ========================================
 """
 from flask import jsonify
+import time
 #from xpml11 import get_element
 
 def alexa_xpml11(get_element, request, requests, BeautifulSoup):
@@ -11,8 +12,8 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
         voz_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>" \
-             f"• Dividend Yield: {dyxpml11_3}%\n" \
-             f"• P/VP: {pvpxpml11_6}\n" \
+             f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
+             f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
              f"• Último rendimento: R$ {divpcxmpl11_16}"
         
         card_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n" \
@@ -22,6 +23,8 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
 
         response = {
             "version": "1.0",
+            "sessionAttributes":{
+                 "follow_up": True },
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
@@ -30,7 +33,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                 "card": {
                     "type": "Simple",
                     "title": "Obtendo de Status Invest",
-                    "content": f"\n{card_xpml11}"
+                    "content": f"\n Atualizações do Fundo XPML11:\n{card_xpml11}"
                 },
                 "shouldEndSession": False
             }

@@ -17,17 +17,27 @@ app = Flask(__name__)
 
 @app.route('/webscrape', methods=['POST'])
 def alexa():
+    data = request.get_json()
+    session = data.get('session', {})
+    attributes = session.get('attributes', {})
         #data = request.get_json()
         #Timer(5, send_follow_up_response).start() # 5 segundos de intervalo
         #response_knri = alexa_knri11(get_element, request, requests, BeautifulSoup)
         #response_xpml = alexa_xpml11(get_element, request, requests, BeautifulSoup)
         #response_mxrf = alexa_mxrf11(get_element, request, requests, BeautifulSoup)
 
-    def delayed_response():
-        # Faz a chamada para a função de resposta atrasada
+    if attributes.get('follow_up', False):
+        # Se a sessão tiver o atributo de seguir, chama a função de resposta atrasada
+        response = send_follow_up_response()
         with app.app_context():
-            response = send_follow_up_response()
-            #print(response.get_json()) # Apenas para visualizar a resposta, pode ser removido
+            return response
+
+    def delayed_response():
+        # Redefinir a função de resposta atrasada dentro do contexto da aplicação
+        with app.app_context():
+            # Altere aqui para o cliente de teste chamando a mesma rota novamente
+            test_client = app.test_client()
+            response = test_client.post('/webscrape', json={"session": {"attributes": {"follow_up": True}}})
 
     # Inicializa o temporizador para chamar a função após um atraso
     Timer(5, delayed_response).start()  # 5 segundos de intervalo
