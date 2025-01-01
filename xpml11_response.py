@@ -60,6 +60,7 @@ def send_follow_up_response():
     }
     return response
 
+"""
 def send_follow_up_response():
     response = {
         "version": "1.0",
@@ -77,3 +78,4 @@ def send_follow_up_response():
         }
     }
     return jsonify(response)
+"""
