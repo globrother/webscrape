@@ -11,15 +11,15 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
         
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
-        voz_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>" \
-             f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
-             f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}"
+        voz_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
+             #f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
+             #f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
+             #f"• Último rendimento: R$ {divpcxmpl11_16}"
         
-        card_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n" \
-             f"• Dividend Yield: {dyxpml11_3}%\n" \
-             f"• P/VP: {pvpxpml11_6}\n" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}"
+        card_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n"
+             #f"• Dividend Yield: {dyxpml11_3}%\n" \
+             #f"• P/VP: {pvpxpml11_6}\n" \
+             #f"• Último rendimento: R$ {divpcxmpl11_16}"
 
         response = {
             "version": "1.0",
@@ -35,7 +35,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                     "title": "Obtendo de Status Invest",
                     "content": f"Atualizações do Fundo XPML11:\n\n{card_xpml11}"
                 },
-                "shouldEndSession": False
+                "shouldEndSession": False # Mantem a sessão aberta para a próxima atualização
             }
         }
         return jsonify(response)
