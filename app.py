@@ -37,7 +37,8 @@ def alexa():
         with app.app_context():
             # Altere aqui para o cliente de teste chamando a mesma rota novamente
             test_client = app.test_client()
-            response = test_client.post('/webscrape', json={"session": {"attributes": {"follow_up": True}}})
+            test_client.post('/webscrape', json={"session": {"attributes": {"follow_up": True}}})
+            #response = test_client.post('/webscrape', json={"session": {"attributes": {"follow_up": True}}})
 
     # Inicializa o temporizador para chamar a função após um atraso
     Timer(5, delayed_response).start()  # 5 segundos de intervalo
