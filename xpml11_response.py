@@ -2,7 +2,7 @@
 ===== ::: CONSTRUINDO RESPOSTA PARA ALEXA ::: ========================================
 """
 from flask import jsonify
-import time
+#import time
 #from xpml11 import get_element
 
 def alexa_xpml11(get_element, request, requests, BeautifulSoup):
