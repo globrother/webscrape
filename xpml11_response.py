@@ -35,7 +35,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                     "title": "Obtendo de Status Invest",
                     "content": f"Atualizações do Fundo XPML11:\n\n{card_xpml11}"
                 },
-                "shouldEndSession": True
+                "shouldEndSession": False
             }
         }
         return jsonify(response)
