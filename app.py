@@ -23,7 +23,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         logger.info("LaunchRequestHandler handle invoked")
         speech_text = "Bem-vindo! Aqui estão os cartões."
         
-        apl_document1 = {
+        apl_document = {
             "type": "APL",
             "version": "1.4",
             "mainTemplate": {
@@ -39,7 +39,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                             },
                             {
                                 "type": "Text",
-                                "id": "textComponent1",
+                                "id": "textComponent",
                                 "text": "Primeiro cartão",
                                 "fontSize": "50dp",
                                 "color": "#FFFFFF",
@@ -52,66 +52,37 @@ class LaunchRequestHandler(AbstractRequestHandler):
             }
         }
         
-        apl_document2 = {
-            "type": "APL",
-            "version": "1.4",
-            "mainTemplate": {
-                "items": [
-                    {
-                        "type": "Container",
-                        "items": [
-                            {
-                                "type": "Image",
-                                "source": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
-                                "width": "100vw",
-                                "height": "100vh"
-                            },
-                            {
-                                "type": "Text",
-                                "id": "textComponent2",
-                                "text": "Segundo cartão",
-                                "fontSize": "50dp",
-                                "color": "#FFFFFF",
-                                "textAlign": "center",
-                                "textAlignVertical": "center"
-                            }
-                        ]
-                    }
-                ]
-            }
+        apl_command = {
+            "type": "Sequential",
+            "commands": [
+                {
+                    "type": "SpeakItem",
+                    "componentId": "textComponent",
+                    "highlightMode": "line"
+                },
+                {
+                    "type": "SetValue",
+                    "componentId": "textComponent",
+                    "property": "text",
+                    "value": "Segundo cartão"
+                },
+                {
+                    "type": "SpeakItem",
+                    "componentId": "textComponent",
+                    "highlightMode": "line"
+                }
+            ]
         }
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="uniqueToken1",
-                document=apl_document1
-            )
-        ).add_directive(
-            RenderDocumentDirective(
-                token="uniqueToken2",
-                document=apl_document2
+                token="uniqueToken",
+                document=apl_document
             )
         ).add_directive(
             ExecuteCommandsDirective(
-                token="uniqueToken1",
-                commands=[
-                    {
-                        "type": "SpeakItem",
-                        "componentId": "textComponent1",
-                        "highlightMode": "line"
-                    }
-                ]
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="uniqueToken2",
-                commands=[
-                    {
-                        "type": "SpeakItem",
-                        "componentId": "textComponent2",
-                        "highlightMode": "line"
-                    }
-                ]
+                token="uniqueToken",
+                commands=apl_command
             )
         ).speak(speech_text).set_card(SimpleCard("Cartões", speech_text)).set_should_end_session(False)
         
