@@ -41,7 +41,7 @@ def alexa():
             #response = test_client.post('/webscrape', json={"session": {"attributes": {"follow_up": True}}})
 
     # Inicializa o temporizador para chamar a função após um atraso
-    Timer(5, delayed_response).start()  # 5 segundos de intervalo
+    Timer(2, delayed_response).start()  # 5 segundos de intervalo
     return alexa_xpml11(get_element, request, requests, BeautifulSoup)
 
 if __name__ == '__main__':
