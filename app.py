@@ -41,11 +41,11 @@ def handle_request():
                                             {
                                                 "type": "Text",
                                                 "text": "Olá, Bem-vindo ao Echo Show!",
-                                                "fontSize": "48dp",
+                                                "fontSize": "40dp",
                                                 "color": "white",
                                                 "position": "absolute",
                                                 "top": "50vh",
-                                                "left": "50vw",
+                                                "left": "0vw",
                                                 "transform": "translate(-50%, -50%)"
                                             }
                                         ]
