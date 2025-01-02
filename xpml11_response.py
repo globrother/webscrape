@@ -98,7 +98,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                                     "text": f"Atualizações do Fundo XPML11:<br><br>{card_xpml11}",
                                                                     "style": "textStyleDisplay4",
                                                                     "textAlign": "left",
-                                                                    "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                                    # "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
                                                                     "id": "financeContent-xpml"
                                                                 },
                                                                 {
@@ -122,6 +122,12 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                         "type": "Sequential",
                                         "commands": [
                                             {
+                                                "type": "SetValue",
+                                                "componentId": "financeContent-xpml",
+                                                "property": "display",
+                                                "value": "normal"
+                                            },
+                                            {
                                                 "type": "SpeakItem",
                                                 "componentId": "financeContent-xpml",
                                                 "highlightMode": "line",
@@ -132,6 +138,12 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                 "componentId": "financeContent-teste1",
                                                 "property": "display",
                                                 "value": "normal"
+                                            },
+                                            {
+                                                "type": "SpeakItem",
+                                                "componentId": "financeContent-teste1",
+                                                "highlightMode": "line",
+                                                "align": "center"
                                             }
                                         ]
                                     }
