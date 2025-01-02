@@ -34,7 +34,7 @@ def handle_request():
                                         "items": [
                                             {
                                                 "type": "Image",
-                                                "source": "https://corhexa.com/png/1280x800/f57837",
+                                                "source": "https://drive.google.com/file/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf/view?usp=drive_link",
                                                 "width": "100vw",
                                                 "height": "100vh"
                                             },
