@@ -108,7 +108,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                 }
             }
             return jsonify(response)
-        return jsonify({})
+        return jsonify("Ocorreu um erro com a solicitação.")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
         
