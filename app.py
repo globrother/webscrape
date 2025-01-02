@@ -18,7 +18,7 @@ def handle_request():
             "response": {
                 "outputSpeech": {
                     "type": "SSML",
-                    "ssml": "<speak>Olá, Bem-vindo ao Echo Show!<break time='2s'/></speak>"
+                    "ssml": "<speak>Olá, Bem-vindo ao Echo Show!<break time='5s'/></speak>"
                 },
                 "directives": [
                     {
