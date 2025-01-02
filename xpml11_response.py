@@ -12,15 +12,17 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
 
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
-        voz_xpml11 = f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
-             #f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>" \
-             #f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
-             #f"• Último rendimento: R$ {divpcxmpl11_16}"
+        voz_xpml11 = (f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>")
+             #f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>"
+             #f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>"
+             #f"• Último rendimento: R$ {divpcxmpl11_16}")
         
-        card_xpml11 = ( f"• Valor atual da cota: R$ {xpml11_0}\n"
-         f"• Dividend Yield: {dyxpml11_3}%\n"
-         f"• P/VP: {pvpxpml11_6}\n"
-         f"• Último rendimento: R$ {divpcxmpl11_16}" )
+        card_xpml11 = (
+            f"• Valor atual da cota: R$ {xpml11_0}<br>"
+            f"• Dividend Yield: {dyxpml11_3}%<br>"
+            f"• P/VP: {pvpxpml11_6}<br>"
+            f"• Último rendimento: R$ {divpcxmpl11_16}"
+        )
         
         # Verifica o tipo de solicitação da Alexa
         if request_data["request"]["type"] == "LaunchRequest":
@@ -80,7 +82,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
                                                             "items": [
                                                                 {
                                                                     "type": "Text",
-                                                                    "text": f"Atualizações do Fundo XPML11:\n\n{card_xpml11}",
+                                                                    "text": f"Atualizações do Fundo XPML11:<br><br>{card_xpml11}",
                                                                     "style": "textStyleDisplay4",
                                                                     "textAlign": "left",
                                                                     "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
