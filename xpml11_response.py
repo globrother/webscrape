@@ -34,7 +34,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
         )
 
         card_teste1 = (
-            f"• Valor atual da cota: R$ {xpml11_0}<br>"
+            "• Valor atual da cota: R$ 5.000,00<br>"
         )
 
         # Verifica o tipo de solicitação da Alexa
@@ -100,6 +100,12 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                                     "textAlign": "left",
                                                                     # "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
                                                                     "id": "financeContent-xpml"
+                                                                },
+                                                                {
+                                                                    "outputSpeech": {
+                                                                        "type": "SSML",
+                                                                        "ssml": "<speak> Teste, esse é um teste.</speak>"
+                                                                    }
                                                                 },
                                                                 {
                                                                     "type": "Text",
