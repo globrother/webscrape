@@ -44,7 +44,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                 "response": {
                     "outputSpeech": {
                         "type": "SSML",
-                        "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
+                        "ssml": f"<speak>Atualizações do Fundo XPML11. {voz_xpml11}</speak>"
                     },
                     "directives": [
                         {
@@ -52,19 +52,8 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                             "token": "welcomeToken",
                             "document": {
                                 "type": "APL",
-                                "version": "2024.3",
-                                "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
-                                "theme": "dark",
-                                "import": [
-                                    {
-                                        "name": "alexa-layouts",
-                                        "version": "1.7.0"
-                                    }
-                                ],
+                                "version": "1.4",
                                 "mainTemplate": {
-                                    "parameters": [
-                                        "payload"
-                                    ],
                                     "items": [
                                         {
                                             "type": "Container",
@@ -82,8 +71,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                     "items": [
                                                         {
                                                             "type": "AlexaHeader",
-                                                            "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
-                                                            "headerAttributionImage": "${payload.longTextTemplateData.properties.logoUrl}"
+                                                            "headerTitle": "Atualizações Fundos Imobiliários - FIIs"
                                                         },
                                                         {
                                                             "type": "ScrollView",
@@ -98,14 +86,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                                     "text": f"Atualizações do Fundo XPML11:<br><br>{card_xpml11}",
                                                                     "style": "textStyleDisplay4",
                                                                     "textAlign": "left",
-                                                                    # "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
                                                                     "id": "financeContent-xpml"
-                                                                },
-                                                                {
-                                                                    "outputSpeech": {
-                                                                        "type": "SSML",
-                                                                        "ssml": "<speak> Teste, esse é um teste.</speak>"
-                                                                    }
                                                                 },
                                                                 {
                                                                     "type": "Text",
