@@ -29,37 +29,71 @@ def handle_request():
                             "version": "2024.3",
                             "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
                             "theme": "dark",
-                            #"type": "APL",
-                            #"version": "1.4",
+                            "import": [
+                                {
+                                    "name": "alexa-layouts",
+                                    "version": "1.7.0"
+                                }
+                            ],
                             "mainTemplate": {
+                                "parameters": [
+                                    "payload"
+                                ],
                                 "items": [
                                     {
                                         "type": "Container",
+                                        "height": "100vh",
                                         "items": [
                                             {
-                                                "type": "Image",
-                                                "source": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
-                                                "width": "100vw",
-                                                "height": "100vh"
+                                                "type": "AlexaBackground",
+                                                "backgroundImageSource": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
+                                                "backgroundScale": "best-fill"
                                             },
                                             {
-                                                "type": "Text",
-                                                "text": "Olá, Bem-vindo ao Echo Show!",
-                                                "fontSize": "40dp",
-                                                "color": "white",
-                                                "position": "absolute",
-                                                "top": "50vh",
-                                                "left": "0vw",
-                                                "transform": "translate(-50%, -50%)"
+                                                "type": "Container",
+                                                "height": "100vh",
+                                                "width": "100vw",
+                                                "items": [
+                                                    {
+                                                        "type": "AlexaHeader",
+                                                        "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
+                                                        "headerAttributionImage": "${payload.longTextTemplateData.properties.logoUrl}"
+                                                    },
+                                                    {
+                                                        "type": "ScrollView",
+                                                        "paddingTop": "@spacingMedium",
+                                                        "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
+                                                        "paddingLeft": "@marginHorizontal",
+                                                        "paddingRight": "@marginHorizontal",
+                                                        "grow": 1,
+                                                        "items": [
+                                                            {
+                                                                "type": "Text",
+                                                                "text": "marcadores voz,",
+                                                                "style": "textStyleDisplay4",
+                                                                "textAlign": "left",
+                                                                "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                                "id": "financeContent"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         ]
                                     }
                                 ]
-                            }
+                            },
+                            "onMount": [
+                                {
+                                    "type": "SpeakItem",
+                                    "componentId": "financeContent",
+                                    "highlightMode": "line",
+                                    "align": "center"
+                                }
+                            ]
                         }
                     }
-                ],
-                "shouldEndSession": True
+                ]
             }
         }
         return jsonify(response)
