@@ -15,8 +15,8 @@ from xpml11 import get_element
 
 app = Flask(__name__)
 
-@app.route('/webscrape', methods=['POST'])
-def alexa():
+@app.route("/webscrape", methods=["POST"])
+def handle_request():
     
     return alexa_xpml11(get_element, request, requests, BeautifulSoup)
 
