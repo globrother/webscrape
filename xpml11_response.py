@@ -16,7 +16,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
             f"• Valor atual da cota: R$ {xpml11_0}<br><break time='500ms'/>"
             f"• Dividend Yield: {dyxpml11_3}%<br><break time='500ms'/>"
             f"• P/VP: {pvpxpml11_6}<br><break time='500ms'/>"
-            f"• Último rendimento: R$ {divpcxmpl11_16}<br><break time='1s'/>"
+            f"• Último rendimento: R$ {divpcxmpl11_16}<br><break time='500ms'/>"
         )
         
         card_xpml11 = (
