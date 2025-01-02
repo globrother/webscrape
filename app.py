@@ -42,6 +42,7 @@ def alexa():
 
     # Inicializa o temporizador para chamar a função após um atraso
     Timer(2, delayed_response).start()  # 5 segundos de intervalo
+    print("teste de teste")
     return alexa_xpml11(get_element, request, requests, BeautifulSoup)
 
 if __name__ == '__main__':
