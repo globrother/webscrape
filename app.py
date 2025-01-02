@@ -18,7 +18,7 @@ app = Flask(__name__)
 @app.route("/webscrape", methods=["POST"])
 def handle_request():
     
-    return alexa_xpml11(get_element, request, requests, BeautifulSoup)
+    return alexa_xpml11(json,get_element, request, requests, BeautifulSoup)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

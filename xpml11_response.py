@@ -5,10 +5,13 @@ from flask import jsonify
 #import time
 #from xpml11 import get_element
 
-def alexa_xpml11(get_element, request, requests, BeautifulSoup):
+def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
     try:
         #data = request.get_json()
         request_data = request.get_json()
+
+        # Adiciona instrução de depuração para imprimir o conteúdo da solicitação
+        print("Request Data:", json.dumps(request_data, indent=2))
 
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
@@ -27,7 +30,7 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
         )
         
         # Verifica o tipo de solicitação da Alexa
-        if request_data["request"]["type"] == "LaunchRequest":
+        if request_data["request"]["type"] in ["LaunchRequest", "IntentRequest"]:
             response = {
                 "version": "1.0",
                 "response": {
