@@ -11,15 +11,15 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
         request_data = request.get_json()
 
         # Adiciona instrução de depuração para imprimir o conteúdo da solicitação
-        print("Request Data:", json.dumps(request_data, indent=2))
+        # print("Request Data:", json.dumps(request_data, indent=2))
 
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
         voz_xpml11 = (
-            f"• Valor atual da cota: R$ {xpml11_0}<br><break time='500ms'/>"
-            f"• Dividend Yield: {dyxpml11_3}%<br><break time='500ms'/>"
-            f"• P/VP: {pvpxpml11_6}<br><break time='500ms'/>"
-            f"• Último rendimento: R$ {divpcxmpl11_16}<br><break time='500ms'/>"
+            f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
+            f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>"
+            f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>"
+            f"• Último rendimento: R$ {divpcxmpl11_16}<break time='1s'/>"
         )
         
         card_xpml11 = (
