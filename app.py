@@ -1,126 +1,95 @@
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.handler_input import HandlerInput
-from ask_sdk_model import Response
-from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective)
+from ask_sdk_core.utils import is_request_type
 from ask_sdk_model.ui import SimpleCard
+from ask_sdk_model import Response
 import logging
 
 app = Flask(__name__)
-sb = SkillBuilder()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
+# Configuração de logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+sb = SkillBuilder()
+
+# Intenção para o LaunchRequest
 class LaunchRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        logger.info("LaunchRequestHandler can_handle invoked")
-        return handler_input.request_envelope.request.object_type == "LaunchRequest"
+        return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        logger.info("LaunchRequestHandler handle invoked")
-        speech_text = "Bem-vindo! Aqui estão os cartões."
-        
+        handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
+        return handler_input.response_builder.response
+
+# Intenção para o IntentRequest
+class IntentRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_request_type("IntentRequest")(handler_input)
+
+    def handle(self, handler_input):
+        bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
+
         apl_document = {
             "type": "APL",
             "version": "1.4",
             "mainTemplate": {
                 "items": [
                     {
-                        "type": "Container",
+                        "type": "Sequence",
+                        "scrollDirection": "horizontal",
+                        "data": [
+                            {"bgImage": bg_image_url, "text": "Texto da Primeira Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Segunda Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Terceira Tela"}
+                        ],
                         "items": [
                             {
-                                "type": "Image",
-                                "source": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
-                                "width": "100vw",
-                                "height": "100vh"
-                            },
-                            {
-                                "type": "Text",
-                                "id": "textComponent",
-                                "text": "Primeiro cartão",
-                                "fontSize": "50dp",
-                                "color": "#FFFFFF",
-                                "textAlign": "center",
-                                "textAlignVertical": "center"
+                                "type": "Container",
+                                "items": [
+                                    {
+                                        "type": "Image",
+                                        "source": "${data.bgImage}",
+                                        "width": "100%",
+                                        "height": "100%"
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "text": "${data.text}",
+                                        "style": "textStylePrimary1"
+                                    }
+                                ]
                             }
                         ]
                     }
                 ]
             }
         }
-        
-        apl_command = {
-            "type": "Sequential",
-            "commands": [
-                {
-                    "type": "SpeakItem",
-                    "componentId": "textComponent",
-                    "highlightMode": "line"
-                },
-                {
-                    "type": "SetValue",
-                    "componentId": "textComponent",
-                    "property": "text",
-                    "value": "Segundo cartão"
-                },
-                {
-                    "type": "SpeakItem",
-                    "componentId": "textComponent",
-                    "highlightMode": "line"
-                }
-            ]
-        }
 
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="uniqueToken",
-                document=apl_document
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="uniqueToken",
-                commands=apl_command
-            )
-        ).speak(speech_text).set_card(SimpleCard("Cartões", speech_text)).set_should_end_session(False)
-        
+        handler_input.response_builder.speak("Texto da Primeira Tela")
+        handler_input.response_builder.add_directive({
+            'type': 'Alexa.Presentation.APL.RenderDocument',
+            'token': 'screen_token',
+            'document': apl_document
+        })
+
         return handler_input.response_builder.response
 
-class FallbackIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return handler_input.request_envelope.request.object_type == "IntentRequest"
-
-    def handle(self, handler_input):
-        speech_text = "Desculpe, não entendi sua solicitação. Você pode tentar novamente?"
-        
-        handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-        
-        return handler_input.response_builder.response
-
-class ErrorHandler(AbstractExceptionHandler):
-    def can_handle(self, handler_input, exception):
-        return True
-
-    def handle(self, handler_input, exception):
-        logger.error(exception, exc_info=True)
-        speech_text = "Desculpe, ocorreu um erro ao processar sua solicitação."
-        
-        handler_input.response_builder.speak(speech_text).set_should_end_session(True)
-        
-        return handler_input.response_builder.response
-
+# Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(FallbackIntentHandler())
-sb.add_exception_handler(ErrorHandler())
+sb.add_request_handler(IntentRequestHandler())
 
-@app.route("/webscrape", methods=['POST'])
-def webscrape():
-    logger.info("Received request at /webscrape endpoint")
-    request_body = request.json
-    response = sb.lambda_handler()(request_body, None)
-    return jsonify(response)
+@app.route('/webscrape', methods=['POST'])
+def alexa_skill():
+    logger.debug("Request JSON: %s", request.json)
+    try:
+        response = sb.lambda_handler()(request.json, None)
+        logger.debug("Response: %s", response)
+        return jsonify(response)
+    except Exception as e:
+        logger.error("Exception: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
