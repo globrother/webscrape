@@ -12,10 +12,12 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
 
         xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxmpl11_16 = get_element(requests, BeautifulSoup)
         
-        voz_xpml11 = (f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>")
-             #f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>"
-             #f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>"
-             #f"• Último rendimento: R$ {divpcxmpl11_16}")
+        voz_xpml11 = (
+            f"• Valor atual da cota: R$ {xpml11_0}<break time='500ms'/>"
+            f"• Dividend Yield: {dyxpml11_3}%<break time='500ms'/>"
+            f"• P/VP: {pvpxpml11_6}<break time='500ms'/>"
+            f"• Último rendimento: R$ {divpcxmpl11_16}"
+        )
         
         card_xpml11 = (
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
