@@ -34,7 +34,7 @@ def handle_request():
                                         "items": [
                                             {
                                                 "type": "Image",
-                                                "source": "https://drive.google.com/file/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf/view?usp=drive_link",
+                                                "source": "https://drive.google.com/file/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf/view?usp=sharing",
                                                 "width": "100vw",
                                                 "height": "100vh"
                                             },
