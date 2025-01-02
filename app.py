@@ -34,7 +34,7 @@ def handle_request():
                                         "items": [
                                             {
                                                 "type": "Image",
-                                                "source": "https://example.com/your-background-image.jpg",
+                                                "source": "https://corhexa.com/png/1280x800/f57837",
                                                 "width": "100vw",
                                                 "height": "100vh"
                                             },
