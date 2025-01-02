@@ -60,82 +60,62 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                             "height": "100vh",
                                             "items": [
                                                 {
-                                                    "type": "AlexaBackground",
-                                                    "backgroundImageSource": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
-                                                    "backgroundScale": "best-fill"
+                                                    "type": "Image",
+                                                    "source": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
+                                                    "width": "100vw",
+                                                    "height": "100vh"
                                                 },
                                                 {
-                                                    "type": "Container",
-                                                    "height": "100vh",
-                                                    "width": "100vw",
-                                                    "items": [
-                                                        {
-                                                            "type": "AlexaHeader",
-                                                            "headerTitle": "Atualizações Fundos Imobiliários - FIIs"
-                                                        },
-                                                        {
-                                                            "type": "ScrollView",
-                                                            "paddingTop": "@spacingMedium",
-                                                            "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
-                                                            "paddingLeft": "@marginHorizontal",
-                                                            "paddingRight": "@marginHorizontal",
-                                                            "grow": 1,
-                                                            "items": [
-                                                                {
-                                                                    "type": "Text",
-                                                                    "text": f"Atualizações do Fundo XPML11:<br><br>{card_xpml11}",
-                                                                    "style": "textStyleDisplay4",
-                                                                    "textAlign": "left",
-                                                                    "id": "financeContent-xpml"
-                                                                },
-                                                                {
-                                                                    "type": "Text",
-                                                                    "text": f"{card_teste1}",
-                                                                    "style": "textStyleDisplay4",
-                                                                    "textAlign": "left",
-                                                                    "id": "financeContent-teste1",
-                                                                    "display": "none"
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
+                                                    "type": "Text",
+                                                    "text": f"Atualizações do Fundo XPML11:<br><br>{card_xpml11}",
+                                                    "style": "textStyleDisplay4",
+                                                    "textAlign": "left",
+                                                    "id": "financeContent-xpml"
+                                                },
+                                                {
+                                                    "type": "Text",
+                                                    "text": f"{card_teste1}",
+                                                    "style": "textStyleDisplay4",
+                                                    "textAlign": "left",
+                                                    "id": "financeContent-teste1",
+                                                    "display": "none"
                                                 }
                                             ]
                                         }
                                     ]
-                                },
-                                "commands": [
-                                    {
-                                        "type": "Sequential",
-                                        "commands": [
-                                            {
-                                                "type": "SetValue",
-                                                "componentId": "financeContent-xpml",
-                                                "property": "display",
-                                                "value": "normal"
-                                            },
-                                            {
-                                                "type": "SpeakItem",
-                                                "componentId": "financeContent-xpml",
-                                                "highlightMode": "line",
-                                                "align": "center"
-                                            },
-                                            {
-                                                "type": "SetValue",
-                                                "componentId": "financeContent-teste1",
-                                                "property": "display",
-                                                "value": "normal"
-                                            },
-                                            {
-                                                "type": "SpeakItem",
-                                                "componentId": "financeContent-teste1",
-                                                "highlightMode": "line",
-                                                "align": "center"
-                                            }
-                                        ]
-                                    }
-                                ]
+                                }
                             }
+                        }
+                    ],
+                    "commands": [
+                        {
+                            "type": "Sequential",
+                            "commands": [
+                                {
+                                    "type": "SetValue",
+                                    "componentId": "financeContent-xpml",
+                                    "property": "display",
+                                    "value": "normal"
+                                },
+                                {
+                                    "type": "SpeakItem",
+                                    "componentId": "financeContent-xpml",
+                                    "highlightMode": "line",
+                                    "align": "center"
+                                },
+                                {
+                                    "type": "SetValue",
+                                    "componentId": "financeContent-teste1",
+                                    "property": "display",
+                                    "value": "normal"
+                                },
+                                {
+                                    "type": "SpeakItem",
+                                    "componentId": "financeContent-teste1",
+                                    "highlightMode": "line",
+                                    "align": "center"
+                                }
+                            ]
                         }
                     ]
                 }
