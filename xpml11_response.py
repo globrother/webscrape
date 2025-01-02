@@ -18,7 +18,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
         voz_xpml11 = (
             f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
             f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>"
-            f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>"
+            f"• PVP: {pvpxpml11_6}\n<break time='500ms'/>"
             f"• Último rendimento: R$ {divpcxmpl11_16}<break time='1s'/>"
         )
         
@@ -28,7 +28,15 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
             f"• P/VP: {pvpxpml11_6}<br>"
             f"• Último rendimento: R$ {divpcxmpl11_16}"
         )
-        
+
+        voz_teste1 = (
+            f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
+        )
+
+        card_teste1 = (
+            f"• Valor atual da cota: R$ {xpml11_0}<br>"
+        )
+
         # Verifica o tipo de solicitação da Alexa
         if request_data["request"]["type"] in ["LaunchRequest", "IntentRequest"]:
             response = {
@@ -91,7 +99,15 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                                                     "style": "textStyleDisplay4",
                                                                     "textAlign": "left",
                                                                     "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                                                                    "id": "financeContent"
+                                                                    "id": "financeContent-xpml"
+                                                                },
+                                                                {
+                                                                    "type": "Text",
+                                                                    "text": f"{card_teste1}",
+                                                                    "style": "textStyleDisplay4",
+                                                                    "textAlign": "left",
+                                                                    "id": "financeContent-teste1",
+                                                                    "display": "none"
                                                                 }
                                                             ]
                                                         }
@@ -101,12 +117,23 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                         }
                                     ]
                                 },
-                                "onMount": [
+                                "commands": [
                                     {
-                                        "type": "SpeakItem",
-                                        "componentId": "financeContent",
-                                        "highlightMode": "line",
-                                        "align": "center"
+                                        "type": "Sequential",
+                                        "commands": [
+                                            {
+                                                "type": "SpeakItem",
+                                                "componentId": "financeContent-xpml",
+                                                "highlightMode": "line",
+                                                "align": "center"
+                                            },
+                                            {
+                                                "type": "SetValue",
+                                                "componentId": "financeContent-teste1",
+                                                "property": "display",
+                                                "value": "normal"
+                                            }
+                                        ]
                                     }
                                 ]
                             }
