@@ -17,10 +17,10 @@ def alexa_xpml11(get_element, request, requests, BeautifulSoup):
              #f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>" \
              #f"• Último rendimento: R$ {divpcxmpl11_16}"
         
-        card_xpml11 = f"\n• Valor atual da cota: R$ {xpml11_0}\n" \
-             f"• Dividend Yield: {dyxpml11_3}%\n" \
-             f"• P/VP: {pvpxpml11_6}\n" \
-             f"• Último rendimento: R$ {divpcxmpl11_16}"
+        card_xpml11 = ( f"• Valor atual da cota: R$ {xpml11_0}\n"
+         f"• Dividend Yield: {dyxpml11_3}%\n"
+         f"• P/VP: {pvpxpml11_6}\n"
+         f"• Último rendimento: R$ {divpcxmpl11_16}" )
         
         # Verifica o tipo de solicitação da Alexa
         if request_data["request"]["type"] == "LaunchRequest":
