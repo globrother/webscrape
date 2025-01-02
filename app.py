@@ -17,8 +17,8 @@ def handle_request():
             "version": "1.0",
             "response": {
                 "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "Olá, Bem-vindo ao Echo Show!"
+                    "type": "SSML",
+                    "ssml": "<speak>Olá, Bem-vindo ao Echo Show!<break time='2s'/></speak>"
                 },
                 "directives": [
                     {
@@ -26,7 +26,11 @@ def handle_request():
                         "token": "welcomeToken",
                         "document": {
                             "type": "APL",
-                            "version": "1.4",
+                            "version": "2024.3",
+                            "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
+                            "theme": "dark",
+                            #"type": "APL",
+                            #"version": "1.4",
                             "mainTemplate": {
                                 "items": [
                                     {
