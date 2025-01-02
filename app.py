@@ -1,32 +1,4 @@
 from flask import Flask, request, jsonify
-import json
-import requests
-from bs4 import BeautifulSoup
-from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.utils import is_request_type, get_supported_interfaces
-from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective)
-import logging
-#from threading import Timer
-#from xpml11_response import alexa_xpml11
-#from xpml11 import get_element
-
-# from xpml11 import get_element
-# from xpml11_response import get_element
-
-from flask import Flask, request, jsonify
-from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.handler_input import HandlerInput
-from ask_sdk_model import Response
-from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective)
-from ask_sdk_model.ui import SimpleCard
-import logging
-
-from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
@@ -51,7 +23,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         logger.info("LaunchRequestHandler handle invoked")
         speech_text = "Bem-vindo! Aqui estão os cartões."
         
-        apl_document = {
+        apl_document1 = {
             "type": "APL",
             "version": "1.4",
             "mainTemplate": {
@@ -67,7 +39,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                             },
                             {
                                 "type": "Text",
-                                "id": "textComponent",
+                                "id": "textComponent1",
                                 "text": "Primeiro cartão",
                                 "fontSize": "50dp",
                                 "color": "#FFFFFF",
@@ -80,34 +52,66 @@ class LaunchRequestHandler(AbstractRequestHandler):
             }
         }
         
-        apl_command = [
-            {
-                "type": "SpeakItem",
-                "componentId": "textComponent",
-                "highlightMode": "line"
-            },
-            {
-                "type": "SetValue",
-                "componentId": "textComponent",
-                "property": "text",
-                "value": "Segundo cartão"
-            },
-            {
-                "type": "SpeakItem",
-                "componentId": "textComponent",
-                "highlightMode": "line"
+        apl_document2 = {
+            "type": "APL",
+            "version": "1.4",
+            "mainTemplate": {
+                "items": [
+                    {
+                        "type": "Container",
+                        "items": [
+                            {
+                                "type": "Image",
+                                "source": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf",
+                                "width": "100vw",
+                                "height": "100vh"
+                            },
+                            {
+                                "type": "Text",
+                                "id": "textComponent2",
+                                "text": "Segundo cartão",
+                                "fontSize": "50dp",
+                                "color": "#FFFFFF",
+                                "textAlign": "center",
+                                "textAlignVertical": "center"
+                            }
+                        ]
+                    }
+                ]
             }
-        ]
+        }
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="uniqueToken",
-                document=apl_document
+                token="uniqueToken1",
+                document=apl_document1
+            )
+        ).add_directive(
+            RenderDocumentDirective(
+                token="uniqueToken2",
+                document=apl_document2
             )
         ).add_directive(
             ExecuteCommandsDirective(
-                token="uniqueToken",
-                commands=apl_command
+                token="uniqueToken1",
+                commands=[
+                    {
+                        "type": "SpeakItem",
+                        "componentId": "textComponent1",
+                        "highlightMode": "line"
+                    }
+                ]
+            )
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="uniqueToken2",
+                commands=[
+                    {
+                        "type": "SpeakItem",
+                        "componentId": "textComponent2",
+                        "highlightMode": "line"
+                    }
+                ]
             )
         ).speak(speech_text).set_card(SimpleCard("Cartões", speech_text)).set_should_end_session(False)
         
