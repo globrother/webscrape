@@ -27,7 +27,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
         try:
             response = requests.get(f"{ENDPOINT}/launch")
             response.raise_for_status()
+            logger.info(f"HTTP Response: {response.text}")
             data = response.json()
+            logger.info(f"Data: {data}")
         except requests.exceptions.RequestException as e:
             logger.error(f"HTTP Request failed: {e}")
             data = {}
@@ -40,6 +42,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(token="mainToken", document=apl_document, datasources=datasource)
             )
+        else:
+            handler_input.response_builder.speak("Desculpe, algo deu errado ao tentar obter os dados.")
 
         return handler_input.response_builder.response
 
@@ -54,7 +58,9 @@ class IntentRequestHandler(AbstractRequestHandler):
         try:
             response = requests.get(f"{ENDPOINT}/intent?name={intent_name}")
             response.raise_for_status()
+            logger.info(f"HTTP Response: {response.text}")
             data = response.json()
+            logger.info(f"Data: {data}")
         except requests.exceptions.RequestException as e:
             logger.error(f"HTTP Request failed: {e}")
             data = {}
