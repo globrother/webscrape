@@ -3,7 +3,7 @@ from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.utils import is_request_type
 from ask_sdk_model.ui import SimpleCard
-from ask_sdk_model import Response
+from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SpeakItemCommand, SequentialCommand
 import logging
 
 app = Flask(__name__)
@@ -67,12 +67,25 @@ class IntentRequestHandler(AbstractRequestHandler):
             }
         }
 
-        handler_input.response_builder.speak("Texto da Primeira Tela")
-        handler_input.response_builder.add_directive({
-            'type': 'Alexa.Presentation.APL.RenderDocument',
-            'token': 'screen_token',
-            'document': apl_document
-        })
+        handler_input.response_builder.speak("Texto da Primeira Tela").add_directive(
+            RenderDocumentDirective(
+                token="screen_token",
+                document=apl_document
+            )
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="screen_token",
+                commands=[
+                    SequentialCommand(
+                        commands=[
+                            SpeakItemCommand(component_id="texto_da_primeira_tela", highlight_mode="line"),
+                            SpeakItemCommand(component_id="texto_da_segunda_tela", highlight_mode="line"),
+                            SpeakItemCommand(component_id="texto_da_terceira_tela", highlight_mode="line")
+                        ]
+                    )
+                ]
+            )
+        )
 
         return handler_input.response_builder.response
 
