@@ -67,6 +67,15 @@ class TestIntentHandler(AbstractRequestHandler):
 
         return handler_input.response_builder.response
 
+# Handler para SessionEndedRequest
+class SessionEndedRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_request_type("SessionEndedRequest")(handler_input)
+
+    def handle(self, handler_input):
+        logger.debug("SessionEndedRequestHandler chamado")
+        return handler_input.response_builder.response
+
 # Logs adicionais para capturar detalhes específicos
 class LoggingRequestInterceptor(AbstractRequestInterceptor):
     def process(self, handler_input):
@@ -75,6 +84,7 @@ class LoggingRequestInterceptor(AbstractRequestInterceptor):
 # Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
+sb.add_request_handler(SessionEndedRequestHandler())  # Adicionar o handler para SessionEndedRequest
 sb.add_global_request_interceptor(LoggingRequestInterceptor())  # Adicionar o interceptor de logging
 
 @app.route('/webscrape', methods=['POST'])
