@@ -68,11 +68,11 @@ class LaunchIntentHandler(AbstractRequestHandler):
             }
         }
 
-        # Adicionando comando AutoPage para trocar as telas automaticamente
+        # Comando para mudar as telas automaticamente
         commands = [
             AutoPageCommand(
                 component_id="SequenceComponent",
-                duration=3000  # Troca a cada 3 segundos
+                duration=5000  # Troca a cada 5 segundos
             )
         ]
 
