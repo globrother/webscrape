@@ -139,7 +139,7 @@ class LoggingRequestInterceptor(AbstractRequestInterceptor):
         logger.debug(f"Interceptando pedido: {handler_input.request_envelope.request}")
 
 # Adicionar os handlers ao Skill Builder
-sb.add_request_handler(LaunchRequestHandler())
+#sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(LaunchIntentHandler())  # Adicionar o handler explícito para LaunchIntent
 sb.add_request_handler(SessionEndedRequestHandler())  # Adicionar o handler para SessionEndedRequest
 sb.add_global_request_interceptor(LoggingRequestInterceptor())  # Adicionar o interceptor de logging
