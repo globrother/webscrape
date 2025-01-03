@@ -38,10 +38,10 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                    #     "type": "SSML",
                    #     "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
                    # },
-                    "directives": [
-                        {
-                            "type": "Alexa.Presentation.APL.RenderDocument",
-                            "token": "welcomeToken",
+                    #"directives": [
+                        #{
+                            #"type": "Alexa.Presentation.APL.RenderDocument",
+                            #"token": "welcomeToken",
                             "document": {
                                 "type": "APL",
                                 "version": "2024.3",
@@ -110,8 +110,8 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                                 },
                                 "sources": {}
                             }
-                        }
-                    ]
+                        #}
+                    #]
                 }
             }
             return jsonify(response)
