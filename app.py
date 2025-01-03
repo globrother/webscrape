@@ -23,13 +23,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
         return handler_input.response_builder.response
 
-# Intenção para o TestIntent
-class TestIntentHandler(AbstractRequestHandler):
+# Intenção para o LaunchIntent
+class LaunchIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        return is_intent_name("TestIntent")(handler_input)
+        return is_intent_name("LaunchIntent")(handler_input)
 
     def handle(self, handler_input):
-        logger.debug("TestIntentHandler chamado")
+        logger.debug("LaunchIntentHandler chamado")
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
 
         apl_document = {
@@ -83,7 +83,7 @@ class LoggingRequestInterceptor(AbstractRequestInterceptor):
 
 # Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
+sb.add_request_handler(LaunchIntentHandler())  # Adicionar o handler explícito para LaunchIntent
 sb.add_request_handler(SessionEndedRequestHandler())  # Adicionar o handler para SessionEndedRequest
 sb.add_global_request_interceptor(LoggingRequestInterceptor())  # Adicionar o interceptor de logging
 
