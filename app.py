@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler, AbstractRequestInterceptor
 from ask_sdk_core.utils import is_request_type, is_intent_name
-from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective
+from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, AutoPageCommand
 import logging
 
 app = Flask(__name__)
@@ -38,19 +38,29 @@ class LaunchIntentHandler(AbstractRequestHandler):
             "mainTemplate": {
                 "items": [
                     {
-                        "type": "Container",
+                        "type": "Sequence",
+                        "scrollDirection": "horizontal",
+                        "data": [
+                            {"bgImage": bg_image_url, "text": "Texto da Primeira Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Segunda Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Terceira Tela"}
+                        ],
                         "items": [
                             {
-                                "type": "Image",
-                                "source": bg_image_url,
-                                "width": "100%",
-                                "height": "100%"
-                            },
-                            {
-                                "type": "Text",
-                                "text": "Texto da Primeira Tela",
-                                "style": "textStylePrimary1",
-                                "id": "texto_da_primeira_tela"
+                                "type": "Container",
+                                "items": [
+                                    {
+                                        "type": "Image",
+                                        "source": "${data.bgImage}",
+                                        "width": "100%",
+                                        "height": "100%"
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "text": "${data.text}",
+                                        "style": "textStylePrimary1"
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -58,10 +68,23 @@ class LaunchIntentHandler(AbstractRequestHandler):
             }
         }
 
+        # Adicionando comando AutoPage para trocar as telas automaticamente
+        commands = [
+            AutoPageCommand(
+                component_id="SequenceComponent",
+                duration=3000  # Troca a cada 3 segundos
+            )
+        ]
+
         handler_input.response_builder.speak("Texto da Primeira Tela").add_directive(
             RenderDocumentDirective(
                 token="screen_token",
                 document=apl_document
+            )
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="screen_token",
+                commands=commands
             )
         )
 
