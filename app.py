@@ -17,7 +17,7 @@ from ask_sdk_model import Response
 import sys
 import os
 #sys.path.append(os.path.dirname(__file__))
-sys.path.append(os.path.dirname(__file__))
+#sys.path.append(os.path.dirname(__file__))
 import data  
 
 logger = logging.getLogger(__name__)
