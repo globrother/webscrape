@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
 import logging
 import gettext
+from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractRequestInterceptor, AbstractExceptionHandler)
@@ -10,19 +10,17 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
 import data  # Certifique-se de que o arquivo data.py está no mesmo diretório
 
-# Configuração do logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Handlers
+app = Flask(__name__)
+
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.WELCOME_MESSAGE)
         return handler_input.response_builder.speak(speak_output).ask(speak_output).response
@@ -30,11 +28,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
 class HelloWorldIntentHandler(AbstractRequestHandler):
     """Handler for Hello World Intent."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.HELLO_MSG)
         return handler_input.response_builder.speak(speak_output).response
@@ -42,11 +38,9 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.HELP_MSG)
         return handler_input.response_builder.speak(speak_output).ask(speak_output).response
@@ -54,12 +48,10 @@ class HelpIntentHandler(AbstractRequestHandler):
 class CancelOrStopIntentHandler(AbstractRequestHandler):
     """Single handler for Cancel and Stop Intent."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
                 ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.GOODBYE_MSG)
         return handler_input.response_builder.speak(speak_output).response
@@ -67,11 +59,9 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 class FallbackIntentHandler(AbstractRequestHandler):
     """Single handler for Fallback Intent."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         logger.info("In FallbackIntentHandler")
         speech = "Hmm, I'm not sure. You can say Hello or Help. What would you like to do?"
         reprompt = "I didn't catch that. What can I help you with?"
@@ -80,11 +70,9 @@ class FallbackIntentHandler(AbstractRequestHandler):
 class SessionEndedRequestHandler(AbstractRequestHandler):
     """Handler for Session End."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         return handler_input.response_builder.response
 
 class IntentReflectorHandler(AbstractRequestHandler):
@@ -93,11 +81,9 @@ class IntentReflectorHandler(AbstractRequestHandler):
     for your intents by defining them above, then also adding them to the request
     handler chain below."""
     def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("IntentRequest")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
         _ = handler_input.attributes_manager.request_attributes["_"]
         intent_name = ask_utils.get_intent_name(handler_input)
         speak_output = _(data.REFLECTOR_MSG).format(intent_name)
@@ -108,11 +94,9 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     stating the request handler chain is not found, you have not implemented a handler for
     the intent being invoked or included it in the skill builder below."""
     def can_handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> bool
         return True
 
     def handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.ERROR)
@@ -136,6 +120,12 @@ sb.add_request_handler(SessionEndedRequestHandler())
 sb.add_request_handler(IntentReflectorHandler())
 sb.add_global_request_interceptor(LocalizationInterceptor())
 sb.add_exception_handler(CatchAllExceptionHandler())
+skill_handler = sb.lambda_handler()
 
-# Handler for AWS Lambda
-handler = sb.lambda_handler()
+@app.route("/webscrape", methods=['POST'])
+def webhook_handler():
+    skill_response = skill_handler(request.data, None)
+    return jsonify(skill_response)
+
+if __name__ == "__main__":
+    app.run(debug=True)
