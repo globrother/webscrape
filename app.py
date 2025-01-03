@@ -13,16 +13,6 @@ logger = logging.getLogger(__name__)
 
 sb = SkillBuilder()
 
-# Intenção para o LaunchRequest
-#class LaunchRequestHandler(AbstractRequestHandler):
-    #def can_handle(self, handler_input):
-        #return is_request_type("LaunchRequest")(handler_input)
-
-    #ef handle(self, handler_input):
-        #logger.debug("LaunchRequestHandler chamado")
-        #handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
-        #return handler_input.response_builder.response
-
 # Intenção para o LaunchIntent
 class LaunchIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -33,7 +23,6 @@ class LaunchIntentHandler(AbstractRequestHandler):
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
 
         apl_document = {
-            "document": {
             "type": "APL",
             "version": "2024.3",
             "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
@@ -64,48 +53,48 @@ class LaunchIntentHandler(AbstractRequestHandler):
                     }
                 ]
             }
-        },
-            "datasources": {
+        }
+
+        apl_datasources = {
             "imageListData": {
                 "type": "object",
                 "objectId": "paginatedListSample",
-                "title": "ATUALIÇÕES FUNDOS IMOBILIÁRIOS - FIIs",
+                "title": "ATUALIZAÇÕES FUNDOS IMOBILIÁRIOS - FIIs",
                 "listItems": [
                     {
                         "primaryText": "Fundos Imobiliários",
                         "secondaryText": "5 itens",
-                        "imageSource": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
+                        "imageSource": bg_image_url
                     },
                     {
                         "primaryText": "Fundo XML11",
-                        "secondaryText": "5 items",
+                        "secondaryText": "5 itens",
                         "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark2.png"
                     },
                     {
                         "primaryText": "Fundo MXRF11",
-                        "secondaryText": "5 items",
+                        "secondaryText": "5 itens",
                         "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark3.png"
                     },
                     {
                         "primaryText": "Fundo KNRI11",
-                        "secondaryText": "5 items",
+                        "secondaryText": "5 itens",
                         "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark4.png"
                     },
                     {
                         "primaryText": "Fundo XPLG11",
-                        "secondaryText": "5 items",
+                        "secondaryText": "5 itens",
                         "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark5.png"
                     }
                 ],
                 "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/logo/logo-modern-botanical-white.png"
             }
-        },
-            "sources": {}
-}
+        }
+
         # Comando para mudar as telas automaticamente
         commands = [
             AutoPageCommand(
-                component_id="SequenceComponent",
+                component_id="paginatedList",
                 duration=5000  # Troca a cada 5 segundos
             )
         ]
@@ -113,7 +102,8 @@ class LaunchIntentHandler(AbstractRequestHandler):
         handler_input.response_builder.speak("Texto da Primeira Tela").add_directive(
             RenderDocumentDirective(
                 token="screen_token",
-                document=apl_document
+                document=apl_document,
+                datasources=apl_datasources
             )
         ).add_directive(
             ExecuteCommandsDirective(
@@ -139,7 +129,6 @@ class LoggingRequestInterceptor(AbstractRequestInterceptor):
         logger.debug(f"Interceptando pedido: {handler_input.request_envelope.request}")
 
 # Adicionar os handlers ao Skill Builder
-#sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(LaunchIntentHandler())  # Adicionar o handler explícito para LaunchIntent
 sb.add_request_handler(SessionEndedRequestHandler())  # Adicionar o handler para SessionEndedRequest
 sb.add_global_request_interceptor(LoggingRequestInterceptor())  # Adicionar o interceptor de logging
