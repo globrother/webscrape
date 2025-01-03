@@ -87,6 +87,23 @@ class LaunchRequestHandler(AbstractRequestHandler):
         
         return handler_input.response_builder.response
 
+class IntentRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_request_type("IntentRequest")(handler_input)
+
+    def handle(self, handler_input):
+        intent_name = handler_input.request_envelope.request.intent.name
+
+        if intent_name == "ExampleIntent":
+            speech_text = "Este é um exemplo de resposta para IntentRequest."
+            handler_input.response_builder.speak(speech_text).set_should_end_session(False)
+        else:
+            speech_text = "Desculpe, eu não entendo essa solicitação."
+            handler_input.response_builder.speak(speech_text).set_should_end_session(True)
+
+        return handler_input.response_builder.response
+
 sb.add_request_handler(LaunchRequestHandler())
+sb.add_request_handler(IntentRequestHandler())
 
 lambda_handler = sb.lambda_handler()
