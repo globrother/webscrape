@@ -14,14 +14,14 @@ logger = logging.getLogger(__name__)
 sb = SkillBuilder()
 
 # Intenção para o LaunchRequest
-class LaunchRequestHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_request_type("LaunchRequest")(handler_input)
+#class LaunchRequestHandler(AbstractRequestHandler):
+    #def can_handle(self, handler_input):
+        #return is_request_type("LaunchRequest")(handler_input)
 
-    def handle(self, handler_input):
-        logger.debug("LaunchRequestHandler chamado")
-        handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
-        return handler_input.response_builder.response
+    #ef handle(self, handler_input):
+        #logger.debug("LaunchRequestHandler chamado")
+        #handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
+        #return handler_input.response_builder.response
 
 # Intenção para o LaunchIntent
 class LaunchIntentHandler(AbstractRequestHandler):
