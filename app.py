@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.utils import is_request_type
-from ask_sdk_model.ui import SimpleCard
-from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SpeakItemCommand, SequentialCommand
+from ask_sdk_core.utils import is_request_type, is_intent_name
+from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective
 import logging
 
 app = Flask(__name__)
@@ -26,7 +25,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # Intenção para o IntentRequest
 class IntentRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        return is_request_type("IntentRequest")(handler_input)
+        return is_intent_name("TestIntent")(handler_input)
 
     def handle(self, handler_input):
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
@@ -37,29 +36,19 @@ class IntentRequestHandler(AbstractRequestHandler):
             "mainTemplate": {
                 "items": [
                     {
-                        "type": "Sequence",
-                        "scrollDirection": "horizontal",
-                        "data": [
-                            {"bgImage": bg_image_url, "text": "Texto da Primeira Tela"},
-                            {"bgImage": bg_image_url, "text": "Texto da Segunda Tela"},
-                            {"bgImage": bg_image_url, "text": "Texto da Terceira Tela"}
-                        ],
+                        "type": "Container",
                         "items": [
                             {
-                                "type": "Container",
-                                "items": [
-                                    {
-                                        "type": "Image",
-                                        "source": "${data.bgImage}",
-                                        "width": "100%",
-                                        "height": "100%"
-                                    },
-                                    {
-                                        "type": "Text",
-                                        "text": "${data.text}",
-                                        "style": "textStylePrimary1"
-                                    }
-                                ]
+                                "type": "Image",
+                                "source": bg_image_url,
+                                "width": "100%",
+                                "height": "100%"
+                            },
+                            {
+                                "type": "Text",
+                                "text": "Texto da Primeira Tela",
+                                "style": "textStylePrimary1",
+                                "id": "texto_da_primeira_tela"
                             }
                         ]
                     }
@@ -71,19 +60,6 @@ class IntentRequestHandler(AbstractRequestHandler):
             RenderDocumentDirective(
                 token="screen_token",
                 document=apl_document
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="screen_token",
-                commands=[
-                    SequentialCommand(
-                        commands=[
-                            SpeakItemCommand(component_id="texto_da_primeira_tela", highlight_mode="line"),
-                            SpeakItemCommand(component_id="texto_da_segunda_tela", highlight_mode="line"),
-                            SpeakItemCommand(component_id="texto_da_terceira_tela", highlight_mode="line")
-                        ]
-                    )
-                ]
             )
         )
 
