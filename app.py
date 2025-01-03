@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
+from ask_sdk_core.dispatch_components import AbstractRequestHandler, AbstractRequestInterceptor
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective
 import logging
@@ -67,16 +67,15 @@ class TestIntentHandler(AbstractRequestHandler):
 
         return handler_input.response_builder.response
 
-# Adicionar os handlers ao Skill Builder
-sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
-
 # Logs adicionais para capturar detalhes específicos
-class LoggingRequestInterceptor(AbstractRequestHandler):
+class LoggingRequestInterceptor(AbstractRequestInterceptor):
     def process(self, handler_input):
         logger.debug(f"Interceptando pedido: {handler_input.request_envelope.request}")
 
-sb.add_global_request_interceptor(LoggingRequestInterceptor())
+# Adicionar os handlers ao Skill Builder
+sb.add_request_handler(LaunchRequestHandler())
+sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
+sb.add_global_request_interceptor(LoggingRequestInterceptor())  # Adicionar o interceptor de logging
 
 @app.route('/webscrape', methods=['POST'])
 def alexa_skill():
