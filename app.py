@@ -33,43 +33,75 @@ class LaunchIntentHandler(AbstractRequestHandler):
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
 
         apl_document = {
+            "document": {
             "type": "APL",
             "version": "2024.3",
             "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
             "theme": "dark",
+            "import": [
+                {
+                    "name": "alexa-layouts",
+                    "version": "1.7.0"
+                }
+            ],
             "mainTemplate": {
+                "parameters": [
+                    "payload"
+                ],
                 "items": [
                     {
-                        "type": "Sequence",
-                        "scrollDirection": "horizontal",
-                        "data": [
-                            {"bgImage": bg_image_url, "text": "Texto da Primeira Tela"},
-                            {"bgImage": bg_image_url, "text": "Texto da Segunda Tela"},
-                            {"bgImage": bg_image_url, "text": "Texto da Terceira Tela"}
-                        ],
-                        "items": [
-                            {
-                                "type": "Container",
-                                "items": [
-                                    {
-                                        "type": "Image",
-                                        "source": "${data.bgImage}",
-                                        "width": "100%",
-                                        "height": "100%"
-                                    },
-                                    {
-                                        "type": "Text",
-                                        "text": "${data.text}",
-                                        "style": "textStylePrimary1"
-                                    }
-                                ]
-                            }
-                        ]
+                        "type": "AlexaPaginatedList",
+                        "id": "paginatedList",
+                        "headerTitle": "${payload.imageListData.title}",
+                        "headerBackButton": True,
+                        "headerAttributionImage": "${payload.imageListData.logoUrl}",
+                        "backgroundBlur": False,
+                        "backgroundColorOverlay": False,
+                        "backgroundScale": "best-fill",
+                        "backgroundAlign": "bottom",
+                        "theme": "dark",
+                        "listItems": "${payload.imageListData.listItems}"
                     }
                 ]
             }
-        }
-
+        },
+            "datasources": {
+            "imageListData": {
+                "type": "object",
+                "objectId": "paginatedListSample",
+                "title": "ATUALIÇÕES FUNDOS IMOBILIÁRIOS - FIIs",
+                "listItems": [
+                    {
+                        "primaryText": "Fundos Imobiliários",
+                        "secondaryText": "5 itens",
+                        "imageSource": "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
+                    },
+                    {
+                        "primaryText": "Fundo XML11",
+                        "secondaryText": "5 items",
+                        "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark2.png"
+                    },
+                    {
+                        "primaryText": "Fundo MXRF11",
+                        "secondaryText": "5 items",
+                        "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark3.png"
+                    },
+                    {
+                        "primaryText": "Fundo KNRI11",
+                        "secondaryText": "5 items",
+                        "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark4.png"
+                    },
+                    {
+                        "primaryText": "Fundo XPLG11",
+                        "secondaryText": "5 items",
+                        "imageSource": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/paginatedlist/PaginatedList_Dark5.png"
+                    }
+                ],
+                "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/logo/logo-modern-botanical-white.png"
+            }
+        },
+            "sources": {}
+}
         # Comando para mudar as telas automaticamente
         commands = [
             AutoPageCommand(
