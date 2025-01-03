@@ -24,32 +24,36 @@ class LaunchIntentHandler(AbstractRequestHandler):
 
         apl_document = {
             "type": "APL",
-            "version": "2024.3",
-            "license": "Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.\nSPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0\nLicensed under the Amazon Software License  http://aws.amazon.com/asl/",
-            "theme": "dark",
-            "import": [
-                {
-                    "name": "alexa-layouts",
-                    "version": "1.7.0"
-                }
-            ],
+            "version": "1.4",
             "mainTemplate": {
-                "parameters": [
-                    "payload"
-                ],
                 "items": [
                     {
-                        "type": "AlexaPaginatedList",
-                        "id": "paginatedList",
-                        "headerTitle": "${payload.imageListData.title}",
-                        "headerBackButton": True,
-                        "headerAttributionImage": "${payload.imageListData.logoUrl}",
-                        "backgroundBlur": False,
-                        "backgroundColorOverlay": False,
-                        "backgroundScale": "best-fill",
-                        "backgroundAlign": "bottom",
-                        "theme": "dark",
-                        "listItems": "${payload.imageListData.listItems}"
+                        "type": "Sequence",
+                        "scrollDirection": "horizontal",
+                        "id": "SequenceComponent",
+                        "data": [
+                            {"bgImage": bg_image_url, "text": "Texto da Primeira Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Segunda Tela"},
+                            {"bgImage": bg_image_url, "text": "Texto da Terceira Tela"}
+                        ],
+                        "items": [
+                            {
+                                "type": "Container",
+                                "items": [
+                                    {
+                                        "type": "Image",
+                                        "source": "${data.bgImage}",
+                                        "width": "100%",
+                                        "height": "100%"
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "text": "${data.text}",
+                                        "style": "textStylePrimary1"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -94,7 +98,7 @@ class LaunchIntentHandler(AbstractRequestHandler):
         # Comando para mudar as telas automaticamente
         commands = [
             AutoPageCommand(
-                component_id="paginatedList",
+                component_id="SequenceComponent",
                 duration=5000  # Troca a cada 5 segundos
             )
         ]
