@@ -23,11 +23,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 
 # Intenção para o IntentRequest
-class IntentRequestHandler(AbstractRequestHandler):
+class TestIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("TestIntent")(handler_input)
 
     def handle(self, handler_input):
+        logger.debug("Handling TestIntent")
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
 
         apl_document = {
@@ -67,7 +68,7 @@ class IntentRequestHandler(AbstractRequestHandler):
 
 # Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(IntentRequestHandler())
+sb.add_request_handler(TestIntentHandler())
 
 @app.route('/webscrape', methods=['POST'])
 def alexa_skill():
