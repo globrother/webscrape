@@ -34,10 +34,10 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
             response = {
                 "version": "1.0",
                 "response": {
-                    "outputSpeech": {
-                        "type": "SSML",
-                        "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
-                    },
+                   # "outputSpeech": {
+                   #     "type": "SSML",
+                   #     "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
+                   # },
                     "directives": [
                         {
                             "type": "Alexa.Presentation.APL.RenderDocument",
