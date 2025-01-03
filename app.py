@@ -1,6 +1,6 @@
 import logging
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.utils import is_request_type, is_intent_name
@@ -37,14 +37,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
         apl_document = data.get("document", {})
         datasource = data.get("datasources", {})
 
-        handler_input.response_builder.speak("Bem-vindo à skill de atualizações de fundos imobiliários!")
         if apl_document and datasource:
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(token="mainToken", document=apl_document, datasources=datasource)
             )
+            speech_text = "Bem-vindo à skill de atualizações de fundos imobiliários!"
         else:
-            handler_input.response_builder.speak("Desculpe, algo deu errado ao tentar obter os dados.")
+            speech_text = "Desculpe, algo deu errado ao tentar obter os dados."
 
+        handler_input.response_builder.speak(speech_text).set_should_end_session(False)
         return handler_input.response_builder.response
 
 class IntentRequestHandler(AbstractRequestHandler):
