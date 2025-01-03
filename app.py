@@ -34,7 +34,7 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         _ = handler_input.attributes_manager.request_attributes["_"]
         speak_output = _(data.HELLO_MSG)
-        return handler_input.response_builder.speak(speak_output).response
+        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
