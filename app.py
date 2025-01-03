@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import gettext
+import json
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import (
@@ -124,7 +125,9 @@ skill_handler = sb.lambda_handler()
 
 @app.route("/webscrape", methods=['POST'])
 def webhook_handler():
-    skill_response = skill_handler(request.data, None)
+    # Decodifique os dados da requisição de bytes para string e depois para JSON
+    request_data = json.loads(request.data.decode('utf-8'))
+    skill_response = skill_handler(request_data, None)
     return jsonify(skill_response)
 
 if __name__ == "__main__":
