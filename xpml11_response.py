@@ -32,8 +32,8 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
         # Verifica o tipo de solicitação da Alexa
         if request_data["request"]["type"] in ["LaunchRequest", "IntentRequest"]:
             response = {
-                "version": "1.0",
-                "response": {
+                #"version": "1.0",
+                #"response": {
                    # "outputSpeech": {
                    #     "type": "SSML",
                    #     "ssml": f"<speak> Atualizações do Fundo XPML onze \n{voz_xpml11}</speak>"
@@ -112,7 +112,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                             }
                         }
                     ]
-                }
+                #}
             }
             return jsonify(response)
         return jsonify("Ocorreu um erro com a solicitação.")
