@@ -19,6 +19,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
+        logger.debug("LaunchRequestHandler chamado")
         handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
         return handler_input.response_builder.response
 
@@ -28,7 +29,7 @@ class TestIntentHandler(AbstractRequestHandler):
         return is_intent_name("TestIntent")(handler_input)
 
     def handle(self, handler_input):
-        logger.debug("Handling TestIntent")
+        logger.debug("TestIntentHandler chamado")
         bg_image_url = "https://lh5.googleusercontent.com/d/1QZIOOt7ziy5avs2FklbSFoJxhUFpXFYf"
 
         apl_document = {
@@ -69,6 +70,13 @@ class TestIntentHandler(AbstractRequestHandler):
 # Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
+
+# Logs adicionais para capturar detalhes específicos
+class LoggingRequestInterceptor(AbstractRequestHandler):
+    def process(self, handler_input):
+        logger.debug(f"Interceptando pedido: {handler_input.request_envelope.request}")
+
+sb.add_global_request_interceptor(LoggingRequestInterceptor())
 
 @app.route('/webscrape', methods=['POST'])
 def alexa_skill():
