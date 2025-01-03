@@ -22,7 +22,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak("Skill iniciada. Vamos começar com as telas.")
         return handler_input.response_builder.response
 
-# Intenção para o IntentRequest
+# Intenção para o TestIntent
 class TestIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("TestIntent")(handler_input)
@@ -68,7 +68,7 @@ class TestIntentHandler(AbstractRequestHandler):
 
 # Adicionar os handlers ao Skill Builder
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(TestIntentHandler())
+sb.add_request_handler(TestIntentHandler())  # Adicionar o handler explícito para TestIntent
 
 @app.route('/webscrape', methods=['POST'])
 def alexa_skill():
