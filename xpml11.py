@@ -30,7 +30,7 @@ def get_xpml(requests, BeautifulSoup):
                         pvpxpml11_6 = elements[6].text
                         divpcxpml11_16 = str(
                             round((float((elements[15].text).replace(',', '.'))), 2)).replace('.', ',')
-
+                        print(divpcxpml11_16)
                         break
 
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
