@@ -37,15 +37,6 @@ def get_knri(requests, BeautifulSoup):
             raise ConnectionError(f"Erro ao acessar o site: Status Code {
                 response.status_code}")
 
-        """
-        voz_knri11 = (
-            f"• Valor atual da cota: R$ {knri11_0}\n<break time='500ms'/>"
-            f"• Dividend Yield: {dyknri11_3}%\n<break time='500ms'/>"
-            f"• P/VP: {pvpknri11_6}\n<break time='500ms'/>"
-            f"• Último rendimento: R$ {divpcknri11_16}<break time='1s'/>"
-        )
-        """
-
         card_knri11 = (
             "Atualizações do Fundo KNRI11:<br><br>"
             f"• Valor atual da cota: R$ {knri11_0}<br>"
