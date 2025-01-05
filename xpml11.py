@@ -36,8 +36,7 @@ def get_xpml(requests, BeautifulSoup):
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
-            raise ConnectionError(f"Erro ao acessar o site: Status Code {
-                                  response.status_code}")
+            raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
 
         card_xpml11 = (
             "Atualizações do Fundo XPML11:<br><br>"
