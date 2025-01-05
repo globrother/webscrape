@@ -1,0 +1,72 @@
+{
+  "type": "APL",
+  "version": "2024.3",
+  "description": "A hello world APL document with background image.",
+  "theme": "dark",
+  "import": [
+    {
+      "name": "alexa-layouts",
+      "version": "1.7.0"
+    }
+  ],
+  "mainTemplate": {
+    "parameters": [
+      "payload"
+    ],
+    "items": [
+      {
+        "type": "Container",
+        "height": "100vh",
+        "items": [
+          {
+            "type": "AlexaBackground",
+            "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+            "backgroundScale": "best-fill"
+          },
+          {
+            "type": "Container",
+            "height": "100vh",
+            "width": "100vw",
+            "items": [
+              {
+                "type": "AlexaHeader",
+                "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
+                "headerSubtitle": "Houve queda de 0,5% no valor do fundo XPML11",
+                "headerDivider": true,
+                "headerAttributionImage": "https://lh5.googleusercontent.com/d/1-_HOuqzwJ9zqwUCnpuZHy9e90vUfKlHY",
+                "headerAttributionText": "by Cleber Gobira",
+                "headerBackgroundColor": "rgba(0, 0, 0, 0.5)",
+                "headerAttributionOpacity": 0.7,
+                "headerBackButton": true,
+                "headerBackButtonCommand": {
+                  "type":"SendEvent",
+                  "arguments":["goBack"]
+                },
+                "paddingTop": "@spacingSmall"
+              },
+              {
+                "type": "ScrollView",
+                "paddingTop": "@spacingMedium",
+                "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
+                "paddingLeft": "@marginHorizontal",
+                "paddingRight": "@marginHorizontal",
+                "grow": 1,
+                "items": [
+                  {
+                    "type": "Text",
+                    "text": "Atualizações do Fundo XPML onze",
+                    "style": "textStyleDisplay4",
+                    "textAlign": "left",
+                    "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                    "id": "financeContent"
+                  }
+                ]
+              }
+            ]
+          }
+          
+        ]
+      }
+    ]
+  }
+}

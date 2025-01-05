@@ -23,7 +23,6 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
         )
         
         card_xpml11 = (
-            "Atualizações do Fundo XPML11:<br><br>"
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
             f"• Dividend Yield: {dyxpml11_3}%<br>"
             f"• P/VP: {pvpxpml11_6}<br>"
@@ -115,9 +114,7 @@ def alexa_xpml11(json, get_element, request, requests, BeautifulSoup):
                     #]
                 }
             }
-            return card_xpml11
-            #return jsonify(response)
-        
+            return jsonify(response)
         return jsonify("Ocorreu um erro com a solicitação.")
     except Exception as e:
         return jsonify({"error": str(e)}), 500

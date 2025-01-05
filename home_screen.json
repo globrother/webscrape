@@ -1,0 +1,14 @@
+{
+    "type": "APL",
+    "version": "1.4",
+    "mainTemplate": {
+      "items": [
+        {
+          "type": "Text",
+          "text": "Bem-vindo à tela inicial!",
+          "fontSize": "30dp"
+        }
+      ]
+    }
+  }
+  

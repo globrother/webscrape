@@ -1,134 +1,142 @@
-# -*- coding: utf-8 -*-
-import logging
-import gettext
+# import locale
 import json
+import logging
+import requests
+from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import (
-    AbstractRequestHandler, AbstractRequestInterceptor, AbstractExceptionHandler)
-import ask_sdk_core.utils as ask_utils
+from ask_sdk_core.utils import (
+    is_request_type, get_supported_interfaces, is_intent_name)
 from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
-import data  # Certifique-se de que o arquivo data.py está no mesmo diretório
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from ask_sdk_model.interfaces.alexa.presentation.apl import (
+    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
+from typing import Dict, Any
+from xpml11 import get_xpml
+from knri11 import get_knri
 
 app = Flask(__name__)
 
+# Configurar a localidade para o formato de número correto
+# locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
+
+
+def _load_apl_document(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # print(f"Content of {file_path}: {content}")
+            return json.loads(content)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON from {file_path}: {e}")
+        return None
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return None
+
+
+card_xpml11 = get_xpml(requests, BeautifulSoup)
+card_knri11 = get_knri(requests, BeautifulSoup)
+
+
+# def aux_json(card_xpml11, card_knri11):
+doc_apl_xpml = "apl_xpml.json"
+apl_document_xpml = _load_apl_document(doc_apl_xpml)
+doc_apl_knri = "apl_knri.json"
+apl_document_knri = _load_apl_document(doc_apl_knri)
+apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_xpml11
+apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_knri11
+
+voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+voz_knri11 = card_knri11.replace(
+    '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
+
+
 class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
+
     def can_handle(self, handler_input):
-        return ask_utils.is_request_type("LaunchRequest")(handler_input)
+        return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = _(data.WELCOME_MESSAGE)
-        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
+        # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
+        handler_input.response_builder.add_directive(
+            RenderDocumentDirective(
+                token="textDisplayToken1",
+                document=apl_document_xpml
+            )
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="textDisplayToken1",
+                commands=[
+                    SendEventCommand(
+                        arguments=["showSecondScreen"], delay=0)
+                ]
+            )
 
-class HelloWorldIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
-    def can_handle(self, handler_input):
-        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
+        ).speak(f"Aqui está as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}")
 
-    def handle(self, handler_input):
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = _(data.HELLO_MSG)
-        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
-
-class HelpIntentHandler(AbstractRequestHandler):
-    """Handler for Help Intent."""
-    def can_handle(self, handler_input):
-        return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
-
-    def handle(self, handler_input):
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = _(data.HELP_MSG)
-        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
-
-class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
-    def can_handle(self, handler_input):
-        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
-
-    def handle(self, handler_input):
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = _(data.GOODBYE_MSG)
-        return handler_input.response_builder.speak(speak_output).response
-
-class FallbackIntentHandler(AbstractRequestHandler):
-    """Single handler for Fallback Intent."""
-    def can_handle(self, handler_input):
-        return ask_utils.is_intent_name("AMAZON.FallbackIntent")(handler_input)
-
-    def handle(self, handler_input):
-        logger.info("In FallbackIntentHandler")
-        speech = "Hmm, I'm not sure. You can say Hello or Help. What would you like to do?"
-        reprompt = "I didn't catch that. What can I help you with?"
-        return handler_input.response_builder.speak(speech).ask(reprompt).response
-
-class SessionEndedRequestHandler(AbstractRequestHandler):
-    """Handler for Session End."""
-    def can_handle(self, handler_input):
-        return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
-
-    def handle(self, handler_input):
         return handler_input.response_builder.response
 
-class IntentReflectorHandler(AbstractRequestHandler):
-    """The intent reflector is used for interaction model testing and debugging.
-    It will simply repeat the intent the user said. You can create custom handlers
-    for your intents by defining them above, then also adding them to the request
-    handler chain below."""
+
+class ShowSecondScreenHandler(AbstractRequestHandler):
+
     def can_handle(self, handler_input):
-        return ask_utils.is_request_type("IntentRequest")(handler_input)
+        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
+            handler_input.request_envelope.request.arguments == [
+                "showSecondScreen"]
 
     def handle(self, handler_input):
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        intent_name = ask_utils.get_intent_name(handler_input)
-        speak_output = _(data.REFLECTOR_MSG).format(intent_name)
-        return handler_input.response_builder.speak(speak_output).response
+        # _, apl_document_knri = aux_json(self.card_xpml11, self.card_knri11)
+        handler_input.response_builder.add_directive(
+            RenderDocumentDirective(
+                token="textDisplayToken2",
+                document=apl_document_knri
+            )
+        ).speak(f"<break time='1s'/>\n{voz_knri11}")
+        return handler_input.response_builder.response
 
-class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Generic error handling to capture any syntax or routing errors. If you receive an error
-    stating the request handler chain is not found, you have not implemented a handler for
-    the intent being invoked or included it in the skill builder below."""
-    def can_handle(self, handler_input, exception):
+
+class CatchAllRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
         return True
+    """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
+    dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
+    método para essa solicitação."""
 
-    def handle(self, handler_input, exception):
-        logger.error(exception, exc_info=True)
-        _ = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = _(data.ERROR)
-        return handler_input.response_builder.speak(speak_output).ask(speak_output).response
+    def handle(self, handler_input):
+        # return handler_input.response_builder.speak("Desculpe, não consegui entender a solicitação.").response
+        return handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True).response
 
-class LocalizationInterceptor(AbstractRequestInterceptor):
-    """Add function to request attributes, that can load locale specific data"""
-    def process(self, handler_input):
-        locale = handler_input.request_envelope.request.locale
-        i18n = gettext.translation('data', localedir='locales', languages=[locale], fallback=True)
-        handler_input.attributes_manager.request_attributes["_"] = i18n.gettext
 
-# SkillBuilder setup
-sb = SkillBuilder()
-sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(HelloWorldIntentHandler())
-sb.add_request_handler(HelpIntentHandler())
-sb.add_request_handler(CancelOrStopIntentHandler())
-sb.add_request_handler(FallbackIntentHandler())
-sb.add_request_handler(SessionEndedRequestHandler())
-sb.add_request_handler(IntentReflectorHandler())
-sb.add_global_request_interceptor(LocalizationInterceptor())
-sb.add_exception_handler(CatchAllExceptionHandler())
-skill_handler = sb.lambda_handler()
+@app.route('/webscrape', methods=['POST'])
+def webhook():
+    data = request.get_json()
 
-@app.route("/webscrape", methods=['POST'])
-def webhook_handler():
-    # Decodifique os dados da requisição de bytes para string e depois para JSON
-    request_data = json.loads(request.data.decode('utf-8'))
-    skill_response = skill_handler(request_data, None)
-    return jsonify(skill_response)
+    # Defina card_xpml11 aqui dentro do contexto da aplicação Flask
+    card_xpml11 = get_xpml(requests, BeautifulSoup)
+    card_knri11 = get_knri(requests, BeautifulSoup)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    # Inicialize o SkillBuilder
+    sb = SkillBuilder()
+
+    # Inicialize os handlers com card_xpml11
+    launch_request_handler = LaunchRequestHandler()
+    show_second_screen_handler = ShowSecondScreenHandler()
+    catch_all_request_handler = CatchAllRequestHandler()
+    # go_back_handler = GoBackHandler()
+
+    # Adicione os handlers ao SkillBuilder
+    sb.add_request_handler(launch_request_handler)
+    sb.add_request_handler(show_second_screen_handler)
+    sb.add_request_handler(catch_all_request_handler)
+    # sb.add_request_handler(go_back_handler)
+
+    # Gere a resposta
+    response = sb.lambda_handler()(data, None)
+    return jsonify(response)
+
+
+if __name__ == '__main__':
+    # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
+    app.run(debug=True, port=5000)

@@ -4,7 +4,7 @@
 WELCOME_MESSAGE = "Bem-vindo ao meu skill Alexa! Como posso ajudar você hoje?"
 
 # Mensagens para a intent Hello World
-HELLO_MSG = "Olá, Mundo!"
+HELLO_MSG = "Esse é um teste para verificação da skill!"
 
 # Mensagens de ajuda
 HELP_MSG = "Você pode me pedir para dizer Olá Mundo ou perguntar sobre outra coisa."
