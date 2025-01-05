@@ -49,6 +49,7 @@ apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_knri11
 
 voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+
 voz_knri11 = card_knri11.replace(
     '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
 

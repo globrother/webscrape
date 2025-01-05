@@ -37,16 +37,7 @@ def get_xpml(requests, BeautifulSoup):
                 raise ValueError("Unable to scrape all required elements.")
         else:
             raise ConnectionError(f"Erro ao acessar o site: Status Code {
-                response.status_code}")
-
-        """
-        voz_xpml11 = (
-            f"• Valor atual da cota: R$ {xpml11_0}\n<break time='500ms'/>"
-            f"• Dividend Yield: {dyxpml11_3}%\n<break time='500ms'/>"
-            f"• P/VP: {pvpxpml11_6}\n<break time='500ms'/>"
-            f"• Último rendimento: R$ {divpcxpml11_16}<break time='1s'/>"
-        )
-        """
+                                  response.status_code}")
 
         card_xpml11 = (
             "Atualizações do Fundo XPML11:<br><br>"

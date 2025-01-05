@@ -35,7 +35,7 @@ def get_knri(requests, BeautifulSoup):
                 raise ValueError("Unable to scrape all required elements.")
         else:
             raise ConnectionError(f"Erro ao acessar o site: Status Code {
-                response.status_code}")
+                                  response.status_code}")
 
         card_knri11 = (
             "Atualizações do Fundo KNRI11:<br><br>"
