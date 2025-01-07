@@ -17,35 +17,58 @@ def get_xpml(requests, BeautifulSoup):
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
-            tags = ['value']
+            tags = ['v-align-middle', 'value']
 
             xpml11_0 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
             for div in container_divs:
-                for tag in tags:
-                    elements = div.find_all(class_=tag)
-                    if len(elements) > 4:
-                        xpml11_0 = elements[0].text
-                        dyxpml11_3 = elements[3].text
-                        pvpxpml11_6 = elements[6].text
-                        divpcxpml11_16 = str(
-                            round((float((elements[15].text).replace(',', '.'))), 2)).replace('.', ',')
-                        print(divpcxpml11_16)
-                        break
+                # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
+                """
+                função de critério que está sendo passada para find_all.
+                Esta função anônima (lambda) verifica se a tag atual (tag)
+                possui a classe v-align-middle ou value em seu atributo class.
+                """
+                # elements = div.find_all(lambda tag: 'v-align-middle' in tag.get('class', []) or 'value' in tag.get('class', [])) #sem o uso de tags
+                elements = div.find_all(lambda tag: any(t in tag.get('class', []) for t in tags)) #com o uso do dicionário tags.
+                #print(f"Elements: {elements}")
+                if len(elements) > 4:
+                    xpml11_0 = elements[0].text # Valor atual da cota
+                    varxpml11 = elements[1].text # Variação da cota dia anterior
+                    dyxpml11_3 = elements[4].text # Dividend Yield
+                    pvpxpml11_6 = elements[26].text # P/VP
+                    divpcxpml11_16 = str(
+                                        round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
+                    # print(f"resultado: {xpml11_0}; {varxpml11}; {dyxpml11_3}; {pvpxpml11_6}; {divpcxpml11_16}")
+                    
+                    break
 
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
             raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
-
+        
+        arrow_xpml = ""
+        aux_xpml = ""
+        
+        if varxpml11[0] == "-":
+            arrow_xpml = "&#x2B07;"
+            aux_xpml = "queda"
+        else:
+            arrow_xpml = "&#x2B06;"
+            aux_xpml = "alta"
+                
+        variac_xpml11 = (f"Houve {aux_xpml} de <b>{varxpml11}  {arrow_xpml}</b> na cota do FII XPML11 (hoje X ontem).")
+        #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
+        
         card_xpml11 = (
-            "Atualizações do Fundo XPML11:<br><br>"
+            f"Atualizações do Fundo XPML11:<br><br>"
+            f"• Houve {aux_xpml} de {varxpml11} na cota<br>"
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
             f"• Dividend Yield: {dyxpml11_3}%<br>"
             f"• P/VP: {pvpxpml11_6}<br>"
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
-        return card_xpml11
+        return card_xpml11, variac_xpml11
 
     except Exception as e:
         return {"error": str(e)}, 500
