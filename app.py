@@ -34,13 +34,11 @@ def _load_apl_document(file_path):
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return None
-
-
-card_xpml11, _ = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-_, variac_xpml11 = get_xpml(requests, BeautifulSoup) # _, significa que a variável card_xpml11 não será utilizada 
-card_knri11, _ = get_knri(requests, BeautifulSoup)
-_, variac_knri11 = get_knri(requests, BeautifulSoup) # _, significa que a variável card_knri11 não será utilizada
-
+    
+card_xpml11, variac_xpml11, hist_text_xpml  = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
+#_, variac_xpml11 = get_xpml(requests, BeautifulSoup) # _, significa que a variável card_xpml11 não será utilizada 
+card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup)
+#_, variac_knri11 = get_knri(requests, BeautifulSoup) # _, significa que a variável card_knri11 não será utilizada
 
 # def aux_json(card_xpml11, card_knri11):
 doc_apl_xpml = "apl_xpml.json"
@@ -49,14 +47,16 @@ doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri)
 apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_xpml11
 apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
+apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_knri11
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
+apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
+
 
 voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
 
 voz_knri11 = card_knri11.replace(
     '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
-
 
 class LaunchRequestHandler(AbstractRequestHandler):
 

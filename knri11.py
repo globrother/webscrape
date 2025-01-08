@@ -1,10 +1,14 @@
 """
 ===== ::: OBTENDO DADOS WEB DO FII KNRI11 ::: ========================================
 """
-from flask import jsonify
+import grava_historico
 
+test = None
 
 def get_knri(requests, BeautifulSoup):
+    
+    global test # Declara que vamos usar a variável global 'test'
+        
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/knri11'
         headers = {
@@ -66,7 +70,19 @@ def get_knri(requests, BeautifulSoup):
             f"• P/VP: {pvpknri11_6}<br>"
             f"• Último rendimento: R$ {divpcknri11_16}"
         )
-        return card_knri11, variac_knri11
+        
+        # Verifica se o valor é diferente do último valor registrado
+        if test != knri11_0:
+            #print("Valor diferente, chamando grava_historico.")
+            grava_historico.gravar_historico("historico_knri.json", f"R$ {knri11_0}")
+            test = knri11_0
+        else:
+            print("Valor igual, não chamando grava_historico.")
+            
+        historico = grava_historico.ler_historico("historico_knri.json")
+        hist_text_knri = grava_historico.gerar_texto_historico(historico)
+        
+        return card_knri11, variac_knri11, hist_text_knri
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return ({"error": str(e)}), 500

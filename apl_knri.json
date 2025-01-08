@@ -45,20 +45,53 @@
                 "paddingTop": "@spacingSmall"
               },
               {
-                "type": "ScrollView",
-                "paddingTop": "@spacingMedium",
-                "paddingBottom": "${@spacing3XLarge + @spacingXSmall}",
-                "paddingLeft": "@marginHorizontal",
-                "paddingRight": "@marginHorizontal",
-                "grow": 1,
+                "scrollDirection": "vertical",
+                "childWidths": [
+                    "865dp",
+                    "315dp"
+                ],
+                "childWidth": [
+                    "865dp",
+                    "315dp"
+                ],
+                "type": "GridSequence",
+                "childHeight": "100%",
+                "height": "100vh",
+                "width": "100vw",
+                "padding": "50dp",
                 "items": [
                   {
                     "type": "Text",
-                    "text": "Atualizações do Fundo XPML onze",
-                    "style": "textStyleDisplay4",
+                    "text": "Atualizações do Fundo KNRI11",
+                    "fontSize": "52dp",
                     "textAlign": "left",
+                    "paddingRight": "20dp",
+                    "style": "textStyleDisplay4",
                     "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                    "id": "financeContent"
+                    "id": "financeContent1"
+                  },
+                  {
+                    "type": "Container",
+                    "width": "100%",
+                    "items": [
+                      {
+                      "type": "Text",
+                      "text": "Histórico",
+                      "fontSize": "28dp",
+                      "fontWeight": "bold",
+                      "textAlign": "center",
+                      "paddingBottom": "10dp"
+                      },
+                      {
+                      "type": "Text",
+                      "text": "05/01/2024:\u2003 R$\u2009 136,73<br>05/01/2024:\u2003 R$\u2009 138,63",
+                      "fontSize": "24dp",
+                      "textAlign": "right",
+                      "style": "textStyleDisplay4",
+                      "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                      "id": "financeContent2"
+                      }
+                    ]
                   }
                 ]
               }
