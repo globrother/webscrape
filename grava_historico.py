@@ -1,12 +1,16 @@
 import datetime
+import pytz
 import json
 import os
+
+# Define o fuso horário para horário de Brasília
+brt_tz = pytz.timezone("America/Sao_Paulo")
 
 def gravar_historico(nome_arquivo, valor, limite_registros=100):
     #data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
     #data_hora_atual = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
     data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
-    hora_atual = datetime.datetime.now().strftime("%H:%M")
+    hora_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
     data_hora_atual = f"{data_atual}\u2003{hora_atual}"
     novo_registro = {
         "data": data_hora_atual,
