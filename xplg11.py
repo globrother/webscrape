@@ -64,7 +64,7 @@ def get_xplg(requests, BeautifulSoup):
             arrow_xplg = "&#x2B06;"
             aux_xplg = "alta"
                 
-        variac_xplg11 = (f"Houve {aux_xplg} de <b>{varxplg11}  {arrow_xplg}</b> na cota do FII xplg11 (hoje X ontem).")
+        variac_xplg11 = (f"Houve {aux_xplg} de <b>{varxplg11}  {arrow_xplg}</b> na cota do FII XPLG11 (hoje X ontem).")
         #variac_xplg11_aux = (f"<b>VAR {varxplg11}  {arrow_xplg}</b>")
         
         card_xplg11 = (

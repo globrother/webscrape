@@ -40,6 +40,7 @@ from xpml11 import get_xpml
 from mxrf11 import get_mxrf
 from xplg11 import get_xplg
 from btlg11 import get_btlg
+from kncr11 import get_kncr
 from knri11 import get_knri
 
 app = Flask(__name__)
@@ -66,6 +67,7 @@ card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) #
 card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
 card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
 card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
+card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
 card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
 
 # AQUI FAZER O CARREGAMENTO DO DOC APL JSON PARA VARIÁVEL apl_document_xxxx. (adicionar 2 linhas e alterar 4 senteças)
@@ -80,6 +82,9 @@ apl_document_xplg = _load_apl_document(doc_apl_xplg)
 
 doc_apl_btlg = "apl_btlg.json"
 apl_document_btlg = _load_apl_document(doc_apl_btlg)
+
+doc_apl_kncr = "apl_kncr.json"
+apl_document_kncr = _load_apl_document(doc_apl_kncr)
 
 doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
@@ -101,6 +106,10 @@ apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0
 apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
 apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
 
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_kncr11
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
+
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_knri11
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
 apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
@@ -110,12 +119,13 @@ voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
 voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
 voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
 voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
+voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
 voz_knri11 = card_knri11.replace(
     '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
 # ============================================================================================
 
 class LaunchRequestHandler(AbstractRequestHandler):
-
+    # ::::: 1 :::::
     def can_handle(self, handler_input):
         return is_request_type("LaunchRequest")(handler_input)
 
@@ -141,7 +151,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 
 class ShowSecondScreenHandler(AbstractRequestHandler):
-
+    # ::::: 2 :::::
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
@@ -171,7 +181,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
 # AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
 # MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
 class ShowThirdScreenHandler(AbstractRequestHandler):
-
+    # ::::: 3 :::::
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
@@ -201,7 +211,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
 # AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
 # MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
 class ShowFourthScreenHandler(AbstractRequestHandler):
-
+    # ::::: 4 :::::
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
@@ -220,11 +230,41 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showEndedScreen"], delay=0)
+                        arguments=["showFifthScreen"], delay=0)
                 ]
             )
 
         ).speak(f"<break time='1s'/>\n{voz_btlg11}")
+        return handler_input.response_builder.response
+# ============================================================================================
+
+# AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
+# MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
+class ShowFifthScreenHandler(AbstractRequestHandler):
+    # ::::: 5 :::::
+    def can_handle(self, handler_input):
+        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
+            handler_input.request_envelope.request.arguments == [
+                "showFifthScreen"]
+
+    def handle(self, handler_input):
+        # _, apl_document_knri = aux_json(self.card_xpml11, self.card_knri11)
+        handler_input.response_builder.add_directive(
+            RenderDocumentDirective(
+                token="textDisplayToken5",
+                document=apl_document_kncr
+            )
+            
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="textDisplayToken5",
+                commands=[
+                    SendEventCommand(
+                        arguments=["showEndedScreen"], delay=0)
+                ]
+            )
+
+        ).speak(f"<break time='1s'/>\n{voz_kncr11}")
         return handler_input.response_builder.response
 # ============================================================================================
 # ↓ ↓ ↓ ↓ ADICIONE NOVOS ↓ ↓ ↓ ↓ ↓ ↓ HANDLERS DE FUNDOS AQUI ↓ ↓ ↓ ↓
@@ -232,7 +272,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
 # ↑ ↑ ↑ ↑ ADICIONE NOVOS ↑ ↑ ↑ ↑ ↑ ↑ HANDLERS DE FUNDOS AQUI ↑ ↑ ↑ ↑
 # ESSE É O ULTIMO HANDLER, NÃO PRECISA MUDAR NADA AQUI APENAS MANTER
 class ShowEndedScreenHandler(AbstractRequestHandler):
-
+    # ::::: FINAL :::::
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
@@ -241,7 +281,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="textDisplayToken5",
+                token="textDisplayToken6",
                 document=apl_document_knri
             )
         ).speak(f"<break time='1s'/>\n{voz_knri11}")
@@ -265,9 +305,9 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 def webhook():
     data = request.get_json()
 
-    # Defina card_xpml11 aqui dentro do contexto da aplicação Flask
-    card_xpml11 = get_xpml(requests, BeautifulSoup)
-    card_knri11 = get_knri(requests, BeautifulSoup)
+    # Defina card_xpml11 aqui dentro do contexto da aplicação Flask (não está mais precisando)
+    # card_xpml11 = get_xpml(requests, BeautifulSoup)
+    # card_knri11 = get_knri(requests, BeautifulSoup)
 
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
@@ -277,6 +317,7 @@ def webhook():
     show_second_screen_handler = ShowSecondScreenHandler()
     show_third_screen_handler = ShowThirdScreenHandler()
     show_fourth_screen_handler = ShowFourthScreenHandler()
+    show_fifth_screen_handler = ShowFifthScreenHandler()
     show_ended_screen_handler = ShowEndedScreenHandler()
 
     catch_all_request_handler = CatchAllRequestHandler()
@@ -288,7 +329,9 @@ def webhook():
     sb.add_request_handler(show_second_screen_handler)
     sb.add_request_handler(show_third_screen_handler)
     sb.add_request_handler(show_fourth_screen_handler)
+    sb.add_request_handler(show_fifth_screen_handler)
     sb.add_request_handler(show_ended_screen_handler)
+    
     sb.add_request_handler(catch_all_request_handler)
     
     # sb.add_request_handler(go_back_handler)

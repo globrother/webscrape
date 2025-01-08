@@ -62,7 +62,7 @@ def get_mxrf(requests, BeautifulSoup):
             arrow_mxrf = "&#x2B06;"
             aux_mxrf = "alta"
                 
-        variac_mxrf11 = (f"Houve {aux_mxrf} de <b>{varmxrf11}  {arrow_mxrf}</b> na cota do FII mxrf11 (hoje X ontem).")
+        variac_mxrf11 = (f"Houve {aux_mxrf} de <b>{varmxrf11}  {arrow_mxrf}</b> na cota do FII MXRF11 (hoje X ontem).")
         #variac_mxrf11_aux = (f"<b>VAR {varmxrf11}  {arrow_mxrf}</b>")
         
         card_mxrf11 = (
