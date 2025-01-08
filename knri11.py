@@ -73,11 +73,11 @@ def get_knri(requests, BeautifulSoup):
         
         # Verifica se o valor é diferente do último valor registrado
         if test != knri11_0:
-            #print("Valor diferente, chamando grava_historico.")
+            print("KNRI: Valor diferente, chamando grava_historico.")
             grava_historico.gravar_historico("historico_knri.json", f"R$ {knri11_0}")
             test = knri11_0
         else:
-            print("Valor igual, não chamando grava_historico.")
+            print("KNRI: Valor igual, não chamando grava_historico.")
             
         historico = grava_historico.ler_historico("historico_knri.json")
         hist_text_knri = grava_historico.gerar_texto_historico(historico)

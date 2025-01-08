@@ -1,5 +1,5 @@
 """
-===== ::: OBTENDO DADOS WEB DO FII XPML11 ::: ========================================
+===== ::: OBTENDO DADOS WEB DO FII MXRF11 ::: ========================================
 """
 import grava_historico
 # import locale
@@ -8,12 +8,12 @@ import grava_historico
 
 test = None
 
-def get_xpml(requests, BeautifulSoup):
+def get_mxrf(requests, BeautifulSoup):
     
     global test # Declara que vamos usar a variável global 'test'
     
     try:
-        url = 'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
+        url = 'https://statusinvest.com.br/fundos-imobiliarios/mxrf11'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
@@ -24,7 +24,7 @@ def get_xpml(requests, BeautifulSoup):
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
 
-            xpml11_0 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
+            mxrf11_0 = dymxrf11_3 = pvpmxrf11_6 = divpcmxrf11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -37,55 +37,55 @@ def get_xpml(requests, BeautifulSoup):
                 elements = div.find_all(lambda tag: any(t in tag.get('class', []) for t in tags)) #com o uso do dicionário tags.
                 #print(f"Elements: {elements}")
                 if len(elements) > 4:
-                    xpml11_0 = elements[0].text # Valor atual da cota
-                    varxpml11 = elements[1].text # Variação da cota dia anterior
-                    dyxpml11_3 = elements[4].text # Dividend Yield
-                    pvpxpml11_6 = elements[26].text # P/VP
-                    divpcxpml11_16 = str(
+                    mxrf11_0 = elements[0].text # Valor atual da cota
+                    varmxrf11 = elements[1].text # Variação da cota dia anterior
+                    dymxrf11_3 = elements[4].text # Dividend Yield
+                    pvpmxrf11_6 = elements[26].text # P/VP
+                    divpcmxrf11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
-                    # print(f"resultado: {xpml11_0}; {varxpml11}; {dyxpml11_3}; {pvpxpml11_6}; {divpcxpml11_16}")
+                    # print(f"resultado: {mxrf11_0}; {varmxrf11}; {dymxrf11_3}; {pvpmxrf11_6}; {divpcmxrf11_16}")
                     
                     break
 
-            if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
+            if not all([mxrf11_0, dymxrf11_3, pvpmxrf11_6, divpcmxrf11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
             raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
         
-        arrow_xpml = ""
-        aux_xpml = ""
+        arrow_mxrf = ""
+        aux_mxrf = ""
         
-        if varxpml11[0] == "-":
-            arrow_xpml = "&#x2B07;"
-            aux_xpml = "queda"
+        if varmxrf11[0] == "-":
+            arrow_mxrf = "&#x2B07;"
+            aux_mxrf = "queda"
         else:
-            arrow_xpml = "&#x2B06;"
-            aux_xpml = "alta"
+            arrow_mxrf = "&#x2B06;"
+            aux_mxrf = "alta"
                 
-        variac_xpml11 = (f"Houve {aux_xpml} de <b>{varxpml11}  {arrow_xpml}</b> na cota do FII XPML11 (hoje X ontem).")
-        #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
+        variac_mxrf11 = (f"Houve {aux_mxrf} de <b>{varmxrf11}  {arrow_mxrf}</b> na cota do FII mxrf11 (hoje X ontem).")
+        #variac_mxrf11_aux = (f"<b>VAR {varmxrf11}  {arrow_mxrf}</b>")
         
-        card_xpml11 = (
-            f"Atualizações do Fundo XPML11:<br><br>"
-            f"• Houve {aux_xpml} de {varxpml11} na cota<br>"
-            f"• Valor atual da cota: R$ {xpml11_0}<br>"
-            f"• Dividend Yield: {dyxpml11_3}%<br>"
-            f"• P/VP: {pvpxpml11_6}<br>"
-            f"• Último rendimento: R$ {divpcxpml11_16}"
+        card_mxrf11 = (
+            f"Atualizações do Fundo MXRF11:<br><br>"
+            f"• Houve {aux_mxrf} de {varmxrf11} na cota<br>"
+            f"• Valor atual da cota: R$ {mxrf11_0}<br>"
+            f"• Dividend Yield: {dymxrf11_3}%<br>"
+            f"• P/VP: {pvpmxrf11_6}<br>"
+            f"• Último rendimento: R$ {divpcmxrf11_16}"
         )
         
         # Verifica se o valor é diferente do último valor registrado
-        if test != xpml11_0:
-            print("XPML: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_xpml.json", f"R$ {xpml11_0}")
-            test = xpml11_0
+        if test != mxrf11_0:
+            print("MXRF: Valor diferente, chamando grava_historico.")
+            grava_historico.gravar_historico("historico_mxrf.json", f"R$ {mxrf11_0}")
+            test = mxrf11_0
         else:
-            print("XPML: Valor igual, não chamando grava_historico.")
+            print("MXRF: Valor igual, não chamando grava_historico.")
             
-        historico = grava_historico.ler_historico("historico_xpml.json")
-        hist_text_xpml = grava_historico.gerar_texto_historico(historico)
+        historico = grava_historico.ler_historico("historico_mxrf.json")
+        hist_text_mxrf = grava_historico.gerar_texto_historico(historico)
 
-        return card_xpml11, variac_xpml11, hist_text_xpml
+        return card_mxrf11, variac_mxrf11, hist_text_mxrf
 
     except Exception as e:
         return {"error": str(e)}, 500

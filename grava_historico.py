@@ -4,7 +4,10 @@ import os
 
 def gravar_historico(nome_arquivo, valor, limite_registros=100):
     #data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
-    data_hora_atual = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+    #data_hora_atual = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+    data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
+    hora_atual = datetime.datetime.now().strftime("%H:%M")
+    data_hora_atual = f"{data_atual}\u2003{hora_atual}"
     novo_registro = {
         "data": data_hora_atual,
         "valor": valor  # Valor já formatado como string
@@ -51,5 +54,5 @@ def ler_historico(nome_arquivo):
         return []
 
 def gerar_texto_historico(historico):
-    linhas = [f'{registro["data"]}:\u2003 {registro["valor"]}' for registro in historico]
+    linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
     return "<br>".join(linhas)
