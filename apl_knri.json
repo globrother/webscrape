@@ -47,12 +47,12 @@
               {
                 "scrollDirection": "vertical",
                 "childWidths": [
-                    "865dp",
-                    "315dp"
+                    "815dp",
+                    "365dp"
                 ],
                 "childWidth": [
-                    "865dp",
-                    "315dp"
+                    "815dp",
+                    "365dp"
                 ],
                 "type": "GridSequence",
                 "childHeight": "100%",
