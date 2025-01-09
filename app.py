@@ -379,9 +379,9 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # Em vez de encerrar, vamos definir uma mensagem padrão
+        handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
         os._exit(0) # Finalizar servidor Flask
-        return handler_input.response_builder.speak(
-            "Encerrando a skill. Até a próxima!").set_should_end_session(True).response
+        return handler_input.response_builder.response
 
 #class CatchAllRequestHandler(AbstractRequestHandler):
     #def can_handle(self, handler_input):
