@@ -2,6 +2,7 @@
 ===== ::: OBTENDO DADOS WEB DO FII XPML11 ::: ========================================
 """
 import grava_historico
+import os
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
@@ -70,8 +71,8 @@ def get_xpml(requests, BeautifulSoup):
             f"• P/VP: {pvpxpml11_6}<br>"
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
-        
-        grava_historico.gravar_historico("historico_xpml.json", f"R$ {xpml11_0}")  
+        nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json')
+        grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
         historico = grava_historico.ler_historico("historico_xpml.json")
         hist_text_xpml = grava_historico.gerar_texto_historico(historico)
 
