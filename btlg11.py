@@ -8,12 +8,8 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-test = None
-
 def get_btlg(requests, BeautifulSoup):
-    
-    global test # Declara que vamos usar a variável global 'test'
-    
+        
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/btlg11'
         headers = {
@@ -26,7 +22,7 @@ def get_btlg(requests, BeautifulSoup):
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
 
-            btlg11_0 = dybtlg11_3 = pvpbtlg11_6 = divpcbtlg11_16 = None
+            btlg11_0 = varbtlg11 = dybtlg11_3 = pvpbtlg11_6 = divpcbtlg11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -47,8 +43,8 @@ def get_btlg(requests, BeautifulSoup):
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
                     # print(f"resultado: {btlg11_0}; {varbtlg11}; {dybtlg11_3}; {pvpbtlg11_6}; {divpcbtlg11_16}")
                     
-                    break
-
+                break
+            print(btlg11_0)
             if not all([btlg11_0, dybtlg11_3, pvpbtlg11_6, divpcbtlg11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -76,14 +72,7 @@ def get_btlg(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcbtlg11_16}"
         )
         
-        # Verifica se o valor é diferente do último valor registrado
-        if test != btlg11_0:
-            print("BTLG: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_btlg.json", f"R$ {btlg11_0}")
-            test = btlg11_0
-        else:
-            print("BTLG: Valor igual, não chamando grava_historico.")
-            
+        grava_historico.gravar_historico("historico_btlg.json", f"R$ {btlg11_0}")
         historico = grava_historico.ler_historico("historico_btlg.json")
         hist_text_btlg = grava_historico.gerar_texto_historico(historico)
 

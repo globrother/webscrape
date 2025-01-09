@@ -3,12 +3,8 @@
 """
 import grava_historico
 
-test = None
-
 def get_knri(requests, BeautifulSoup):
-    
-    global test # Declara que vamos usar a variável global 'test'
-        
+            
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/knri11'
         headers = {
@@ -21,7 +17,7 @@ def get_knri(requests, BeautifulSoup):
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
 
-            knri11_0 = dyknri11_3 = pvpknri11_6 = divpcknri11_16 = None
+            knri11_0 = varknri11 = dyknri11_3 = pvpknri11_6 = divpcknri11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -40,10 +36,9 @@ def get_knri(requests, BeautifulSoup):
                     pvpknri11_6 = elements[26].text # P/VP
                     divpcknri11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
-                    # print(f"resultado: {knri11_0}; {varknri11}; {dyknri11_3}; {pvpknri11_6}; {divpcknri11_16}")
                     
-                    break
-
+                break
+            print(knri11_0)
             if not all([knri11_0, dyknri11_3, pvpknri11_6, divpcknri11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -71,14 +66,7 @@ def get_knri(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcknri11_16}"
         )
         
-        # Verifica se o valor é diferente do último valor registrado
-        if test != knri11_0:
-            print("KNRI: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_knri.json", f"R$ {knri11_0}")
-            test = knri11_0
-        else:
-            print("KNRI: Valor igual, não chamando grava_historico.")
-            
+        grava_historico.gravar_historico("historico_knri.json", f"R$ {knri11_0}")
         historico = grava_historico.ler_historico("historico_knri.json")
         hist_text_knri = grava_historico.gerar_texto_historico(historico)
         

@@ -8,12 +8,8 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-test = None
-
 def get_kncr(requests, BeautifulSoup):
-    
-    global test # Declara que vamos usar a variável global 'test'
-    
+        
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/kncr11'
         headers = {
@@ -25,8 +21,8 @@ def get_kncr(requests, BeautifulSoup):
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
-
-            kncr11_0 = dykncr11_3 = pvpkncr11_6 = divpckncr11_16 = None
+            
+            kncr11_0 = varkncr11 = dykncr11_3 = pvpkncr11_6 = divpckncr11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -45,10 +41,9 @@ def get_kncr(requests, BeautifulSoup):
                     pvpkncr11_6 = elements[26].text # P/VP
                     divpckncr11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
-                    # print(f"resultado: {kncr11_0}; {varkncr11}; {dykncr11_3}; {pvpkncr11_6}; {divpckncr11_16}")
                     
-                    break
-
+                break
+            print(kncr11_0)
             if not all([kncr11_0, dykncr11_3, pvpkncr11_6, divpckncr11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -76,14 +71,7 @@ def get_kncr(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpckncr11_16}"
         )
         
-        # Verifica se o valor é diferente do último valor registrado
-        if test != kncr11_0:
-            print("KNCR: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_kncr.json", f"R$ {kncr11_0}")
-            test = kncr11_0
-        else:
-            print("KNCR: Valor igual, não chamando grava_historico.")
-            
+        grava_historico.gravar_historico("historico_kncr.json", f"R$ {kncr11_0}")
         historico = grava_historico.ler_historico("historico_kncr.json")
         hist_text_kncr = grava_historico.gerar_texto_historico(historico)
 

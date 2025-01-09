@@ -6,11 +6,7 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-test = None
-
 def get_xpml(requests, BeautifulSoup):
-    
-    global test # Declara que vamos usar a variável global 'test'
     
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
@@ -23,8 +19,9 @@ def get_xpml(requests, BeautifulSoup):
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
-
-            xpml11_0 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
+            print("ok:ok")
+               
+            xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -46,7 +43,7 @@ def get_xpml(requests, BeautifulSoup):
                     # print(f"resultado: {xpml11_0}; {varxpml11}; {dyxpml11_3}; {pvpxpml11_6}; {divpcxpml11_16}")
                     
                     break
-
+            print(xpml11_0)
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -74,14 +71,7 @@ def get_xpml(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
         
-        # Verifica se o valor é diferente do último valor registrado
-        if test != xpml11_0:
-            print("XPML: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_xpml.json", f"R$ {xpml11_0}")
-            test = xpml11_0
-        else:
-            print("XPML: Valor igual, não chamando grava_historico.")
-            
+        grava_historico.gravar_historico("historico_xpml.json", f"R$ {xpml11_0}")  
         historico = grava_historico.ler_historico("historico_xpml.json")
         hist_text_xpml = grava_historico.gerar_texto_historico(historico)
 

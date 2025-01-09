@@ -8,11 +8,7 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-test = None
-
 def get_xplg(requests, BeautifulSoup):
-    
-    global test # Declara que vamos usar a variável global 'test'
     
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/xplg11'
@@ -26,7 +22,7 @@ def get_xplg(requests, BeautifulSoup):
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
 
-            xplg11_0 = dyxplg11_3 = pvpxplg11_6 = divpcxplg11_16 = None
+            xplg11_0 = varxplg11 = dyxplg11_3 = pvpxplg11_6 = divpcxplg11_16 = None
 
             for div in container_divs:
                 # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
@@ -48,7 +44,7 @@ def get_xplg(requests, BeautifulSoup):
                     # print(f"resultado: {xplg11_0}; {varxplg11}; {dyxplg11_3}; {pvpxplg11_6}; {divpcxplg11_16}")
                     
                     break
-
+            print(xplg11_0)
             if not all([xplg11_0, dyxplg11_3, pvpxplg11_6, divpcxplg11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -76,14 +72,7 @@ def get_xplg(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcxplg11_16}"
         )
         
-        # Verifica se o valor é diferente do último valor registrado
-        if test != xplg11_0:
-            print("XPLG: Valor diferente, chamando grava_historico.")
-            grava_historico.gravar_historico("historico_xplg.json", f"R$ {xplg11_0}")
-            test = xplg11_0
-        else:
-            print("XPLG: Valor igual, não chamando grava_historico.")
-            
+        grava_historico.gravar_historico("historico_xplg.json", f"R$ {xplg11_0}")   
         historico = grava_historico.ler_historico("historico_xplg.json")
         hist_text_xplg = grava_historico.gerar_texto_historico(historico)
 
