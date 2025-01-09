@@ -35,7 +35,7 @@ def gravar_historico(nome_arquivo, valor, limite_registros=100):
     # Verifica se o último valor é igual ao novo valor
     if historico and historico[0]["valor"] == valor:
         print("O valor é igual ao último registrado. Não será gravado novamente.")
-        return
+        #return
 
     # Adiciona o novo registro no início da lista
     historico.insert(0, novo_registro)
