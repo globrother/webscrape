@@ -16,6 +16,7 @@ mas ao tocar em um botão, a skill é encerrada.
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
 # import locale
+import os
 import json
 import logging
 import requests
@@ -291,7 +292,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 document=apl_document_knri
             )
         ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
-        
+        os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -378,6 +379,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # Em vez de encerrar, vamos definir uma mensagem padrão
+        os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.speak(
             "Encerrando a skill. Até a próxima!").set_should_end_session(True).response
 
@@ -399,12 +401,6 @@ def webhook():
     data = request.get_json()
 
     # Defina card_xpml11 aqui dentro do contexto da aplicação Flask (não está mais precisando)
-    card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-    card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
-    card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
-    card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
-    card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
-    card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
     
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
