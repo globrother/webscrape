@@ -61,20 +61,6 @@ def _load_apl_document(file_path):
         print(f"File not found: {file_path}")
         return None
     
-    
-apl_document_continuacao = {  # Defina o documento APL de continuação
-    "type": "APL",
-    "version": "1.4",
-    "mainTemplate": {
-        "items": [
-            {
-                "type": "Text",
-                "text": "Continuando de onde paramos..."
-            }
-        ]
-    }
-}
-    
 # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
 # AQUI, ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx    
 card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
@@ -150,7 +136,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"Aqui está as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
@@ -336,7 +322,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken2",
                     document=apl_document_mxrf
                 )
-            ).speak(f"<break time='1s'/>\n{voz_mxrf11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_mxrf11}")
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
@@ -345,7 +331,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken3",
                     document=apl_document_xplg
                 )
-            ).speak(f"<break time='1s'/>\n{voz_xplg11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_xplg11}")
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
@@ -354,7 +340,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken4",
                     document=apl_document_btlg
                 )
-            ).speak(f"<break time='1s'/>\n{voz_btlg11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_btlg11}")
             
         elif "state" in session_attr and session_attr["state"] == "fourthScreen":
             session_attr["state"] = "fifthScreen"
@@ -363,7 +349,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken5",
                     document=apl_document_kncr
                 )
-            ).speak(f"<break time='1s'/>\n{voz_kncr11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_kncr11}")
             
         elif "state" in session_attr and session_attr["state"] == "fifthScreen":
             session_attr["state"] = "endedScreen"
@@ -372,7 +358,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken6",
                     document=apl_document_knri
                 )
-            ).speak(f"<break time='1s'/>\n{voz_knri11}")   
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_knri11}")   
         else:
             session_attr["state"] = "firstScreen"
             handler_input.response_builder.add_directive(
@@ -380,7 +366,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken1",
                     document=apl_document_xpml
                 )
-            ).speak(f"<break time='1s'/>\n{voz_xpml11}")
+            ).speak(f"Recomeçando:<break time='1s'/>\n{voz_xpml11}")
 
         handler_input.attributes_manager.session_attributes = session_attr
 
