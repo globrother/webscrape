@@ -27,17 +27,17 @@ def gravar_historico(nome_arquivo, valor, limite_registros=100):
                     historico = []
                 else:
                     historico = json.loads(conteudo)
-                    print("Arquivo histórico lido com sucesso.")
+                    print("\nArquivo histórico lido com sucesso.\n")
         except json.JSONDecodeError:
             print("Erro ao decodificar o arquivo JSON.")
             historico = []
     else:
         historico = []
 
-    print(f"Histórico atual: {historico}")
+    print(f"/nHistórico atual: \n{historico}\n")
     # Verifica se o último valor é igual ao novo valor
-    if historico and historico[0]["valor"] == valor:
-        print("O valor é igual ao último registrado. Não será gravado novamente.")
+    #if historico and historico[0]["valor"] == valor:
+        #print("O valor é igual ao último registrado. Não será gravado novamente.")
         #return
 
     # Adiciona o novo registro no início da lista
@@ -46,12 +46,12 @@ def gravar_historico(nome_arquivo, valor, limite_registros=100):
     # Mantém apenas os registros mais recentes até o limite especificado
     historico = historico[:limite_registros]
     
-    print(f"Histórico atualizado: {historico}")
+    print(f"\nHistórico atualizado: {historico}\n")
 
     # Grava a lista atualizada de volta no arquivo JSON
     with open(nome_arquivo, "w", encoding="utf-8") as arquivo:
         json.dump(historico, arquivo, ensure_ascii=False, indent=4)
-        print("Histórico gravado com sucesso.")
+        print("\nHistórico gravado com sucesso.\n")
 
 # gerando string para o documento APL alexa:
 
