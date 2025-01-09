@@ -61,35 +61,44 @@
                 "padding": "50dp",
                 "items": [
                   {
-                    "type": "Text",
-                    "text": "Atualizações do Fundo XPML11",
-                    "fontSize": "52dp",
-                    "textAlign": "left",
-                    "paddingRight": "20dp",
-                    "style": "textStyleDisplay4",
-                    "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                    "id": "financeContent1"
+                    "type": "TouchWrapper",
+                    "onPress": [
+                      {
+                        "type": "SendEvent",
+                        "arguments": ["touch"]
+                      }
+                    ],
+                    "item": {
+                      "type": "Text",
+                      "text": "Atualizações do Fundo XPML11",
+                      "fontSize": "52dp",
+                      "textAlign": "left",
+                      "paddingRight": "20dp",
+                      "style": "textStyleDisplay4",
+                      "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                      "id": "financeContent1"
+                    }
                   },
                   {
                     "type": "Container",
                     "width": "100%",
                     "items": [
                       {
-                      "type": "Text",
-                      "text": "Histórico",
-                      "fontSize": "28dp",
-                      "fontWeight": "bold",
-                      "textAlign": "center",
-                      "paddingBottom": "10dp"
+                        "type": "Text",
+                        "text": "Histórico",
+                        "fontSize": "28dp",
+                        "fontWeight": "bold",
+                        "textAlign": "center",
+                        "paddingBottom": "10dp"
                       },
                       {
-                      "type": "Text",
-                      "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73",
-                      "fontSize": "24dp",
-                      "textAlign": "right",
-                      "style": "textStyleDisplay4",
-                      "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                      "id": "financeContent2"
+                        "type": "Text",
+                        "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73",
+                        "fontSize": "24dp",
+                        "textAlign": "right",
+                        "style": "textStyleDisplay4",
+                        "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                        "id": "financeContent2"
                       }
                     ]
                   }
