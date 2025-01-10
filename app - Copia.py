@@ -65,10 +65,16 @@ def _load_apl_document(file_path):
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return None
-
-apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
-   
     
+# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
+# AQUI, ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx    
+card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
+card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
+card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
+card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
+card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
+card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
+
 # AQUI FAZER O CARREGAMENTO DO DOC APL JSON PARA VARIÁVEL apl_document_xxxx. (adicionar 2 linhas e alterar 4 senteças)
 doc_apl_xpml = "apl_xpml.json"
 apl_document_xpml = _load_apl_document(doc_apl_xpml)
@@ -88,82 +94,42 @@ apl_document_kncr = _load_apl_document(doc_apl_kncr)
 doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
 
-def web_scrape_xpml():
-    card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
-    voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
-    
-    return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
-    
-def web_scrape_mxrf():
-    card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_mxrf11
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
-    voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
-    
-    return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11
-    
-    
-def web_scrape_xplg():
-    card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xplg11
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xplg
-    voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
-    
-    return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
-    
-    
-def web_scrape_btlg():
-    card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_btlg11
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
-    voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
-    
-    return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
-    
-def web_scrape_kncr():
-    card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_kncr11
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
-    voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
-    
-    return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
-    
-def web_scrape_knri():
-    card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_knri11
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
-    voz_knri11 = card_knri11.replace(
-        '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
-    
-    return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
+# AQUI, ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
+apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
+#apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['text'] = card_xpml11
+apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
+apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
+#apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
 
-    # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
-    # AQUI, ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx 
-    
-    
-    # AQUI, ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
-    
+apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_mxrf11
+apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
+apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
 
-    
+apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xplg11
+apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
+apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xplg
 
-    # AQUI DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
+apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_btlg11
+apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
+apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
 
-card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
-card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
-card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
-card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
-card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11 = web_scrape_knri()
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_kncr11
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
+apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
+
+apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_knri11
+apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
+apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
+
+# AQUI DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
+voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
+voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
+voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
+voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
+voz_knri11 = card_knri11.replace(
+    '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
 # ============================================================================================
-
 
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
@@ -172,7 +138,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        web_scrape_xpml()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
@@ -202,8 +167,6 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
 
     def handle(self, handler_input):
-        
-        web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
         handler_input.response_builder.speak(f"<break time='1s'/>\n{voz_mxrf11}").add_directive(
@@ -234,8 +197,6 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 "showThirdScreen"]
 
     def handle(self, handler_input):
-        
-        web_scrape_xplg()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "thirdScreen" # Atualiza o estado para "thirdScreen"
         handler_input.response_builder.add_directive(
@@ -266,8 +227,6 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 "showFourthScreen"]
 
     def handle(self, handler_input):
-        
-        web_scrape_btlg()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fourthScreen" # Atualiza o estado para "fourthScreen"
         handler_input.response_builder.add_directive(
@@ -298,7 +257,6 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 "showFifthScreen"]
 
     def handle(self, handler_input):
-        web_scrape_kncr()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fifthScreen" # Atualiza o estado para "fifthScreen"
         handler_input.response_builder.add_directive(
@@ -330,8 +288,6 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 "showEndedScreen"]
 
     def handle(self, handler_input):
-        
-        web_scrape_knri()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "endedScreen" # Atualiza o estado para "endedScreen"
         handler_input.response_builder.add_directive(
@@ -429,8 +385,8 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         # Em vez de encerrar, vamos definir uma mensagem padrão
         handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("Encerrando o servidor Flask...")
-        #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
-        return handler_input.response_builder.response 
+        os.kill(os.getpid(), signal.SIGTERM)
+        return handler_input.response_builder.response # Finalizar servidor Flask usando sinal
 
 #class CatchAllRequestHandler(AbstractRequestHandler):
     #def can_handle(self, handler_input):
@@ -450,7 +406,8 @@ def webhook():
     data = request.get_json()
 
     # Defina card_xpml11 aqui dentro do contexto da aplicação Flask (não está mais precisando)
-        
+    get_xpml(requests, BeautifulSoup)
+    
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
 
@@ -483,10 +440,8 @@ def webhook():
     # Gere a resposta
     response = sb.lambda_handler()(data, None)
     return jsonify(response)
-    
-    
+
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
     # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
     app.run(debug=True, use_reloader=False, port=5000)
-    

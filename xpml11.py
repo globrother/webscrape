@@ -20,6 +20,7 @@ def get_xpml(requests, BeautifulSoup):
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
+            
             print("ok:ok")
                
             xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
@@ -73,8 +74,8 @@ def get_xpml(requests, BeautifulSoup):
         )
         nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json')
         grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
-        historico = grava_historico.ler_historico("historico_xpml.json")
-        hist_text_xpml = grava_historico.gerar_texto_historico(historico)
+        meu_historico = grava_historico.ler_historico("historico_xpml.json")
+        hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
 
         return card_xpml11, variac_xpml11, hist_text_xpml
 
