@@ -17,6 +17,8 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import os
+import signal
+import time
 import json
 import logging
 import requests
@@ -43,6 +45,8 @@ from xplg11 import get_xplg
 from btlg11 import get_btlg
 from kncr11 import get_kncr
 from knri11 import get_knri
+
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -292,7 +296,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 document=apl_document_knri
             )
         ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
-        os._exit(0) # Finalizar servidor Flask
+        #os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -379,9 +383,10 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # Em vez de encerrar, vamos definir uma mensagem padrão
-        handler_input.response_builder.speak("Encerrando a skill. Até a próxima!")
-        os._exit(0) # Finalizar servidor Flask
-        return handler_input.response_builder.set_should_end_session(True).response
+        handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
+        logging.info("Encerrando o servidor Flask...")
+        os.kill(os.getpid(), signal.SIGTERM)
+        return handler_input.response_builder.response # Finalizar servidor Flask usando sinal
 
 #class CatchAllRequestHandler(AbstractRequestHandler):
     #def can_handle(self, handler_input):
@@ -436,5 +441,6 @@ def webhook():
     return jsonify(response)
 
 if __name__ == '__main__':
+    logging.info("Iniciando o servidor Flask...")
     # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
     app.run(debug=True, use_reloader=False, port=5000)
