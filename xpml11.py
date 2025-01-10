@@ -20,8 +20,6 @@ def get_xpml(requests, BeautifulSoup):
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
-            
-            print("ok:ok")
                
             xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
@@ -34,18 +32,15 @@ def get_xpml(requests, BeautifulSoup):
                 """
                 # elements = div.find_all(lambda tag: 'v-align-middle' in tag.get('class', []) or 'value' in tag.get('class', [])) #sem o uso de tags
                 elements = div.find_all(lambda tag: any(t in tag.get('class', []) for t in tags)) #com o uso do dicionário tags.
-                #print(f"Elements: {elements}")
                 if len(elements) > 4:
                     xpml11_0 = elements[0].text # Valor atual da cota
                     varxpml11 = elements[1].text # Variação da cota dia anterior
                     dyxpml11_3 = elements[4].text # Dividend Yield
                     pvpxpml11_6 = elements[26].text # P/VP
                     divpcxpml11_16 = str(
-                                        round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
-                    # print(f"resultado: {xpml11_0}; {varxpml11}; {dyxpml11_3}; {pvpxpml11_6}; {divpcxpml11_16}")
-                    
+                                        round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota                    
                     break
-            print(xpml11_0)
+            #print(xpml11_0)
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -72,7 +67,8 @@ def get_xpml(requests, BeautifulSoup):
             f"• P/VP: {pvpxpml11_6}<br>"
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
-        nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json')
+        # Com caminho absoluto, parece não ser necessário: os.path.join(os.path.dirname(__file__)
+        nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
         grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
         meu_historico = grava_historico.ler_historico("historico_xpml.json")
         hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)

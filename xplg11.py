@@ -33,7 +33,6 @@ def get_xplg(requests, BeautifulSoup):
                 """
                 # elements = div.find_all(lambda tag: 'v-align-middle' in tag.get('class', []) or 'value' in tag.get('class', [])) #sem o uso de tags
                 elements = div.find_all(lambda tag: any(t in tag.get('class', []) for t in tags)) #com o uso do dicionário tags.
-                #print(f"Elements: {elements}")
                 if len(elements) > 4:
                     xplg11_0 = elements[0].text # Valor atual da cota
                     varxplg11 = elements[1].text # Variação da cota dia anterior
@@ -41,10 +40,9 @@ def get_xplg(requests, BeautifulSoup):
                     pvpxplg11_6 = elements[26].text # P/VP
                     divpcxplg11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
-                    # print(f"resultado: {xplg11_0}; {varxplg11}; {dyxplg11_3}; {pvpxplg11_6}; {divpcxplg11_16}")
                     
                     break
-            print(xplg11_0)
+            #print(xplg11_0)
             if not all([xplg11_0, dyxplg11_3, pvpxplg11_6, divpcxplg11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -61,7 +59,6 @@ def get_xplg(requests, BeautifulSoup):
             aux_xplg = "alta"
                 
         variac_xplg11 = (f"Houve {aux_xplg} de <b>{varxplg11}  {arrow_xplg}</b> na cota do FII XPLG11 (hoje X ontem).")
-        #variac_xplg11_aux = (f"<b>VAR {varxplg11}  {arrow_xplg}</b>")
         
         card_xplg11 = (
             f"Atualizações do Fundo XPLG11:<br><br>"
