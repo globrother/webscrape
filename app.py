@@ -16,6 +16,7 @@ mas ao tocar em um botão, a skill é encerrada.
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
 # import locale
+import time
 import json
 import logging
 import requests
@@ -64,6 +65,7 @@ def _load_apl_document(file_path):
         return None
 
 apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
+voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
     
 # AQUI FAZER O CARREGAMENTO DO DOC APL JSON PARA VARIÁVEL apl_document_xxxx. (adicionar 2 linhas e alterar 4 senteças)
 doc_apl_xpml = "apl_xpml.json"
@@ -147,12 +149,12 @@ def web_scrape_knri():
     
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 
-card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
-card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
-card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
-card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
-card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11 = web_scrape_knri()
+#card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+#card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
+#card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
+#card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
+#card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
+#card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11 = web_scrape_knri()
 # ============================================================================================
 
 class LaunchRequestHandler(AbstractRequestHandler):
@@ -162,15 +164,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        web_scrape_xpml()
+        _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
-            )  
+            )
         ).add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken1",
@@ -193,15 +195,15 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        web_scrape_mxrf()        
+        _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
-        handler_input.response_builder.speak(f"<break time='1s'/>\n{voz_mxrf11}").add_directive(
+        handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken2",
                 document=apl_document_mxrf
             )
-        ).add_directive(
+        ).speak(f"<break time='1s'/>\n{voz_mxrf11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken2",
                 commands=[
@@ -225,7 +227,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        web_scrape_xplg()
+        _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "thirdScreen" # Atualiza o estado para "thirdScreen"
         handler_input.response_builder.add_directive(
@@ -233,7 +235,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken3",
                 document=apl_document_xplg
             )  
-        ).speak(f"<break time='1s'/>\n{voz_xplg11}").add_directive(
+        ).speak(f"<break time='3s'/>\n{voz_xplg11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken3",
                 commands=[
@@ -257,7 +259,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        web_scrape_btlg()
+        _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fourthScreen" # Atualiza o estado para "fourthScreen"
         handler_input.response_builder.add_directive(
@@ -288,7 +290,8 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 "showFifthScreen"]
 
     def handle(self, handler_input):
-        web_scrape_kncr()
+        
+        _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fifthScreen" # Atualiza o estado para "fifthScreen"
         handler_input.response_builder.add_directive(
@@ -321,7 +324,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        web_scrape_knri()
+        _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "endedScreen" # Atualiza o estado para "endedScreen"
         handler_input.response_builder.add_directive(
@@ -331,7 +334,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
             )
         ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
         #os._exit(0) # Finalizar servidor Flask
-        return handler_input.response_builder.response
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
@@ -352,65 +355,93 @@ class TouchHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         if not session_attr:
             session_attr = {}
-
+        
+        print(f"Estado atual: {session_attr.get('state')}")
+        #time.sleep(1)
         # Continuação da lógica baseada no estado armazenado
         if "state" in session_attr and session_attr["state"] == "firstScreen":
             session_attr["state"] = "secondScreen"
+            handler_input.response_builder.speak("Ok")
+            _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken2",
                     document=apl_document_mxrf
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_mxrf11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_mxrf11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
+            _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken3",
                     document=apl_document_xplg
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_xplg11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_xplg11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
+            _, _, _, apl_document_xpml, voz_btlg11 = web_scrape_btlg()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken4",
                     document=apl_document_btlg
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_btlg11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_btlg11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fourthScreen":
             session_attr["state"] = "fifthScreen"
+            _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken5",
                     document=apl_document_kncr
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_kncr11}")
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_kncr11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fifthScreen":
             session_attr["state"] = "endedScreen"
+            _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken6",
                     document=apl_document_knri
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_knri11}")   
+            ).speak(f"Próximo:<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)  
         else:
             session_attr["state"] = "firstScreen"
+            _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken1",
                     document=apl_document_xpml
                 )
-            ).speak(f"Recomeçando:<break time='1s'/>\n{voz_xpml11}")
+            ).speak(f"Recomeçando:<break time='1s'/>\n{voz_xpml11}").set_should_end_session(False)
 
         handler_input.attributes_manager.session_attributes = session_attr
-
+        time.sleep(2)
         return handler_input.response_builder.set_should_end_session(False).response
+        
 # ============================================================================================
+
+class FallbackIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_request_type("IntentRequest")(handler_input) and \
+               handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent"
+               
+    def handle(self, handler_input):
+        print("FallbackIntent acionado")
+        # Cria uma instância de TouchHandler
+        #touch_handler = TouchHandler()
+                
+        # Chama o método handle de TouchHandler
+        #return touch_handler.handle(handler_input)
+            
+            
+        # Não altere o estado e não forneça resposta audível
+        handler_input.response_builder.set_should_end_session(False)
+        return handler_input.response_builder.response
 
 """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
@@ -420,6 +451,29 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         return True
 
     def handle(self, handler_input):
+        # Log para depuração
+        print("CatchAllRequestHandler acionado")
+        print(f"Tipo de Requisição: {handler_input.request_envelope.request}")
+        
+        # Verificar se é um FallbackIntent
+        if handler_input.request_envelope.request.object_type == "IntentRequest" and \
+            handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
+                print("FallbackIntent em CatchAllRequest detectado")
+                # Cria uma instância de TouchHandler
+                #touch_handler = TouchHandler()
+                
+                # Chama o método handle de TouchHandler
+                #return touch_handler.handle(handler_input)
+            
+            
+                # Não altere o estado e não forneça resposta audível
+                handler_input.response_builder.set_should_end_session(False)
+                return handler_input.response_builder.response
+        
+        # Mensagem padrão caso não seja um FallbackIntent
+        handler_input.response_builder.speak(
+            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
+        
         # Em vez de encerrar, vamos definir uma mensagem padrão
         handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("Encerrando o servidor Flask...")
@@ -446,6 +500,7 @@ def webhook():
     show_ended_screen_handler = ShowEndedScreenHandler()
 
     touch_handler = TouchHandler()
+    fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
     
     # go_back_handler = GoBackHandler()
@@ -459,6 +514,7 @@ def webhook():
     sb.add_request_handler(show_ended_screen_handler)
     
     sb.add_request_handler(touch_handler)
+    sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
     
     # sb.add_request_handler(go_back_handler)
