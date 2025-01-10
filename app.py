@@ -16,9 +16,6 @@ mas ao tocar em um botão, a skill é encerrada.
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
 # import locale
-import os
-import signal
-import time
 import json
 import logging
 import requests
@@ -32,7 +29,7 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
-from typing import Dict, Any
+#from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
 
@@ -67,7 +64,6 @@ def _load_apl_document(file_path):
         return None
 
 apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
-   
     
 # AQUI FAZER O CARREGAMENTO DO DOC APL JSON PARA VARIÁVEL apl_document_xxxx. (adicionar 2 linhas e alterar 4 senteças)
 doc_apl_xpml = "apl_xpml.json"
@@ -88,6 +84,14 @@ apl_document_kncr = _load_apl_document(doc_apl_kncr)
 doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
 
+# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
+# LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
+
+# CRIAR UMA NOVA FUNÇÃO web_scrape_xxxx PARA CADA NOVO FUNDO ADICIONADO:
+# ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx 
+# ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
+# DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
+
 def web_scrape_xpml():
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
@@ -104,8 +108,7 @@ def web_scrape_mxrf():
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
     
-    return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11
-    
+    return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
 def web_scrape_xplg():
     card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
@@ -115,7 +118,6 @@ def web_scrape_xplg():
     voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
     
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
-    
     
 def web_scrape_btlg():
     card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
@@ -145,17 +147,6 @@ def web_scrape_knri():
     
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 
-    # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
-    # AQUI, ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx 
-    
-    
-    # AQUI, ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
-    
-
-    
-
-    # AQUI DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
-
 card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
 card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
 card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
@@ -163,7 +154,6 @@ card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11 = web_
 card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
 card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11 = web_scrape_knri()
 # ============================================================================================
-
 
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
@@ -420,7 +410,11 @@ class TouchHandler(AbstractRequestHandler):
         handler_input.attributes_manager.session_attributes = session_attr
 
         return handler_input.response_builder.set_should_end_session(False).response
+# ============================================================================================
 
+"""Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
+    dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
+    método para essa solicitação."""
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return True
@@ -432,17 +426,6 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response 
 
-#class CatchAllRequestHandler(AbstractRequestHandler):
-    #def can_handle(self, handler_input):
-        #return True
-    """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
-    dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
-    método para essa solicitação."""
-
-    #def handle(self, handler_input):
-        # return handler_input.response_builder.speak("Desculpe, não consegui entender a solicitação.").response
-        #return handler_input.response_builder.speak(
-            #"Encerrando a skill. Até a próxima!").set_should_end_session(True).response
 # ============================================================================================
 
 @app.route('/webscrape', methods=['POST'])
