@@ -171,7 +171,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"<break time='500ms'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(
+            f"<break time='500ms'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
@@ -181,12 +182,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=3000)
+                        arguments=["showSecondScreen"], delay=1)
                 ]
             )
-        ).set_should_end_session(False)
-        
-        return handler_input.response_builder.response
+        )
+        time.sleep(8)
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
 class ShowSecondScreenHandler(AbstractRequestHandler):
@@ -195,7 +196,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
                 "showSecondScreen"]
-
+        
     def handle(self, handler_input):
         _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
@@ -210,12 +211,12 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken2",
                 commands=[
                     SendEventCommand(
-                        arguments=["showThirdScreen"], delay=2000)
+                        arguments=["showThirdScreen"], delay=1)
                 ]
             )
-        ).set_should_end_session(False)
-        
-        return handler_input.response_builder.response
+        )
+        time.sleep(3)
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
 class ShowThirdScreenHandler(AbstractRequestHandler):
@@ -235,16 +236,16 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken3",
                 document=apl_document_xplg
             )  
-        ).speak(f"<break time='3s'/>\n{voz_xplg11}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz_xplg11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken3",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFourthScreen"], delay=2000)
+                        arguments=["showFourthScreen"], delay=1)
                 ]
             )
         ).set_should_end_session(False)
-        
+        time.sleep(3)
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -265,16 +266,16 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 document=apl_document_btlg
             )
-        ).speak(f"<break time='3s'/>\n{voz_btlg11}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz_btlg11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=2000)
+                        arguments=["showFifthScreen"], delay=1) # Atraso em ms
                 ]
             )
         ).set_should_end_session(False)
-        
+        time.sleep(3)
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -297,17 +298,17 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken5",
                 document=apl_document_kncr
             )
-        ).speak(f"<break time='3s'/>\n{voz_kncr11}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz_kncr11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken5",
                 commands=[
                     SendEventCommand(
-                        arguments=["showEndedScreen"], delay=2000)
+                        arguments=["showEndedScreen"], delay=1)
                 ]
             )
-        ).set_should_end_session(False)
-        
-        return handler_input.response_builder.response
+        )
+        time.sleep(3)
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 # ↓ ↓ ↓ ↓ ADICIONE NOVOS ↓ ↓ ↓ ↓ ↓ ↓ HANDLERS DE FUNDOS AQUI ↓ ↓ ↓ ↓
     
@@ -330,7 +331,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken6",
                 document=apl_document_knri
             )
-        ).speak(f"<break time='3s'/>\n{voz_knri11}").set_should_end_session(False)
+        ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
         #os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
@@ -349,15 +350,17 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
         if fundo in ["XPML11", "xpml"]:
+            time.sleep(1)
             _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-            document = apl_document_xpml
+            
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_xpml11
+            voice_prompt = f"<break time='1s'/>\n{voz_xpml11}"
+            document = apl_document_xpml
         elif fundo in ["MXRF11", "mxrf"]:
             _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
             document = apl_document_mxrf
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_mxrf11
+            voice_prompt = f"<break time='1s'/>\n{voz_mxrf11}"
         elif fundo in ["XPLG11", "xplg"]:
             _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
             document = apl_document_xplg
@@ -367,17 +370,17 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
             document = apl_document_btlg
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_btlg11
+            voice_prompt = f"<break time='1s'/>\n{voz_btlg11}"
         elif fundo in ["KNCR11","kncr"]:
             _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
             document = apl_document_kncr
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_kncr11
+            voice_prompt = f"<break time='1s'/>\n{voz_kncr11}"
         elif fundo in ["KNRI11", "knri"]:
             _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
             document = apl_document_knri
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_knri11
+            voice_prompt = f"<break time='1s'/>\n{voz_knri11}"
         else:
             response_text = "Desculpe, não consegui encontrar o fundo solicitado."
 
