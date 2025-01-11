@@ -334,7 +334,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
             )
         ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
         #os._exit(0) # Finalizar servidor Flask
-        return handler_input.response_builder.set_should_end_session(False).response
+        return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
