@@ -171,7 +171,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"<break time='500ms'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
@@ -206,7 +206,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken2",
                 document=apl_document_mxrf
             )
-        ).speak(f"<break time='1s'/>\n{voz_mxrf11}").add_directive(
+        ).speak(f"<break time='3s'/>\n{voz_mxrf11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken2",
                 commands=[
@@ -266,7 +266,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 document=apl_document_btlg
             )
-        ).speak(f"<break time='1s'/>\n{voz_btlg11}").add_directive(
+        ).speak(f"<break time='3s'/>\n{voz_btlg11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken4",
                 commands=[
@@ -298,7 +298,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken5",
                 document=apl_document_kncr
             )
-        ).speak(f"<break time='1s'/>\n{voz_kncr11}").add_directive(
+        ).speak(f"<break time='3s'/>\n{voz_kncr11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken5",
                 commands=[
@@ -331,7 +331,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken6",
                 document=apl_document_knri
             )
-        ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
+        ).speak(f"<break time='3s'/>\n{voz_knri11}").set_should_end_session(False)
         #os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
