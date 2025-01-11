@@ -181,10 +181,10 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=5)
+                        arguments=["showSecondScreen"], delay=6)
                 ]
             )
-        ).set_should_end_session(False)
+        )
         
         return handler_input.response_builder.response
 # ============================================================================================
@@ -211,10 +211,10 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken2",
                 commands=[
                     SendEventCommand(
-                        arguments=["showThirdScreen"], delay=3)
+                        arguments=["showThirdScreen"], delay=6)
                 ]
             )
-        ).set_should_end_session(False)
+        )
         
         return handler_input.response_builder.response
 # ============================================================================================
@@ -241,7 +241,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken3",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFourthScreen"], delay=3)
+                        arguments=["showFourthScreen"], delay=6)
                 ]
             )
         ).set_should_end_session(False)
@@ -271,7 +271,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=3)
+                        arguments=["showFifthScreen"], delay=6)
                 ]
             )
         ).set_should_end_session(False)
@@ -303,7 +303,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken5",
                 commands=[
                     SendEventCommand(
-                        arguments=["showEndedScreen"], delay=3)
+                        arguments=["showEndedScreen"], delay=6)
                 ]
             )
         ).set_should_end_session(False)
