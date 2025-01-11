@@ -184,7 +184,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                         arguments=["showSecondScreen"], delay=6)
                 ]
             )
-        )
+        ).set_should_end_session(False)
         
         return handler_input.response_builder.response
 # ============================================================================================
@@ -214,7 +214,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                         arguments=["showThirdScreen"], delay=6)
                 ]
             )
-        )
+        ).set_should_end_session(False)
         
         return handler_input.response_builder.response
 # ============================================================================================
