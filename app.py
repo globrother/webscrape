@@ -181,7 +181,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=2)
+                        arguments=["showSecondScreen"], delay=5)
                 ]
             )
         ).set_should_end_session(False)
@@ -211,7 +211,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken2",
                 commands=[
                     SendEventCommand(
-                        arguments=["showThirdScreen"], delay=2)
+                        arguments=["showThirdScreen"], delay=3)
                 ]
             )
         ).set_should_end_session(False)
@@ -241,7 +241,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken3",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFourthScreen"], delay=2)
+                        arguments=["showFourthScreen"], delay=3)
                 ]
             )
         ).set_should_end_session(False)
@@ -271,7 +271,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=2)
+                        arguments=["showFifthScreen"], delay=3)
                 ]
             )
         ).set_should_end_session(False)
@@ -303,7 +303,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken5",
                 commands=[
                     SendEventCommand(
-                        arguments=["showEndedScreen"], delay=0)
+                        arguments=["showEndedScreen"], delay=3)
                 ]
             )
         ).set_should_end_session(False)
