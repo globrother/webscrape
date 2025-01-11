@@ -185,6 +185,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 ]
             )
         ).set_should_end_session(False)
+        time.sleep(10)
         
         return handler_input.response_builder.response
 # ============================================================================================
@@ -197,7 +198,6 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
 
     def handle(self, handler_input):
-        time.sleep(3)
         _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
