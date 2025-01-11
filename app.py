@@ -181,7 +181,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=2000)
+                        arguments=["showSecondScreen"], delay=3000)
                 ]
             )
         ).set_should_end_session(False)
@@ -197,7 +197,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
 
     def handle(self, handler_input):
-        
+        time.sleep(3)
         _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
@@ -271,7 +271,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=6)
+                        arguments=["showFifthScreen"], delay=2000)
                 ]
             )
         ).set_should_end_session(False)
@@ -303,7 +303,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken5",
                 commands=[
                     SendEventCommand(
-                        arguments=["showEndedScreen"], delay=6)
+                        arguments=["showEndedScreen"], delay=2000)
                 ]
             )
         ).set_should_end_session(False)
