@@ -337,6 +337,66 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
+class SelectFundIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("SelectFundIntent")(handler_input)
+
+    def handle(self, handler_input):
+        fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+
+        # Inicializa variáveis
+        response_text = ""
+        document = None
+        voice_prompt = ""
+
+        # Define o documento APL e a resposta de voz com base no fundo selecionado
+        if fundo in ["XPML11", "xpml"]:
+            _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+            document = apl_document_xpml
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_xpml11
+        elif fundo in ["MXRF11", "mxrf"]:
+            _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
+            document = apl_document_mxrf
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_mxrf11
+        elif fundo in ["XPLG11", "xplg"]:
+            _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
+            document = apl_document_xplg
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_xplg11
+        elif fundo in ["BTLG11", "btlg"]:
+            _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
+            document = apl_document_btlg
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_btlg11
+        elif fundo in ["KNCR11","kncr"]:
+            _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
+            document = apl_document_kncr
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_kncr11
+        elif fundo in ["KNRI11", "knri"]:
+            _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
+            document = apl_document_knri
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz_knri11
+        else:
+            response_text = "Desculpe, não consegui encontrar o fundo solicitado."
+
+        # Adiciona a resposta de fala e o documento APL, se aplicável
+        if document:
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="textDisplayToken",
+                    document=document
+                )
+            ).speak(f"{response_text}<break time='1s'/>\n{voice_prompt}").set_should_end_session(False)
+        else:
+            handler_input.response_builder.speak(response_text).set_should_end_session(False)
+
+        return handler_input.response_builder.response
+
+
 class TouchHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
@@ -420,7 +480,7 @@ class TouchHandler(AbstractRequestHandler):
             ).speak(f"Recomeçando:<break time='1s'/>\n{voz_xpml11}").set_should_end_session(False)
 
         handler_input.attributes_manager.session_attributes = session_attr
-        time.sleep(2)
+        time.sleep(1)
         return handler_input.response_builder.set_should_end_session(False).response
         
 # ============================================================================================
@@ -498,6 +558,7 @@ def webhook():
     show_fourth_screen_handler = ShowFourthScreenHandler()
     show_fifth_screen_handler = ShowFifthScreenHandler()
     show_ended_screen_handler = ShowEndedScreenHandler()
+    select_fund_intent_handler = SelectFundIntentHandler()
 
     touch_handler = TouchHandler()
     fall_back_intent_handler = FallbackIntentHandler()
@@ -512,6 +573,7 @@ def webhook():
     sb.add_request_handler(show_fourth_screen_handler)
     sb.add_request_handler(show_fifth_screen_handler)
     sb.add_request_handler(show_ended_screen_handler)
+    sb.add_request_handler(select_fund_intent_handler)
     
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(fall_back_intent_handler)
