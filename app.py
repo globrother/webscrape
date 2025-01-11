@@ -7,6 +7,7 @@ O JSON contém as informações de atualização dos fundos imobiliários monito
 A aplicação ainda não é capaz de lidar com solicitações de eventos de usuário da Alexa com eficiencia,
 mas ao tocar em um botão, a skill é encerrada.
 """
+# ::== AJUDA ==::
 # PARA CADA FII QUE DESEJA MONITORAR:
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json (pasta raiz)
 # IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS EM app.py
@@ -43,6 +44,12 @@ from xplg11 import get_xplg
 from btlg11 import get_btlg
 from kncr11 import get_kncr
 from knri11 import get_knri
+# ============================================================================================
+
+# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
+# LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
+# ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
+# DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
 logging.basicConfig(level=logging.INFO)
 
@@ -66,8 +73,11 @@ def _load_apl_document(file_path):
 
 apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
 voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
-    
-# AQUI FAZER O CARREGAMENTO DO DOC APL JSON PARA VARIÁVEL apl_document_xxxx. (adicionar 2 linhas e alterar 4 senteças)
+
+# =====::::: CARREGAMENTO DO DOC APL JSON :::::=====
+   
+# Fazer o carregamento do Doc APL json para variável apl_document_xxxx.
+# Adicionar 2 linhas e fazer 4 alterações.
 doc_apl_xpml = "apl_xpml.json"
 apl_document_xpml = _load_apl_document(doc_apl_xpml)
 
@@ -85,15 +95,13 @@ apl_document_kncr = _load_apl_document(doc_apl_kncr)
 
 doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
+# ============================================================================================
 
-# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
-# LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
+# =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
 
-# CRIAR UMA NOVA FUNÇÃO web_scrape_xxxx PARA CADA NOVO FUNDO ADICIONADO:
-# ADICIONAR UMA NOVA LINHA PARA CADA VARIÁVEL (alterar 4) RECEBER O VALOR REPASSADO PELA TUPLA DA FUNÇÃO get_xxxx 
-# ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
-# DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
-
+# Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
+# Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
+# Ao todo são 18 alterações incluindo a função scrape e get.
 def web_scrape_xpml():
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
@@ -148,14 +156,9 @@ def web_scrape_knri():
         '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
     
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
-
-#card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-#card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
-#card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
-#card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
-#card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
-#card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11 = web_scrape_knri()
 # ============================================================================================
+
+# =====::::: CLASSE E INTENTS DA SKILL ALEXA :::::=====
 
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
@@ -178,7 +181,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=0)
+                        arguments=["showSecondScreen"], delay=2)
                 ]
             )
         ).set_should_end_session(False)
@@ -208,7 +211,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken2",
                 commands=[
                     SendEventCommand(
-                        arguments=["showThirdScreen"], delay=0)
+                        arguments=["showThirdScreen"], delay=2)
                 ]
             )
         ).set_should_end_session(False)
@@ -216,8 +219,6 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-# AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
-# MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
 class ShowThirdScreenHandler(AbstractRequestHandler):
     # ::::: 3 :::::
     def can_handle(self, handler_input):
@@ -240,7 +241,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken3",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFourthScreen"], delay=0)
+                        arguments=["showFourthScreen"], delay=2)
                 ]
             )
         ).set_should_end_session(False)
@@ -248,8 +249,6 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-# AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
-# MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
 class ShowFourthScreenHandler(AbstractRequestHandler):
     # ::::: 4 :::::
     def can_handle(self, handler_input):
@@ -272,7 +271,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 token="textDisplayToken4",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=0)
+                        arguments=["showFifthScreen"], delay=2)
                 ]
             )
         ).set_should_end_session(False)
@@ -395,7 +394,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(response_text).set_should_end_session(False)
 
         return handler_input.response_builder.response
-
+# ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
 
@@ -481,8 +480,7 @@ class TouchHandler(AbstractRequestHandler):
 
         handler_input.attributes_manager.session_attributes = session_attr
         time.sleep(1)
-        return handler_input.response_builder.set_should_end_session(False).response
-        
+        return handler_input.response_builder.set_should_end_session(False).response    
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
@@ -502,6 +500,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
         # Não altere o estado e não forneça resposta audível
         handler_input.response_builder.set_should_end_session(False)
         return handler_input.response_builder.response
+# ============================================================================================
 
 """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
@@ -538,15 +537,12 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("Encerrando o servidor Flask...")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
-        return handler_input.response_builder.response 
-
+        return handler_input.response_builder.response
 # ============================================================================================
 
 @app.route('/webscrape', methods=['POST'])
 def webhook():
     data = request.get_json()
-
-    # Defina card_xpml11 aqui dentro do contexto da aplicação Flask (não está mais precisando)
         
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
