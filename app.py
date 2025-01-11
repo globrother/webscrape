@@ -185,7 +185,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 ]
             )
         ).set_should_end_session(False)
-        time.sleep(10)
         
         return handler_input.response_builder.response
 # ============================================================================================
