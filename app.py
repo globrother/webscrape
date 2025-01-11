@@ -186,7 +186,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 ]
             )
         )
-        time.sleep(8)
+        time.sleep(3)
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
@@ -349,34 +349,33 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         voice_prompt = ""
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
-        if fundo in ["XPML11", "xpml"]:
+        if fundo in ["XPML11", "XPML"]:
             time.sleep(1)
             _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-            
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = f"<break time='1s'/>\n{voz_xpml11}"
+            voice_prompt = f"<break time='500ms'/>\n{voz_xpml11}"
             document = apl_document_xpml
-        elif fundo in ["MXRF11", "mxrf"]:
+        elif fundo in ["MXRF11", "MXRF"]:
             _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
             document = apl_document_mxrf
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = f"<break time='1s'/>\n{voz_mxrf11}"
-        elif fundo in ["XPLG11", "xplg"]:
+        elif fundo in ["XPLG11", "XPLG"]:
             _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
             document = apl_document_xplg
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_xplg11
-        elif fundo in ["BTLG11", "btlg"]:
+        elif fundo in ["BTLG11", "BTLG"]:
             _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
             document = apl_document_btlg
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = f"<break time='1s'/>\n{voz_btlg11}"
-        elif fundo in ["KNCR11","kncr"]:
+        elif fundo in ["KNCR11","KNCR"]:
             _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
             document = apl_document_kncr
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = f"<break time='1s'/>\n{voz_kncr11}"
-        elif fundo in ["KNRI11", "knri"]:
+        elif fundo in ["KNRI11", "KNRI"]:
             _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
             document = apl_document_knri
             response_text = f"Mostrando informações sobre o fundo {fundo}."
