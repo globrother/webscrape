@@ -171,8 +171,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(
-            f"<break time='500ms'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
@@ -185,37 +184,46 @@ class LaunchRequestHandler(AbstractRequestHandler):
                         arguments=["showSecondScreen"], delay=1)
                 ]
             )
-        )
-        time.sleep(3)
-        return handler_input.response_builder.set_should_end_session(False).response
+        ).set_should_end_session(False)
+        
+        return handler_input.response_builder.response
+
 # ============================================================================================
 
 class ShowSecondScreenHandler(AbstractRequestHandler):
     # ::::: 2 :::::
+    """
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
             handler_input.request_envelope.request.arguments == [
                 "showSecondScreen"]
+    """
+    def can_handle(self, handler_input):
+        time.sleep(5)
+        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
+            "showSecondScreen" in handler_input.request_envelope.request.arguments
         
     def handle(self, handler_input):
         _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="textDisplayToken2",
-                document=apl_document_mxrf
-            )
-        ).speak(f"<break time='3s'/>\n{voz_mxrf11}").add_directive(
-            ExecuteCommandsDirective(
-                token="textDisplayToken2",
-                commands=[
-                    SendEventCommand(
-                        arguments=["showThirdScreen"], delay=1)
-                ]
-            )
-        )
-        time.sleep(3)
+        
+        if not session_attr.get("userInteracted"):
+                session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="textDisplayToken2",
+                        document=apl_document_mxrf
+                    )
+                    
+                ).speak(f"<break time='3s'/>\n{voz_mxrf11}<break time='5s'/>").add_directive(
+                    ExecuteCommandsDirective(
+                        token="textDisplayToken2",
+                        commands=[
+                            SendEventCommand(
+                                arguments=["showThirdScreen"])
+                        ]
+                    )
+                )
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
@@ -223,29 +231,29 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
     # ::::: 3 :::::
     def can_handle(self, handler_input):
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showThirdScreen"]
+            "showThirdScreen" in handler_input.request_envelope.request.arguments
 
     def handle(self, handler_input):
-        
         _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
         session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "thirdScreen" # Atualiza o estado para "thirdScreen"
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="textDisplayToken3",
-                document=apl_document_xplg
-            )  
-        ).speak(f"<break time='1s'/>\n{voz_xplg11}").add_directive(
-            ExecuteCommandsDirective(
-                token="textDisplayToken3",
-                commands=[
-                    SendEventCommand(
-                        arguments=["showFourthScreen"], delay=1)
-                ]
-            )
-        ).set_should_end_session(False)
-        time.sleep(3)
+        
+        if not session_attr.get("userInteracted"):
+            session_attr["state"] = "thirdScreen" # Atualiza o estado para "thirdScreen"
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="textDisplayToken3",
+                    document=apl_document_xplg
+                )  
+            ).speak(f"<break time='1s'/>\n{voz_xplg11}").add_directive(
+                ExecuteCommandsDirective(
+                    token="textDisplayToken3",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["showFourthScreen"], delay=1)
+                    ]
+                )
+            ).set_should_end_session(False)
+        #time.sleep(3)
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -275,7 +283,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 ]
             )
         ).set_should_end_session(False)
-        time.sleep(3)
+        #time.sleep(3)
         return handler_input.response_builder.response
 # ============================================================================================
 
@@ -307,7 +315,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 ]
             )
         )
-        time.sleep(3)
+        #time.sleep(3)
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 # ↓ ↓ ↓ ↓ ADICIONE NOVOS ↓ ↓ ↓ ↓ ↓ ↓ HANDLERS DE FUNDOS AQUI ↓ ↓ ↓ ↓
@@ -341,12 +349,16 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         return is_intent_name("SelectFundIntent")(handler_input)
 
     def handle(self, handler_input):
+        #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+        session_attr = handler_input.attributes_manager.session_attributes
         fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
 
         # Inicializa variáveis
         response_text = ""
         document = None
         voice_prompt = ""
+        # Marca que o usuário interagiu
+        session_attr["userInteracted"] = True
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
         if fundo in ["XPML11", "XPML"]:
@@ -390,7 +402,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     token="textDisplayToken",
                     document=document
                 )
-            ).speak(f"{response_text}<break time='1s'/>\n{voice_prompt}").set_should_end_session(False)
+            ).speak(f"{response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
         else:
             handler_input.response_builder.speak(response_text).set_should_end_session(False)
 
