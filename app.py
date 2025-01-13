@@ -361,33 +361,33 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr["userInteracted"] = True
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
-        if fundo in ["XPML11", "XPML"]:
+        if fundo in ["XPML11", "XPML", "Xispê eme éle"]:
             time.sleep(1)
             _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_xpml11
             document = apl_document_xpml
-        elif fundo in ["MXRF11", "MXRF"]:
+        elif fundo in ["MXRF11", "MXRF", "Eme xis erre efi"]:
             _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
             document = apl_document_mxrf
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_mxrf11
-        elif fundo in ["XPLG11", "XPLG"]:
+        elif fundo in ["XPLG11", "XPLG", "Xispê éle gê"]:
             _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
             document = apl_document_xplg
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_xplg11
-        elif fundo in ["BTLG11", "BTLG"]:
+        elif fundo in ["BTLG11", "BTLG", "Bêtê éle gê"]:
             _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
             document = apl_document_btlg
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_btlg11
-        elif fundo in ["KNCR11","KNCR"]:
+        elif fundo in ["KNCR11","KNCR", "CA ene cê erre"]:
             _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
             document = apl_document_kncr
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz_kncr11
-        elif fundo in ["KNRI11", "KNRI"]:
+        elif fundo in ["KNRI11", "KNRI", "Ca ene erri i"]:
             _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
             document = apl_document_knri
             response_text = f"Mostrando informações sobre o fundo {fundo}."
