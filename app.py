@@ -33,11 +33,22 @@ from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
 
-from google.cloud import logging
-logging.basicConfig(level=logging.INFO)
-client = logging.Client()
-logger = client.logger('webscrapefii')
-logger.log_text('Alguma mensagem de log')
+import logging
+import google.cloud.logging
+from google.cloud.logging.handlers import CloudLoggingHandler
+
+# Inicializar o cliente de logging do Google Cloud usando credenciais padrão
+client = google.cloud.logging.Client()
+handler = CloudLoggingHandler(client)
+
+# Configurar o logger
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(handler)
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Aplicativo iniciado')
+
 
 #from typing import Dict, Any
 
