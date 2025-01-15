@@ -192,22 +192,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         #voz_xpml11 = "esse é um teste da voz xpml"
         print(f"->->->{voz_xpml11}")
-        apl_document_xpml = {
-            "type": "APL",
-            "version": "1.4",
-            "mainTemplate": {
-                "items": [
-                    {
-                        "type": "Text",
-                        "text": "Olá, bem-vindo ao nosso dispositivo Echo!",
-                        "fontSize": "50dp",
-                        "textAlign": "center",
-                        "textColor": "#FFFFFF"
-                        }
-                    ]
-                },
-            "speech": "Olá, bem-vindo ao nosso dispositivo Echo!"
-        } 
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
@@ -635,5 +619,5 @@ def webhook():
 
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
     

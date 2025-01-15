@@ -2,11 +2,13 @@
 ===== ::: OBTENDO DADOS WEB DO FII MXRF11 ::: ========================================
 """
 import grava_historico
+import requests
+from bs4 import BeautifulSoup
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-def get_mxrf(requests, BeautifulSoup):
+def get_mxrf():
         
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/mxrf11'
@@ -62,7 +64,7 @@ def get_mxrf(requests, BeautifulSoup):
         #variac_mxrf11_aux = (f"<b>VAR {varmxrf11}  {arrow_mxrf}</b>")
         
         card_mxrf11 = (
-            f"Atualizações do Fundo MXRF11:<br><br>"
+            f"Atualizações do Fundo MXRF11:<br>"
             f"• Houve {aux_mxrf} de {varmxrf11} na cota<br>"
             f"• Valor atual da cota: R$ {mxrf11_0}<br>"
             f"• Dividend Yield: {dymxrf11_3}%<br>"
@@ -73,6 +75,16 @@ def get_mxrf(requests, BeautifulSoup):
         grava_historico.gravar_historico("historico_mxrf.json", f"R$ {mxrf11_0}")
         historico = grava_historico.ler_historico("historico_mxrf.json")
         hist_text_mxrf = grava_historico.gerar_texto_historico(historico)
+        
+        print(f"->>>>>>>>>>>{card_mxrf11}")
+        print(f"->>>>>>>>>>>{variac_mxrf11}")
+        print(f"->>>>>>>>>>>{hist_text_mxrf}")
+        
+        card_mxrf11 = "abc"
+        variac_mxrf11 = "def"
+        hist_text_mxrf = "ghi"
+        
+        
 
         return card_mxrf11, variac_mxrf11, hist_text_mxrf
 
