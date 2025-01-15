@@ -3,9 +3,25 @@
 """
 import grava_historico
 import os
-import logging
 import requests
 from bs4 import BeautifulSoup
+
+import logging
+import google.cloud.logging
+from google.cloud.logging.handlers import CloudLoggingHandler
+
+# Inicializar o cliente de logging do Google Cloud usando credenciais padrão
+client = google.cloud.logging.Client()
+handler = CloudLoggingHandler(client)
+
+# Configurar o logger
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(handler)
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Aplicativo iniciado')
+
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
@@ -50,6 +66,7 @@ def get_xpml():
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
+            logging.info(f'Erro ao acessar o site: {response.status_code}')
             raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
         
         arrow_xpml = ""

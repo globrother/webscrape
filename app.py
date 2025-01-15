@@ -191,7 +191,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
         _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         #voz_xpml11 = "esse é um teste da voz xpml"
-        print(f"->->->{voz_xpml11}")
+        logger.info(f"->->->{voz_xpml11}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
