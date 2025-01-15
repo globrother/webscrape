@@ -68,7 +68,7 @@ def get_xpml():
         #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
         
         card_xpml11 = (
-            f"Atualizações do Fundo XPML11:<br><br>"
+            f"Atualizações do Fundo XPML11:<br>"
             f"• Houve {aux_xpml} de {varxpml11} na cota<br>"
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
             f"• Dividend Yield: {dyxpml11_3}%<br>"

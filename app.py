@@ -110,7 +110,7 @@ def web_scrape_xpml():
         apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
         apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
         voz_xpml11 = card_xpml11.replace('<br>', '<break time="500ms"/>')
-    
+        print(f"->->->{voz_xpml11}")
     
         return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     except Exception as e:
@@ -177,7 +177,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
