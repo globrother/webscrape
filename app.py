@@ -110,8 +110,8 @@ def web_scrape_xpml():
         apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
         apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
         voz_xpml11 = card_xpml11.replace('<br>', '<break time="500ms"/>')
-        print(f"->->->{voz_xpml11}")
-    
+        voz_xpml11 = "esse é um teste da voz xpml" 
+        
         return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     except Exception as e:
         logging.error(f"Erro ao executar web_scrape_xpml: {e}")
@@ -174,6 +174,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
         _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+        print(f"->->->{voz_xpml11}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
