@@ -73,6 +73,9 @@ def get_xpml(requests, BeautifulSoup):
         meu_historico = grava_historico.ler_historico("historico_xpml.json")
         hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
 
+        print(f"->>>>>>>>>>>{card_xpml11}")
+        print(f"->>>>>>>>>>>{variac_xpml11}")
+        print(f"->>>>>>>>>>>{hist_text_xpml}")
         return card_xpml11, variac_xpml11, hist_text_xpml
 
     except Exception as e:
