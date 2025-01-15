@@ -3,6 +3,7 @@
 """
 import grava_historico
 import os
+import logging
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
@@ -40,7 +41,12 @@ def get_xpml(requests, BeautifulSoup):
                     divpcxpml11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota                    
                     break
-            #print(xpml11_0)
+            
+            
+
+            # Adicione logs para verificar o conteúdo das variáveis
+            logging.info(f"xpml11_0: {xpml11_0}, varxpml11: {varxpml11}, dyxpml11_3: {dyxpml11_3}, pvpxpml11_6: {pvpxpml11_6}, divpcxpml11_16: {divpcxpml11_16}")
+            
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
