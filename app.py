@@ -624,5 +624,5 @@ def webhook():
 
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
     

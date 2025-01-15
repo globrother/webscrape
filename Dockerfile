@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o restante dos arquivos do projeto
 COPY . .
 
-# Exponha a porta 5000
-EXPOSE 5000
+# Exponha a porta 8080
+EXPOSE 8080
 
 # Define o comando de inicialização da aplicação
 CMD ["python", "app.py"]
