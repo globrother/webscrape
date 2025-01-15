@@ -4,11 +4,13 @@
 import grava_historico
 import os
 import logging
+import requests
+from bs4 import BeautifulSoup
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-def get_xpml(requests, BeautifulSoup):
+def get_xpml():
     
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
