@@ -32,6 +32,12 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
+
+from google.cloud import logging
+client = logging.Client()
+logger = client.logger('webscrapefii')
+logger.log_text('Alguma mensagem de log')
+
 #from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
