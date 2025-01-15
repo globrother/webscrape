@@ -173,18 +173,18 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+        card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         print(f"->->->{voz_xpml11}")
         voz_xpml11 = "esse é um teste da voz xpml" 
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:{voz_xpml11}").add_directive(
+        handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
             )
-        ).add_directive(
+        ).speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:{voz_xpml11}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken1",
                 commands=[
