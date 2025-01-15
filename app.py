@@ -20,7 +20,7 @@ mas ao tocar em um botão, a skill é encerrada.
 import time
 import json
 import os
-import logging
+#import logging
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
