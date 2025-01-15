@@ -84,6 +84,9 @@ def get_xpml():
         print(f"->>>>>>>>>>>{card_xpml11}")
         print(f"->>>>>>>>>>>{variac_xpml11}")
         print(f"->>>>>>>>>>>{hist_text_xpml}")
+        card_xpml11 = "abc"
+        variac_xpml11 = "def"
+        hist_text_xpml = "ghi"
         return card_xpml11, variac_xpml11, hist_text_xpml
 
     except Exception as e:
