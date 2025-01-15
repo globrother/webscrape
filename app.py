@@ -173,8 +173,24 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+        #card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         print(f"->->->{voz_xpml11}")
+        apl_document_xpml = {
+            "type": "APL",
+            "version": "1.4",
+            "mainTemplate": {
+                "items": [
+                    {
+                        "type": "Text",
+                        "text": "Olá, bem-vindo ao nosso dispositivo Echo!",
+                        "fontSize": "50dp",
+                        "textAlign": "center",
+                        "textColor": "#FFFFFF"
+                        }
+                    ]
+                },
+            "speech": "Olá, bem-vindo ao nosso dispositivo Echo!"
+        }
         voz_xpml11 = "esse é um teste da voz xpml" 
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
