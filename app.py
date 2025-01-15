@@ -34,6 +34,7 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
 
 from google.cloud import logging
+logging.basicConfig(level=logging.INFO)
 client = logging.Client()
 logger = client.logger('webscrapefii')
 logger.log_text('Alguma mensagem de log')
@@ -57,8 +58,6 @@ from knri11 import get_knri
 # LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
-
-logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -625,5 +624,5 @@ def webhook():
 
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
     
