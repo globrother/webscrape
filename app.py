@@ -19,6 +19,7 @@ mas ao tocar em um botão, a skill é encerrada.
 # import locale
 import time
 import json
+import os
 import logging
 import requests
 from bs4 import BeautifulSoup
@@ -103,13 +104,18 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
 def web_scrape_xpml():
-    card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
-    voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+    try:
+        card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
+        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
+        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
+        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
+        voz_xpml11 = card_xpml11.replace('<br>', '<break time="500ms"/>')
     
-    return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
+    
+        return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
+    except Exception as e:
+        logging.error(f"Erro ao executar web_scrape_xpml: {e}")
+        return None, None, None, None, None
     
 def web_scrape_mxrf():
     card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
@@ -440,7 +446,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken2",
                     document=apl_document_mxrf
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_mxrf11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz_mxrf11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
@@ -450,7 +456,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken3",
                     document=apl_document_xplg
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_xplg11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz_xplg11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
@@ -460,7 +466,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken4",
                     document=apl_document_btlg
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_btlg11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz_btlg11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fourthScreen":
             session_attr["state"] = "fifthScreen"
@@ -470,7 +476,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken5",
                     document=apl_document_kncr
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_kncr11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz_kncr11}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fifthScreen":
             session_attr["state"] = "endedScreen"
@@ -489,10 +495,9 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken1",
                     document=apl_document_xpml
                 )
-            ).speak(f"Recomeçando:<break time='1s'/>\n{voz_xpml11}").set_should_end_session(False)
+            ).speak(f"Recomeçando:<break time='500ms'/>\n{voz_xpml11}").set_should_end_session(False)
 
         handler_input.attributes_manager.session_attributes = session_attr
-        time.sleep(1)
         return handler_input.response_builder.set_should_end_session(False).response    
 # ============================================================================================
 
@@ -593,10 +598,8 @@ def webhook():
     # Gere a resposta
     response = sb.lambda_handler()(data, None)
     return jsonify(response)
-    
-    
+
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
-    # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
-    app.run(debug=True, use_reloader=False, port=5000)
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
     
