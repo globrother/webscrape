@@ -44,8 +44,6 @@ def get_xpml():
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota                    
                     break
             
-            
-
             # Adicione logs para verificar o conteúdo das variáveis
             logging.info(f"xpml11_0: {xpml11_0}, varxpml11: {varxpml11}, dyxpml11_3: {dyxpml11_3}, pvpxpml11_6: {pvpxpml11_6}, divpcxpml11_16: {divpcxpml11_16}")
             
