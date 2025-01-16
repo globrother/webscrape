@@ -560,7 +560,6 @@ class CatchAllRequestHandler(AbstractRequestHandler):
                 # Chama o método handle de TouchHandler
                 #return touch_handler.handle(handler_input)
             
-            
                 # Não altere o estado e não forneça resposta audível
                 handler_input.response_builder.set_should_end_session(False)
                 return handler_input.response_builder.response
