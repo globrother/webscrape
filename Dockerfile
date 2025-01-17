@@ -15,6 +15,8 @@ COPY . .
 
 # Exponha a porta 8080
 EXPOSE 8080
+EXPOSE 80
+EXPOSE 443
 
 # Define o comando de inicialização da aplicação
 CMD ["python", "app.py"]
