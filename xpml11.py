@@ -37,7 +37,14 @@ def get_xpml():
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
             'DNT': '1',
-            'Referer': 'https://statusinvest.com.br/'
+            'Referer': 'https://statusinvest.com.br/',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+        # Lista de proxies HTTPS de serviços gratuitos ou pagos
+        proxies = {
+        'http': 'http://50.174.7.159:80',
+        'https': 'http://13.40.239.130:80', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
         response = requests.get(url, headers=headers)
