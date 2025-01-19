@@ -47,7 +47,7 @@ def get_xpml():
         'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, proxies=proxies)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
