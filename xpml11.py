@@ -27,7 +27,7 @@ logger.info('Aplicativo iniciado')
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 def get_xpml():
-    
+    logging.info("PASSOU POR AQUI GET_XPML <<<<<<<<")
     try:
         url = 'https://www.google.com' #'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
         headers = {
