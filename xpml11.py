@@ -52,6 +52,7 @@ def get_xpml():
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
+            logging.info("PASSOU POR AQUI AGORA <<<<<<<<")
                
             xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
