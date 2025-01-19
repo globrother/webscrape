@@ -83,6 +83,7 @@ def get_xpml():
             logging.info(f'Erro ao acessar o site: {response.status_code}')
             raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
         
+        logging.info("PASSOU POR AQUI DEPOIS <<<<<<<<")
         arrow_xpml = ""
         aux_xpml = ""
         
