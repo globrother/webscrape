@@ -43,8 +43,8 @@ def get_xpml():
         }
         # Lista de proxies HTTPS de serviços gratuitos ou pagos
         proxies = {
-        'http': 'http://123.154.118.3:8085',
-        'https': 'http://112.120.100.163:3128', # Certifique-se de usar um proxy que suporte HTTPS
+        'http': 'http://67.43.227.226:2053',
+        'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
         response = requests.get(url, headers=headers)
