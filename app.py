@@ -18,6 +18,7 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import time
+import os
 import json
 import logging
 import requests
@@ -597,5 +598,5 @@ def webhook():
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
     # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
-    app.run(debug=True, use_reloader=False, port=8080)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
     
