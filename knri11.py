@@ -2,10 +2,8 @@
 ===== ::: OBTENDO DADOS WEB DO FII KNRI11 ::: ========================================
 """
 import grava_historico
-import requests
-from bs4 import BeautifulSoup
 
-def get_knri():
+def get_knri(requests, BeautifulSoup):
             
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/knri11'

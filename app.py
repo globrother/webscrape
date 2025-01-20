@@ -19,8 +19,7 @@ mas ao tocar em um botão, a skill é encerrada.
 # import locale
 import time
 import json
-import os
-#import logging
+import logging
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
@@ -32,24 +31,6 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
-
-import logging
-import google.cloud.logging
-from google.cloud.logging.handlers import CloudLoggingHandler
-
-# Inicializar o cliente de logging do Google Cloud usando credenciais padrão
-client = google.cloud.logging.Client()
-handler = CloudLoggingHandler(client)
-
-# Configurar o logger
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().addHandler(handler)
-
-# Usar o logger para registrar mensagens
-logger = logging.getLogger(__name__)
-logger.info('Aplicativo iniciado')
-
-
 #from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -69,6 +50,8 @@ from knri11 import get_knri
 # LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
+
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -120,21 +103,16 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
 def web_scrape_xpml():
-    try:
-        card_xpml11, variac_xpml11, hist_text_xpml = get_xpml() # ,_ significa que a variável variac_xpml11 não será utilizada
-        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
-        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-        apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
-        voz_xpml11 = card_xpml11.replace('<br>', '<break time="500ms"/>')
-        #voz_xpml11 = "esse é um teste da voz xpml" 
-        
-        return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
-    except Exception as e:
-        logging.error(f"Erro ao executar web_scrape_xpml: {e}")
-        return None, None, None, None, None
+    card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
+    voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+    
+    return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
 def web_scrape_mxrf():
-    card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf()
+    card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
@@ -143,7 +121,7 @@ def web_scrape_mxrf():
     return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
 def web_scrape_xplg():
-    card_xplg11, variac_xplg11, hist_text_xplg = get_xplg()
+    card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xplg11
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xplg
@@ -152,7 +130,7 @@ def web_scrape_xplg():
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
     
 def web_scrape_btlg():
-    card_btlg11, variac_btlg11, hist_text_btlg = get_btlg()
+    card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
@@ -161,7 +139,7 @@ def web_scrape_btlg():
     return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
     
 def web_scrape_kncr():
-    card_kncr11, variac_kncr11, hist_text_kncr = get_kncr()
+    card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
@@ -170,7 +148,7 @@ def web_scrape_kncr():
     return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
     
 def web_scrape_knri():
-    card_knri11, variac_knri11, hist_text_knri = get_knri() # Último fundo a ser chamado na alexa
+    card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
@@ -190,17 +168,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
         _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-        #voz_xpml11 = "esse é um teste da voz xpml"
-        logger.info(f"->->->{voz_xpml11}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document_xpml
             )
-        ).speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:{voz_xpml11}").add_directive(
+        ).add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken1",
                 commands=[
@@ -560,6 +536,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
                 # Chama o método handle de TouchHandler
                 #return touch_handler.handle(handler_input)
             
+            
                 # Não altere o estado e não forneça resposta audível
                 handler_input.response_builder.set_should_end_session(False)
                 return handler_input.response_builder.response
@@ -615,8 +592,10 @@ def webhook():
     # Gere a resposta
     response = sb.lambda_handler()(data, None)
     return jsonify(response)
-
+    
+    
 if __name__ == '__main__':
     logging.info("Iniciando o servidor Flask...")
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
+    app.run(debug=True, use_reloader=False, port=8080)
     

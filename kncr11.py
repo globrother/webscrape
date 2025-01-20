@@ -4,13 +4,11 @@
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_(nome_do_fii).py PARA CADA FII QUE DESEJA MONITORAR
 
 import grava_historico
-import requests
-from bs4 import BeautifulSoup
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-def get_kncr():
+def get_kncr(requests, BeautifulSoup):
         
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/kncr11'

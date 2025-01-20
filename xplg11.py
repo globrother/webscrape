@@ -4,13 +4,11 @@
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_(nome_do_fii).py PARA CADA FII QUE DESEJA MONITORAR
 
 import grava_historico
-import requests
-from bs4 import BeautifulSoup
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-def get_xplg():
+def get_xplg(requests, BeautifulSoup):
     
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/xplg11'
@@ -44,7 +42,7 @@ def get_xplg():
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
                     
                     break
-                
+            #print(xplg11_0)
             if not all([xplg11_0, dyxplg11_3, pvpxplg11_6, divpcxplg11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:

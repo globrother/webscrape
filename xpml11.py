@@ -3,8 +3,9 @@
 """
 import grava_historico
 import os
-import requests
-from bs4 import BeautifulSoup
+# import locale
+# Configurar a localidade para o formato de número correto
+# locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 import logging
 import google.cloud.logging
@@ -20,40 +21,22 @@ logging.getLogger().addHandler(handler)
 
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
-logger.info('Aplicativo iniciado')
+logger.info('Função XPML iniciada')
 
-# import locale
-# Configurar a localidade para o formato de número correto
-# locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
-
-def get_xpml():
+def get_xpml(requests, BeautifulSoup):
     logging.info("PASSOU POR AQUI GET_XPML <<<<<<<<")
     try:
-        url = 'https://www.google.com' #'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
+        url = 'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'DNT': '1',
-            'Referer': 'https://statusinvest.com.br/',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-        }
-        # Lista de proxies HTTPS de serviços gratuitos ou pagos
-        proxies = {
-        'http': 'http://67.43.227.226:2053',
-        'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
 
-        response = requests.get(url, headers=headers, proxies=proxies)
-        logging.info(f"Esse é o código: {response.status_code}")
+        response = requests.get(url, headers=headers)
+        logging.info(f"Status Code: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
-            logging.info("PASSOU POR AQUI AGORA <<<<<<<<")
                
             xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
@@ -74,17 +57,12 @@ def get_xpml():
                     divpcxpml11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota                    
                     break
-            
-            # Adicione logs para verificar o conteúdo das variáveis
-            logging.info(f"xpml11_0: {xpml11_0}, varxpml11: {varxpml11}, dyxpml11_3: {dyxpml11_3}, pvpxpml11_6: {pvpxpml11_6}, divpcxpml11_16: {divpcxpml11_16}")
-            
+            #print(xpml11_0)
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
-            logging.info(f'Erro ao acessar o site: {response.status_code}')
             raise ConnectionError(f"Erro ao acessar o site: Status Code {response.status_code}")
         
-        logging.info("PASSOU POR AQUI DEPOIS <<<<<<<<")
         arrow_xpml = ""
         aux_xpml = ""
         
@@ -99,7 +77,7 @@ def get_xpml():
         #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
         
         card_xpml11 = (
-            f"Atualizações do Fundo XPML11:<br>"
+            f"Atualizações do Fundo XPML11:<br><br>"
             f"• Houve {aux_xpml} de {varxpml11} na cota<br>"
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
             f"• Dividend Yield: {dyxpml11_3}%<br>"
@@ -107,8 +85,8 @@ def get_xpml():
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
         # Com caminho absoluto, parece não ser necessário: os.path.join(os.path.dirname(__file__)
-        #nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
-        grava_historico.gravar_historico("historico_xpml.json", f"R$ {xpml11_0}")  
+        nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
+        grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
         meu_historico = grava_historico.ler_historico("historico_xpml.json")
         hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
 
