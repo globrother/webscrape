@@ -16,7 +16,7 @@ def get_mxrf(requests, BeautifulSoup):
         
         proxies = {
         'http': 'http://89.117.22.218:8080',
-        'https': 'http://104.152.186.111:2019', # Certifique-se de usar um proxy que suporte HTTPS
+        'https': 'http://101.255.150.254:3128', # Certifique-se de usar um proxy que suporte HTTPS
         }        
 
         response = requests.get(url, headers=headers, proxies=proxies)
