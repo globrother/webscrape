@@ -30,8 +30,13 @@ def get_xpml(requests, BeautifulSoup):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
+        
+        proxies = {
+        'http': 'http://89.117.22.218:8080',
+        'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
+        }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, proxies=proxies)
         logging.info(f"gobis Status Code: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
