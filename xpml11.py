@@ -44,7 +44,7 @@ def get_xpml(requests, BeautifulSoup):
         'https': 'http://67.43.228.250:1405', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, proxies=proxies)
         logging.info(f"gobis Status Code: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
