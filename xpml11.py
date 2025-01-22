@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 logger.info('Função XPML iniciada')
 
 def get_xpml(requests, BeautifulSoup):
-    logging.info("PASSOU POR AQUI GET_XPML <<<<<<<<")
+    logging.info("ANTES DA REQUISIÇÃO GET_XPML VEJA<<<<<<<<")
     try:
         url = 'https://statusinvest.com.br/fundos-imobiliarios/xpml11'
         headers = {
@@ -44,8 +44,8 @@ def get_xpml(requests, BeautifulSoup):
         'https': 'http://67.43.228.250:1405', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
-        response = requests.get(url, headers=headers, proxies=proxies)
-        logging.info(f"gobis Status Code: {response.status_code}")
+        response = requests.get(url, headers=headers)
+        logging.info(f"gobis Status Code VEJA: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
