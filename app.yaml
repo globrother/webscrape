@@ -1,5 +1,7 @@
 runtime: python311
 
+entrypoint: gunicorn -b :$PORT app:app
+
 # Define o serviço padrão
 service: default
 
