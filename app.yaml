@@ -1,0 +1,22 @@
+runtime: python311
+
+# Define o serviço padrão
+service: default
+
+# Configurações de instâncias
+instance_class: F1
+
+# Limites de escalonamento automáticos para manter dentro das cotas gratuitas
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  max_instances: 1
+  min_instances: 0
+  target_throughput_utilization: 0.75
+
+# Handlers de URL
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /.*
+  script: auto
