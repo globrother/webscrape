@@ -41,7 +41,7 @@ def get_xpml(requests, BeautifulSoup):
         
         proxies = {
         'http': 'http://89.117.22.218:8080',
-        'https': 'http://67.43.228.250:1405', # Certifique-se de usar um proxy que suporte HTTPS
+        'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
         response = requests.get(url, headers=headers)
