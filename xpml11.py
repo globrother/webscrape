@@ -28,7 +28,7 @@ def get_xpml(requests, BeautifulSoup):
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
         }
-        
+        logging.info("gobis Status Veja")
         proxies = {
         'http': 'http://89.117.22.218:8080',
         'https': 'http://183.234.215.11:8443', # Certifique-se de usar um proxy que suporte HTTPS
