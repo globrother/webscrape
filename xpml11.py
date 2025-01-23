@@ -8,16 +8,6 @@ import os
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 import logging
-import google.cloud.logging
-from google.cloud.logging.handlers import CloudLoggingHandler
-
-# Inicializar o cliente de logging do Google Cloud usando credenciais padrão
-client = google.cloud.logging.Client()
-handler = CloudLoggingHandler(client)
-
-# Configurar o logger
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().addHandler(handler)
 
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
