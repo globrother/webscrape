@@ -5,6 +5,12 @@ from parse_rest.connection import register
 from parse_rest.datatypes import Object
 from parse_rest.query import QueryResourceDoesNotExist
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função Gravar iniciada')
+
 # Definir a variável de ambiente PARSE_API_ROOT
 os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
 
@@ -33,6 +39,8 @@ def obter_nome_classe(sufixo):
 def gravar_historico(sufixo, valor, limite_registros=250):
     nome_classe = obter_nome_classe(sufixo)
     ClasseDinamica = create_dynamic_class(nome_classe)
+    
+    logger.info(f"Função Gravar iniciada{nome_classe}")
     
     data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
     hora_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
