@@ -1,0 +1,8 @@
+modules = ["python-3.12", "python-base-3.13"]
+run = "gunicorn app:app"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "gunicorn app:app"]
