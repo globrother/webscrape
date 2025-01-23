@@ -10,3 +10,4 @@ parse==1.20.2
 pip==24.3.1
 pytz==2024.2
 Requests==2.32.3
+ParsePy==0.3.20150629
