@@ -101,6 +101,7 @@ def get_xpml(requests, BeautifulSoup):
         hist_text_xpml = grava_historico.gerar_texto_historico(historico)
         print(hist_text_xpml)
 
+        logging.info(f"Veja os valores:> {card_xpml11, variac_xpml11, hist_text_xpml}") 
         return card_xpml11, variac_xpml11, hist_text_xpml
 
     except Exception as e:
