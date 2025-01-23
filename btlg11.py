@@ -21,7 +21,7 @@ def get_btlg(requests, BeautifulSoup):
         'https': 'http://104.152.186.111:2019', # Certifique-se de usar um proxy que suporte HTTPS
         }
 
-        response = requests.get(url, headers=headers, proxies=proxies)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
