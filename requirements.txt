@@ -6,5 +6,7 @@ ask-sdk-runtime==1.19.0
 beautifulsoup4==4.12.3
 Flask==3.1.0
 gunicorn==23.0.0
+parse==1.20.2
+pip==24.3.1
 pytz==2024.2
 Requests==2.32.3
