@@ -3,7 +3,7 @@ import pytz
 import os
 from parse_rest.connection import register
 from parse_rest.datatypes import Object
-from parse_rest.query import QueryManager, QueryResourceDoesNotExist
+from parse_rest.query import QueryResourceDoesNotExist
 
 # Definir a variável de ambiente PARSE_API_ROOT
 os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
@@ -11,30 +11,29 @@ os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
 # Configurar a conexão com o Back4App
 APPLICATION_ID = os.getenv("APPLICATION_ID")
 REST_API_KEY = os.getenv("CLIENT_KEY")
-MASTER_KEY = os.getenv("MASTER_KEY")  # Opcional, use se necessário
+#MASTER_KEY = os.getenv("MASTER_KEY")  # Opcional, use se necessário
 
 register(
     APPLICATION_ID,
     REST_API_KEY,
-    master_key=MASTER_KEY
+    #master_key=MASTER_KEY
 )
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
 
-# Definir a classe Historico e adicionar QueryManager
-class Historico(Object):
-    pass
-
-# Inicializar o QueryManager depois da definição da classe Historico
-Historico.Meta = type("Meta", (object,), {"manager": QueryManager(Historico)})
+# Função para criar uma nova classe dinamicamente
+def create_dynamic_class(class_name):
+    return type(class_name, (Object,), {})
 
 def obter_nome_classe(sufixo):
     # Exemplo de função para gerar o nome da classe
-    return f"historico_{sufixo}"
+    return f"Classe_{sufixo}"
 
 def gravar_historico(sufixo, valor, limite_registros=250):
     nome_classe = obter_nome_classe(sufixo)
+    ClasseDinamica = create_dynamic_class(nome_classe)
+    
     data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
     hora_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
     data_hora_atual = f"{data_atual}\u2003{hora_atual}"
@@ -45,7 +44,7 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     }
 
     # Verifica se o último valor é igual ao novo valor
-    query = Historico.Query.filter(nome_classe=nome_classe).order_by("-createdAt")
+    query = ClasseDinamica.Query.order_by("-createdAt")
     try:
         resultados = query.limit(1).all()
     except QueryResourceDoesNotExist:
@@ -56,7 +55,7 @@ def gravar_historico(sufixo, valor, limite_registros=250):
         return
 
     # Adiciona o novo registro no Parse
-    historico_obj = Historico(nome_classe=nome_classe, **novo_registro)
+    historico_obj = ClasseDinamica(**novo_registro)
     historico_obj.save()
     print("\nHistórico gravado com sucesso.\n")
 
@@ -69,7 +68,9 @@ def gravar_historico(sufixo, valor, limite_registros=250):
 
 def ler_historico(sufixo):
     nome_classe = obter_nome_classe(sufixo)
-    query = Historico.Query.filter(nome_classe=nome_classe).order_by("-createdAt")
+    ClasseDinamica = create_dynamic_class(nome_classe)
+    
+    query = ClasseDinamica.Query.order_by("-createdAt")
     try:
         resultados = query.all()
     except QueryResourceDoesNotExist:
@@ -80,3 +81,4 @@ def ler_historico(sufixo):
 def gerar_texto_historico(historico):
     linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
     return "<br>".join(linhas)
+
