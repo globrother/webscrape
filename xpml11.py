@@ -88,10 +88,17 @@ def get_xpml(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
         # Com caminho absoluto, parece não ser necessário: os.path.join(os.path.dirname(__file__)
-        nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
-        grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
-        meu_historico = grava_historico.ler_historico("historico_xpml.json")
-        hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
+        # nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
+        # grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
+        # meu_historico = grava_historico.ler_historico("historico_xpml.json")
+        # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
+        
+        sufixo = "xpml"
+        valor = f"R$ {xpml11_0}"
+        grava_historico.gravar_historico(sufixo, valor)
+        historico = grava_historico.ler_historico(sufixo)
+        hist_text_xpml = grava_historico.gerar_texto_historico(historico)
+        print(hist_text_xpml)
 
         return card_xpml11, variac_xpml11, hist_text_xpml
 

@@ -13,6 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia o restante dos arquivos do projeto
 COPY . .
 
+# Define variáveis de ambiente
+ENV APPLICATION_ID=${APPLICATION_ID}
+ENV CLIENT_KEY=${CLIENT_KEY}
+
 # Exponha a porta 8080
 EXPOSE 8080
 
