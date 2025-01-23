@@ -79,6 +79,7 @@ def get_xpml(requests, BeautifulSoup):
                 
         variac_xpml11 = (f"Houve {aux_xpml} de <b>{varxpml11}  {arrow_xpml}</b> na cota do FII XPML11 (hoje X ontem).")
         #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
+        
         logging.info(f"Veja o valor:> {variac_xpml11}")
         card_xpml11 = (
             f"Atualizações do Fundo XPML11:<br><br>"
@@ -88,6 +89,7 @@ def get_xpml(requests, BeautifulSoup):
             f"• P/VP: {pvpxpml11_6}<br>"
             f"• Último rendimento: R$ {divpcxpml11_16}"
         )
+        logging.info(f"Veja o valor:> {card_xpml11}")
         # Com caminho absoluto, parece não ser necessário: os.path.join(os.path.dirname(__file__)
         # nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
         # grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
