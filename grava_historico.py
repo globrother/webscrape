@@ -1,23 +1,33 @@
 import datetime
 import pytz
-import json
 import os
 from parse_rest.connection import register
 from parse_rest.datatypes import Object
-from parse_rest.query import Query
+from parse_rest.query import QueryManager, QueryResourceDoesNotExist
+
+# Definir a variável de ambiente PARSE_API_ROOT
+os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
 
 # Configurar a conexão com o Back4App
+APPLICATION_ID = os.getenv("APPLICATION_ID")
+REST_API_KEY = os.getenv("CLIENT_KEY")
+MASTER_KEY = os.getenv("MASTER_KEY")  # Opcional, use se necessário
+
 register(
-    app_id=os.getenv("APPLICATION_ID"),
-    rest_key=os.getenv("CLIENT_KEY"),
-    master_key=os.getenv("MASTER_KEY")  # Opcional, use se necessário
+    APPLICATION_ID,
+    REST_API_KEY,
+    master_key=MASTER_KEY
 )
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
 
+# Definir a classe Historico e adicionar QueryManager
 class Historico(Object):
     pass
+
+# Inicializar o QueryManager depois da definição da classe Historico
+Historico.Meta = type("Meta", (object,), {"manager": QueryManager(Historico)})
 
 def obter_nome_classe(sufixo):
     # Exemplo de função para gerar o nome da classe
@@ -35,8 +45,11 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     }
 
     # Verifica se o último valor é igual ao novo valor
-    query = Query(Historico).filter(nome_classe=nome_classe).order_by("-createdAt")
-    resultados = query.limit(1).all()
+    query = Historico.Query.filter(nome_classe=nome_classe).order_by("-createdAt")
+    try:
+        resultados = query.limit(1).all()
+    except QueryResourceDoesNotExist:
+        resultados = []
 
     if resultados and resultados[0].valor == valor:
         print("O valor é igual ao último registrado. Não será gravado novamente.")
@@ -56,19 +69,14 @@ def gravar_historico(sufixo, valor, limite_registros=250):
 
 def ler_historico(sufixo):
     nome_classe = obter_nome_classe(sufixo)
-    query = Query(Historico).filter(nome_classe=nome_classe).order_by("-createdAt")
-    resultados = query.all()
+    query = Historico.Query.filter(nome_classe=nome_classe).order_by("-createdAt")
+    try:
+        resultados = query.all()
+    except QueryResourceDoesNotExist:
+        resultados = []
     historico = [{"data": resultado.data, "valor": resultado.valor} for resultado in resultados]
     return historico
 
 def gerar_texto_historico(historico):
     linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
     return "<br>".join(linhas)
-
-# Exemplo de uso
-sufixo = "xpml"
-valor = "Novo valor de exemplo"
-gravar_historico(sufixo, valor)
-historico = ler_historico(sufixo)
-texto_historico = gerar_texto_historico(historico)
-print(texto_historico)
