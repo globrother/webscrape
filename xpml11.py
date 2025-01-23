@@ -79,7 +79,7 @@ def get_xpml(requests, BeautifulSoup):
                 
         variac_xpml11 = (f"Houve {aux_xpml} de <b>{varxpml11}  {arrow_xpml}</b> na cota do FII XPML11 (hoje X ontem).")
         #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
-        
+        logging.info(f"Veja o valor:> {variac_xpml11}")
         card_xpml11 = (
             f"Atualizações do Fundo XPML11:<br><br>"
             f"• Houve {aux_xpml} de {varxpml11} na cota<br>"
