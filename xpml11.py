@@ -40,7 +40,7 @@ def get_xpml(requests, BeautifulSoup):
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
             tags = ['v-align-middle', 'value']
-               
+            logging.info("Veja antes do for")   
             xpml11_0 = varxpml11 = dyxpml11_3 = pvpxpml11_6 = divpcxpml11_16 = None
 
             for div in container_divs:
@@ -59,6 +59,7 @@ def get_xpml(requests, BeautifulSoup):
                     pvpxpml11_6 = elements[26].text # P/VP
                     divpcxpml11_16 = str(
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota                    
+                    logging.info("Veja dentro do for") 
                     break
             #print(xpml11_0)
             if not all([xpml11_0, dyxpml11_3, pvpxpml11_6, divpcxpml11_16]):
@@ -92,7 +93,7 @@ def get_xpml(requests, BeautifulSoup):
         # grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")  
         # meu_historico = grava_historico.ler_historico("historico_xpml.json")
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
-        
+        logging.info("começar a chamar função de gravar Veja") 
         sufixo = "xpml"
         valor = f"R$ {xpml11_0}"
         grava_historico.gravar_historico(sufixo, valor)
