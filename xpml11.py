@@ -107,4 +107,5 @@ def get_xpml(requests, BeautifulSoup):
         return card_xpml11, variac_xpml11, hist_text_xpml
 
     except Exception as e:
+        logging.info(f"Ocorreu um erro em xpml: {e}")
         return {"error": str(e)}, 500
