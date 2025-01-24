@@ -34,13 +34,13 @@ def create_dynamic_class(class_name):
 
 def obter_nome_classe(sufixo):
     # Exemplo de função para gerar o nome da classe
-    return f"Classe_{sufixo}"
+    return f"historico_{sufixo}"
 
 def gravar_historico(sufixo, valor, limite_registros=250):
     nome_classe = obter_nome_classe(sufixo)
     ClasseDinamica = create_dynamic_class(nome_classe)
     
-    logger.info(f"Função Gravar iniciada{nome_classe}")
+    logger.info(f"Função Gravar iniciada: {nome_classe}")
     
     data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
     hora_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
@@ -55,10 +55,12 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     query = ClasseDinamica.Query.order_by("-createdAt")
     try:
         resultados = query.limit(1).all()
+        logger.info(f"Resultado se valor igual: {resultados}")
     except QueryResourceDoesNotExist:
         resultados = []
 
     if resultados and resultados[0].valor == valor:
+        logger.info(f"Valor na tabela: {valor}")
         print("O valor é igual ao último registrado. Não será gravado novamente.")
         return
 
