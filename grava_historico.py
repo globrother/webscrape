@@ -1,9 +1,11 @@
 import datetime
 import pytz
 import os
+from parse_rest.datatypes import Function, Object, GeoPoint
 from parse_rest.connection import register
-from parse_rest.datatypes import Object
-from parse_rest.query import Query, QueryResourceDoesNotExist
+from parse_rest.query import QueryResourceDoesNotExist, Queryset
+from parse_rest.connection import ParseBatcher
+from parse_rest.core import ResourceRequestBadRequest, ParseError
 
 import logging
 
@@ -18,12 +20,12 @@ os.environ["PARSE_API_ROOT"] = "https://parseapi.back4app.com/"
 # Configurar a conexão com o Back4App
 APPLICATION_ID = os.getenv("APPLICATION_ID")
 REST_API_KEY = os.getenv("CLIENT_KEY")
-#MASTER_KEY = os.getenv("MASTER_KEY")  # Opcional, use se necessário
+#MASTER_KEY = os.getenv("MASTER_KEY")
 
 register(
     APPLICATION_ID,
     REST_API_KEY,
-    #master_key=MASTER_KEY
+    master_key=None
 )
 
 # Define o fuso horário para horário de Brasília
@@ -31,7 +33,7 @@ brt_tz = pytz.timezone("America/Sao_Paulo")
 
 # Função para criar uma nova classe dinamicamente
 def create_dynamic_class(class_name):
-    return type(class_name, (Object,), {})
+    return Object.factory(class_name)
 
 def obter_nome_classe(sufixo):
     # Exemplo de função para gerar o nome da classe
@@ -54,8 +56,7 @@ def gravar_historico(sufixo, valor, limite_registros=250):
 
     # Verifica se o último valor é igual ao novo valor
     try:
-        query = Query(ClasseDinamica).order_by("-createdAt")
-        resultados = query.limit(1).all()
+        resultados = ClasseDinamica.Query.filter(data=data_hora_atual).order_by("-createdAt").limit(1).all()
         logger.info(f"#### O novo registro é: {novo_registro}")
         logger.info(f"Resultado se valor igual: {resultados}")
     except QueryResourceDoesNotExist:
@@ -73,9 +74,9 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     print("\nHistórico gravado com sucesso.\n")
 
     # Verificar o limite de registros e remover os mais antigos se necessário
-    total_registros = Query(ClasseDinamica).count()
+    total_registros = ClasseDinamica.Query.all().count()
     if total_registros > limite_registros:
-        registros_antigos = Query(ClasseDinamica).order_by("-createdAt").skip(limite_registros).all()
+        registros_antigos = ClasseDinamica.Query.all().order_by("-createdAt").skip(limite_registros).all()
         for registro in registros_antigos:
             registro.delete()
 
@@ -84,7 +85,7 @@ def ler_historico(sufixo):
     ClasseDinamica = create_dynamic_class(nome_classe)
     
     try:
-        query = Query(ClasseDinamica).order_by("-createdAt")
+        query = ClasseDinamica.Query.all().order_by("-createdAt")
         resultados = query.all()
     except QueryResourceDoesNotExist:
         resultados = []
