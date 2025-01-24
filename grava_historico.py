@@ -72,9 +72,9 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     print("\nHistórico gravado com sucesso.\n")
 
     # Verificar o limite de registros e remover os mais antigos se necessário
-    total_registros = query.count()
+    total_registros = ClasseDinamica.Query.all().count()
     if total_registros > limite_registros:
-        registros_antigos = query.skip(limite_registros).all()
+        registros_antigos = ClasseDinamica.Query.order_by("-createdAt").skip(limite_registros).all()
         for registro in registros_antigos:
             registro.delete()
 
@@ -93,4 +93,3 @@ def ler_historico(sufixo):
 def gerar_texto_historico(historico):
     linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
     return "<br>".join(linhas)
-
