@@ -61,6 +61,7 @@ def gravar_historico(sufixo, valor, limite_registros=250):
 
     if resultados and resultados[0].valor == valor:
         logger.info(f"Valor na tabela: {valor}")
+        logger.info(f"Valor zero da tabela: {resultados[0].valor}")
         print("O valor é igual ao último registrado. Não será gravado novamente.")
         return
 
