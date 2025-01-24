@@ -3,12 +3,13 @@ import pytz
 import os
 from parse_rest.connection import register
 from parse_rest.datatypes import Object
-from parse_rest.query import QueryResourceDoesNotExist
+from parse_rest.query import Query, QueryResourceDoesNotExist
 
 import logging
 
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 logger.info('Função Gravar iniciada')
 
 # Definir a variável de ambiente PARSE_API_ROOT
@@ -52,10 +53,10 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     }
 
     # Verifica se o último valor é igual ao novo valor
-    query = ClasseDinamica.Query.order_by("-createdAt")
-    logger.info(f"#### O novo registro é: {novo_registro}")
     try:
+        query = Query(ClasseDinamica).order_by("-createdAt")
         resultados = query.limit(1).all()
+        logger.info(f"#### O novo registro é: {novo_registro}")
         logger.info(f"Resultado se valor igual: {resultados}")
     except QueryResourceDoesNotExist:
         resultados = []
@@ -72,9 +73,9 @@ def gravar_historico(sufixo, valor, limite_registros=250):
     print("\nHistórico gravado com sucesso.\n")
 
     # Verificar o limite de registros e remover os mais antigos se necessário
-    total_registros = ClasseDinamica.Query.all().count()
+    total_registros = Query(ClasseDinamica).count()
     if total_registros > limite_registros:
-        registros_antigos = ClasseDinamica.Query.order_by("-createdAt").skip(limite_registros).all()
+        registros_antigos = Query(ClasseDinamica).order_by("-createdAt").skip(limite_registros).all()
         for registro in registros_antigos:
             registro.delete()
 
@@ -82,8 +83,8 @@ def ler_historico(sufixo):
     nome_classe = obter_nome_classe(sufixo)
     ClasseDinamica = create_dynamic_class(nome_classe)
     
-    query = ClasseDinamica.Query.order_by("-createdAt")
     try:
+        query = Query(ClasseDinamica).order_by("-createdAt")
         resultados = query.all()
     except QueryResourceDoesNotExist:
         resultados = []
