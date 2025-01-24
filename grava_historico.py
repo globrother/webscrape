@@ -53,6 +53,7 @@ def gravar_historico(sufixo, valor, limite_registros=250):
 
     # Verifica se o último valor é igual ao novo valor
     query = ClasseDinamica.Query.order_by("-createdAt")
+    logger.info(f"#### O novo registro é: {novo_registro}")
     try:
         resultados = query.limit(1).all()
         logger.info(f"Resultado se valor igual: {resultados}")
