@@ -99,8 +99,11 @@ def get_xpml(requests, BeautifulSoup):
         sufixo = "xpml"
         valor = f"R$ {xpml11_0}"
         grava_historico.gravar_historico(sufixo, valor)
+        logging.info("parada grava_historico")
         historico = grava_historico.ler_historico(sufixo)
+        logging.info("parada ler_historico")
         hist_text_xpml = grava_historico.gerar_texto_historico(historico)
+        logging.info("parada gerar_texto_historico")
         print(hist_text_xpml)
 
         logging.info(f"Veja os valores:> {card_xpml11, variac_xpml11, hist_text_xpml}") 
