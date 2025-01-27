@@ -369,22 +369,30 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             speech_text = "Qual é o valor do alerta?"
             reprompt = "Por favor, me diga o valor do alerta."
             handler_input.response_builder.speak(speech_text).ask(reprompt)
-            return handler_input.response_builder.response
+            handler_input.attributes_manager.session_attributes = session_attr
+            return handler_input.response_builder.set_should_end_session(False).response
         
         # Segunda interação: perguntar o fundo FII
         elif "fundName" not in session_attr:
             alert_value = get_slot_value(handler_input, "alertValue")
-            session_attr["alertValue"] = alert_value
-            speech_text = "Qual é o nome do fundo FII?"
-            reprompt = "Por favor, me diga o nome do fundo FII."
-            handler_input.response_builder.speak(speech_text).ask(reprompt)
-            return handler_input.response_builder.response
+            if alert_value is not None:
+                session_attr["alertValue"] = alert_value
+                speech_text = "Qual é o nome do fundo FII?"
+                reprompt = "Por favor, me diga o nome do fundo FII."
+                handler_input.response_builder.speak(speech_text).ask(reprompt)
+                handler_input.attributes_manager.session_attributes = session_attr
+                return handler_input.response_builder.set_should_end_session(False).response
+            else:
+                speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, repita o valor do alerta."
+                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                return handler_input.response_builder.set_should_end_session(False).response
         
         # Terceira interação: armazenar os dados no banco de dados
         else:
             fund_name = get_slot_value(handler_input, "fundName")
-            alert_value = session_attr["alertValue"]
-            session_attr["fundName"] = fund_name
+            if fund_name is not None:
+                alert_value = session_attr["alertValue"]
+                session_attr["fundName"] = fund_name
             
             # Armazenar no banco de dados Back4App
             logger.info('\n Começar a gravar\n')
