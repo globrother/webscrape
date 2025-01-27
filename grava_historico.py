@@ -50,7 +50,7 @@ def testar_conexao():
         logger.error(f"\n Erro ao conectar com o servidor Back4App: {e}\n")
         return False
 
-def gravar_historico(sufixo, valor, limite_registros):
+def gravar_historico(sufixo, valor):
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.")
         return

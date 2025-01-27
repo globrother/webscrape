@@ -387,8 +387,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             # Armazenar no banco de dados Back4App
             sufixo = f"alert_value_{fund_name.lower()}"
             valor = alert_value
-            limite_registros = 5
-            grava_historico.gravar_historico(sufixo, valor, limite_registros)
+            grava_historico.gravar_historico(sufixo, valor)
             
             speech_text = f"Alerta de preço de {alert_value} reais para o fundo {fund_name} criado com sucesso."
             return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
