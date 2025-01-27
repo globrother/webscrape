@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.utils import (
-    is_request_type, get_supported_interfaces, is_intent_name)
+    is_request_type, get_supported_interfaces, is_intent_name,  get_slot_value)
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
@@ -45,6 +45,7 @@ from xplg11 import get_xplg
 from btlg11 import get_btlg
 from kncr11 import get_kncr
 from knri11 import get_knri
+import grava_historico
 # ============================================================================================
 
 # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
@@ -54,6 +55,8 @@ from knri11 import get_knri
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+time.sleep(1)
 
 app = Flask(__name__)
 
@@ -353,6 +356,43 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
+class CreatePriceAlertIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+    def handle(self, handler_input):
+        slots = handler_input.request_envelope.request.intent.slots
+        session_attr = handler_input.attributes_manager.session_attributes
+        
+        # Primeira interação: perguntar o valor do alerta
+        if "alertValue" not in session_attr:
+            speech_text = "Qual é o valor do alerta?"
+            handler_input.response_builder.speak(speech_text).ask(speech_text)
+            return handler_input.response_builder.response
+        
+        # Segunda interação: perguntar o fundo FII
+        elif "fundName" not in session_attr:
+            alert_value = get_slot_value(handler_input, "alertValue")
+            session_attr["alertValue"] = alert_value
+            speech_text = "Qual é o nome do fundo FII?"
+            handler_input.response_builder.speak(speech_text).ask(speech_text)
+            return handler_input.response_builder.response
+        
+        # Terceira interação: armazenar os dados no banco de dados
+        else:
+            fund_name = get_slot_value(handler_input, "fundName")
+            alert_value = session_attr["alertValue"]
+            session_attr["fundName"] = fund_name
+            
+            # Armazenar no banco de dados Back4App
+            sufixo = f"alert_value_{fund_name.lower()}"
+            valor = alert_value
+            limite_registros = 5
+            grava_historico.gravar_historico(sufixo, valor, limite_registros)
+            
+            speech_text = f"Alerta de preço de {alert_value} reais para o fundo {fund_name} criado com sucesso."
+            return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
+
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("SelectFundIntent")(handler_input)
@@ -576,7 +616,8 @@ def webhook():
     show_fifth_screen_handler = ShowFifthScreenHandler()
     show_ended_screen_handler = ShowEndedScreenHandler()
     select_fund_intent_handler = SelectFundIntentHandler()
-
+    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
+    
     touch_handler = TouchHandler()
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
@@ -591,6 +632,7 @@ def webhook():
     sb.add_request_handler(show_fifth_screen_handler)
     sb.add_request_handler(show_ended_screen_handler)
     sb.add_request_handler(select_fund_intent_handler)
+    sb.add_request_handler(create_price_alert_intent_handler)
     
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(fall_back_intent_handler)

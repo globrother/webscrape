@@ -84,9 +84,9 @@ def get_mxrf(requests, BeautifulSoup):
         
         sufixo = "mxrf"
         valor = f"R$ {mxrf11_0}"
+        grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
         hist_text_mxrf = grava_historico.gerar_texto_historico(historico)
-        grava_historico.gravar_historico(sufixo, valor)
 
         return card_mxrf11, variac_mxrf11, hist_text_mxrf
 

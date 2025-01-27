@@ -24,7 +24,10 @@ def create_dynamic_class(class_name):
 
 def obter_nome_classe(sufixo):
     # Função para gerar o nome da classe
-    return f"historico_{sufixo}"
+    if len(sufixo) > 6:
+        return sufixo
+    else:
+        return f"historico_{sufixo}"
 
 def testar_conexao():
     try:
@@ -47,7 +50,7 @@ def testar_conexao():
         logger.error(f"\n Erro ao conectar com o servidor Back4App: {e}\n")
         return False
 
-def gravar_historico(sufixo, valor, limite_registros=250):
+def gravar_historico(sufixo, valor, limite_registros):
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.")
         return
@@ -99,6 +102,11 @@ def gravar_historico(sufixo, valor, limite_registros=250):
         print(f"\n Erro ao gravar histórico: {response.reason}\n")
 
     # Verificar o limite de registros e remover os mais antigos se necessário
+    if len(sufixo) > 6:
+        limite_registros = 5
+    else:
+        limite_registros = 250
+    
     connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
     connection.connect()
     connection.request('GET', f'/classes/{nome_classe}?count=1&limit=0', '', {
