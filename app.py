@@ -385,6 +385,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             session_attr["fundName"] = fund_name
             
             # Armazenar no banco de dados Back4App
+            logger.info('\n Começar a gravar\n')
             sufixo = f"alert_value_{fund_name.lower()}"
             valor = alert_value
             grava_historico.gravar_historico(sufixo, valor)
