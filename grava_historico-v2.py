@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 logger.info('Função Gravar iniciada')
 
 # Configurar a conexão com o Back4App
-APPLICATION_ID = "m8jLEFk7pcs3PHm8MZmZFGtHKKUqpJLqjMtLF6Hz"
-REST_API_KEY = "FGGS3m6YvCktVe0ezRFJReQrIu9vEw3Vb9Zk0c0V"
+APPLICATION_ID = ""
+REST_API_KEY = ""
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
