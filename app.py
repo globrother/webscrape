@@ -367,7 +367,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Primeira interação: perguntar o valor do alerta
         if "alertValue" not in session_attr:
             speech_text = "Qual é o valor do alerta?"
-            handler_input.response_builder.speak(speech_text).ask(speech_text)
+            reprompt = "Por favor, me diga o valor do alerta."
+            handler_input.response_builder.speak(speech_text).ask(reprompt)
             return handler_input.response_builder.response
         
         # Segunda interação: perguntar o fundo FII
@@ -375,7 +376,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value = get_slot_value(handler_input, "alertValue")
             session_attr["alertValue"] = alert_value
             speech_text = "Qual é o nome do fundo FII?"
-            handler_input.response_builder.speak(speech_text).ask(speech_text)
+            reprompt = "Por favor, me diga o nome do fundo FII."
+            handler_input.response_builder.speak(speech_text).ask(reprompt)
             return handler_input.response_builder.response
         
         # Terceira interação: armazenar os dados no banco de dados
