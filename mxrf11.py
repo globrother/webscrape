@@ -6,6 +6,12 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função iniciada')
+
 def get_mxrf(requests, BeautifulSoup):
         
     try:
@@ -20,6 +26,7 @@ def get_mxrf(requests, BeautifulSoup):
         }        
 
         response = requests.get(url, headers=headers)
+        logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
@@ -47,7 +54,7 @@ def get_mxrf(requests, BeautifulSoup):
                     # print(f"resultado: {mxrf11_0}; {varmxrf11}; {dymxrf11_3}; {pvpmxrf11_6}; {divpcmxrf11_16}")
                     
                     break
-            print(mxrf11_0)
+            
             if not all([mxrf11_0, dymxrf11_3, pvpmxrf11_6, divpcmxrf11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -75,11 +82,14 @@ def get_mxrf(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcmxrf11_16}"
         )
         
-        grava_historico.gravar_historico("historico_mxrf.json", f"R$ {mxrf11_0}")
-        historico = grava_historico.ler_historico("historico_mxrf.json")
+        sufixo = "mxrf"
+        valor = f"R$ {mxrf11_0}"
+        historico = grava_historico.ler_historico(sufixo)
         hist_text_mxrf = grava_historico.gerar_texto_historico(historico)
+        grava_historico.gravar_historico(sufixo, valor)
 
         return card_mxrf11, variac_mxrf11, hist_text_mxrf
 
     except Exception as e:
+        logging.info(f"\n Ocorreu um erro em {sufixo}: {e}\n")
         return {"error": str(e)}, 500

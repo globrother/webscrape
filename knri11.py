@@ -3,6 +3,12 @@
 """
 import grava_historico
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função iniciada\n')
+
 def get_knri(requests, BeautifulSoup):
             
     try:
@@ -17,6 +23,7 @@ def get_knri(requests, BeautifulSoup):
         }
 
         response = requests.get(url, headers=headers)
+        logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
@@ -43,7 +50,7 @@ def get_knri(requests, BeautifulSoup):
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
                     
                 break
-            print(knri11_0)
+
             if not all([knri11_0, dyknri11_3, pvpknri11_6, divpcknri11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -71,11 +78,14 @@ def get_knri(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcknri11_16}"
         )
         
-        grava_historico.gravar_historico("historico_knri.json", f"R$ {knri11_0}")
-        historico = grava_historico.ler_historico("historico_knri.json")
+        sufixo = "knri"
+        valor = f"R$ {knri11_0}"
+        grava_historico.gravar_historico(sufixo, valor)
+        historico = grava_historico.ler_historico(sufixo)
         hist_text_knri = grava_historico.gerar_texto_historico(historico)
         
         return card_knri11, variac_knri11, hist_text_knri
 
     except Exception as e:
+        logging.info(f"Ocorreu um erro em {sufixo}: {e}")
         return ({"error": str(e)}), 500

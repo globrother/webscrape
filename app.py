@@ -52,6 +52,7 @@ from knri11 import get_knri
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
+logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
@@ -118,7 +119,8 @@ def web_scrape_mxrf():
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
-    
+    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
+     
     return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
 def web_scrape_xplg():
@@ -127,6 +129,7 @@ def web_scrape_xplg():
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xplg
     voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
+    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_xplg}\n")
     
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
     
@@ -136,6 +139,7 @@ def web_scrape_btlg():
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
     voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
+    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_btlg}\n")
     
     return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
     
@@ -145,6 +149,7 @@ def web_scrape_kncr():
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
     voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
+    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_kncr}\n")
     
     return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
     
@@ -185,9 +190,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
                         arguments=["showSecondScreen"], delay=1)
                 ]
             )
-        ).set_should_end_session(False)
+        )
         
-        return handler_input.response_builder.response
+        return handler_input.response_builder.set_should_end_session(False).response
 
 # ============================================================================================
 
@@ -200,9 +205,12 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
     """
     def can_handle(self, handler_input):
-        time.sleep(5)
+        #time.sleep(5)
+        #return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
+            #"showSecondScreen" in handler_input.request_envelope.request.arguments
         return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            "showSecondScreen" in handler_input.request_envelope.request.arguments
+            handler_input.request_envelope.request.arguments == [
+                "showSecondScreen"]
         
     def handle(self, handler_input):
         _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
@@ -216,12 +224,12 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                         document=apl_document_mxrf
                     )
                     
-                ).speak(f"<break time='3s'/>\n{voz_mxrf11}<break time='5s'/>").add_directive(
+                ).speak(f"<break time='1s'/>\n{voz_mxrf11}<break time='500ms'/>").add_directive(
                     ExecuteCommandsDirective(
                         token="textDisplayToken2",
                         commands=[
                             SendEventCommand(
-                                arguments=["showThirdScreen"])
+                                arguments=["showThirdScreen"], delay=1)
                         ]
                     )
                 )
@@ -253,9 +261,9 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
                             arguments=["showFourthScreen"], delay=1)
                     ]
                 )
-            ).set_should_end_session(False)
+            )
         #time.sleep(3)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
 class ShowFourthScreenHandler(AbstractRequestHandler):
@@ -283,9 +291,9 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                         arguments=["showFifthScreen"], delay=1) # Atraso em ms
                 ]
             )
-        ).set_should_end_session(False)
+        )
         #time.sleep(3)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
 # AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
@@ -481,7 +489,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken6",
                     document=apl_document_knri
                 )
-            ).speak(f"Próximo:<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)  
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz_knri11}").set_should_end_session(False)  
         else:
             session_attr["state"] = "firstScreen"
             _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
@@ -548,7 +556,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         
         # Em vez de encerrar, vamos definir uma mensagem padrão
         handler_input.response_builder.speak("Encerrando a skill. Até a próxima!").set_should_end_session(True)
-        logging.info("Encerrando o servidor Flask...")
+        logging.info("\n Encerrando Aplicativo...\n")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response
 # ============================================================================================
@@ -596,7 +604,7 @@ def webhook():
     
     
 if __name__ == '__main__':
-    logging.info("Iniciando o servidor Flask...")
+    logging.info("\n Iniciando o servidor Flask...\n")
     # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
     

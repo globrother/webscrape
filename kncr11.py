@@ -8,6 +8,12 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função iniciada')
+
 def get_kncr(requests, BeautifulSoup):
         
     try:
@@ -22,6 +28,7 @@ def get_kncr(requests, BeautifulSoup):
         }
 
         response = requests.get(url, headers=headers)
+        logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
@@ -48,7 +55,7 @@ def get_kncr(requests, BeautifulSoup):
                                         round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',') # Dividendo por cota
                     
                 break
-            print(kncr11_0)
+
             if not all([kncr11_0, dykncr11_3, pvpkncr11_6, divpckncr11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -76,11 +83,14 @@ def get_kncr(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpckncr11_16}"
         )
         
-        grava_historico.gravar_historico("historico_kncr.json", f"R$ {kncr11_0}")
-        historico = grava_historico.ler_historico("historico_kncr.json")
+        sufixo = "kncr"
+        valor = f"R$ {kncr11_0}"
+        historico = grava_historico.ler_historico(sufixo)
         hist_text_kncr = grava_historico.gerar_texto_historico(historico)
+        grava_historico.gravar_historico(sufixo, valor)
 
         return card_kncr11, variac_kncr11, hist_text_kncr
 
     except Exception as e:
+        logging.info(f"Ocorreu um erro em {sufixo}: {e}")
         return {"error": str(e)}, 500

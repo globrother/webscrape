@@ -8,6 +8,12 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função iniciada')
+
 def get_xplg(requests, BeautifulSoup):
     
     try:
@@ -22,6 +28,7 @@ def get_xplg(requests, BeautifulSoup):
         }
 
         response = requests.get(url, headers=headers)
+        logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
@@ -74,11 +81,14 @@ def get_xplg(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcxplg11_16}"
         )
         
-        grava_historico.gravar_historico("historico_xplg.json", f"R$ {xplg11_0}")   
-        historico = grava_historico.ler_historico("historico_xplg.json")
+        sufixo = "xplg"
+        valor = f"R$ {xplg11_0}"
+        historico = grava_historico.ler_historico(sufixo)
         hist_text_xplg = grava_historico.gerar_texto_historico(historico)
+        grava_historico.gravar_historico(sufixo, valor)
 
         return card_xplg11, variac_xplg11, hist_text_xplg
 
     except Exception as e:
+        logging.info(f"Ocorreu um erro em {sufixo}: {e}")
         return {"error": str(e)}, 500

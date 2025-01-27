@@ -8,6 +8,12 @@ import grava_historico
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
+import logging
+
+# Usar o logger para registrar mensagens
+logger = logging.getLogger(__name__)
+logger.info('Função iniciada')
+
 def get_btlg(requests, BeautifulSoup):
         
     try:
@@ -22,6 +28,7 @@ def get_btlg(requests, BeautifulSoup):
         }
 
         response = requests.get(url, headers=headers)
+        logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             container_divs = soup.find_all('div', class_='container pb-7')
@@ -49,7 +56,7 @@ def get_btlg(requests, BeautifulSoup):
                     # print(f"resultado: {btlg11_0}; {varbtlg11}; {dybtlg11_3}; {pvpbtlg11_6}; {divpcbtlg11_16}")
                     
                 break
-            print(btlg11_0)
+
             if not all([btlg11_0, dybtlg11_3, pvpbtlg11_6, divpcbtlg11_16]):
                 raise ValueError("Unable to scrape all required elements.")
         else:
@@ -77,11 +84,14 @@ def get_btlg(requests, BeautifulSoup):
             f"• Último rendimento: R$ {divpcbtlg11_16}"
         )
         
-        grava_historico.gravar_historico("historico_btlg.json", f"R$ {btlg11_0}")
-        historico = grava_historico.ler_historico("historico_btlg.json")
+        sufixo = "btlg"
+        valor = f"R$ {btlg11_0}"
+        historico = grava_historico.ler_historico(sufixo)
         hist_text_btlg = grava_historico.gerar_texto_historico(historico)
-
+        grava_historico.gravar_historico(sufixo, valor)
+        
         return card_btlg11, variac_btlg11, hist_text_btlg
 
     except Exception as e:
+        logging.info(f"Ocorreu um erro em {sufixo}: {e}")
         return {"error": str(e)}, 500
