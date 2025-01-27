@@ -364,7 +364,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         session_attr = handler_input.attributes_manager.session_attributes
         logger.info(f"Session Attributes: {session_attr}")
-        
+
         # Primeira interação: perguntar o valor do alerta
         if "alertValue" not in session_attr:
             alert_value = get_slot_value(handler_input, "alertValue")
@@ -380,7 +380,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(speech_text).ask(reprompt)
             handler_input.attributes_manager.session_attributes = session_attr
             return handler_input.response_builder.set_should_end_session(False).response
-        
+
         # Segunda interação: perguntar o fundo FII
         elif "fundName" not in session_attr:
             fund_name = get_slot_value(handler_input, "fundName")
@@ -420,6 +420,14 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         voice_prompt = ""
         # Marca que o usuário interagiu
         session_attr["userInteracted"] = True
+        
+        # Verifique se não há um conflito com CreatePriceAlertIntent
+        if "alertValue" in session_attr:
+            speech_text = "Ainda estamos configurando o alerta de preço. Por favor, forneça o nome do fundo FII."
+            reprompt = "Qual é o nome do fundo FII?"
+            handler_input.response_builder.speak(speech_text).ask(reprompt)
+            handler_input.attributes_manager.session_attributes = session_attr
+            return handler_input.response_builder.set_should_end_session(False).response
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
         if fundo in ["XPML11", "XPML", "Xispê eme éle"]:
