@@ -119,9 +119,9 @@ def web_scrape_xpml():
     
 def web_scrape_mxrf():
     card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_mxrf11
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_mxrf
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_mxrf
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
      
@@ -129,9 +129,9 @@ def web_scrape_mxrf():
     
 def web_scrape_xplg():
     card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xplg11
+    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xplg11
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xplg
+    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xplg
     voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_xplg}\n")
     
@@ -139,9 +139,9 @@ def web_scrape_xplg():
     
 def web_scrape_btlg():
     card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_btlg11
+    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_btlg
+    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_btlg
     voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_btlg}\n")
     
@@ -149,9 +149,9 @@ def web_scrape_btlg():
     
 def web_scrape_kncr():
     card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_kncr11
+    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_kncr
+    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_kncr
     voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_kncr}\n")
     
@@ -159,9 +159,9 @@ def web_scrape_kncr():
     
 def web_scrape_knri():
     card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_knri11
+    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_knri
+    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_knri
     voz_knri11 = card_knri11.replace(
         '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
     
