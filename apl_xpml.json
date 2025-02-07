@@ -105,7 +105,7 @@
                                                         "items": [
                                                             {
                                                                 "text": "ALERTA:",
-                                                                "fontSize": "42dp",
+                                                                "fontSize": "36dp",
                                                                 "type": "Text",                                                                
                                                                 "paddingTop": "0dp",
                                                                 "paddingBottom": "12dp"
