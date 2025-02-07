@@ -113,10 +113,10 @@ def web_scrape_xpml():
     #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
     #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
     
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][0]['text'] = card_xpml11
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item'][0]['text'] = card_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['text'] = hist_text_xpml
-    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['text'] = "Novo texto para financeAlerta"
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item']['text'] = hist_text_xpml
+    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item'][0]['item'][1]['text'] = "Novo texto para financeAlerta"
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
