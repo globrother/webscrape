@@ -109,9 +109,14 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # Ao todo são 18 alterações incluindo a função scrape e get.
 def web_scrape_xpml():
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
+    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['item']['text'] = card_xpml11
+    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
+    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
+    
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][0]['text'] = card_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['text'] = hist_text_xpml
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['text'] = hist_text_xpml
+    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['text'] = "Novo texto para financeAlerta"
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
