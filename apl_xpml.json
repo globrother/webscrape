@@ -95,8 +95,10 @@
                                                         "id": "financeCard"
                                                     },
                                                     {
-                                                        "type": "Separator",
-                                                        "color": "grey"
+                                                        "type": "Frame",
+                                                        "height": "2dp",
+                                                        "width": "100%",
+                                                        "background": "#384b5d"
                                                     },
                                                     {
                                                         "type": "Container",
