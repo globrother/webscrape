@@ -95,6 +95,10 @@
                                                         "id": "financeCard"
                                                     },
                                                     {
+                                                        "type": "Separator",
+                                                        "color": "grey"
+                                                    },
+                                                    {
                                                         "type": "Container",
                                                         "height": "160dp",                                                        
                                                         "paddingTop": "0dp",
