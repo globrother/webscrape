@@ -89,7 +89,7 @@
                                                         "text": "Atualizações do Fundo XPML11<br><br>* Houve alta de 0,33% na cota<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67",
                                                         "fontSize": "52dp",
                                                         "textAlign": "left",
-                                                        "height": "445dp",
+                                                        "height": "455dp",
                                                         "paddingRight": "20dp",
                                                         "style": "textStyleDisplay4",                                                    
                                                         "id": "financeCard"
@@ -98,8 +98,7 @@
                                                         "type": "Frame",
                                                         "height": "2dp",
                                                         "width": "100%",
-                                                        "background": "#879eb4",
-                                                        "paddingTop": "5dp"
+                                                        "background": "#879eb4"                                                        
                                                     },
                                                     {
                                                         "type": "Container",
