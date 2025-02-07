@@ -1,113 +1,163 @@
 {
-  "type": "APL",
-  "version": "2024.3",
-  "description": "Documento APL de Apresentação do Fundo Imobiliário XPML11.",
-  "theme": "dark",
-  "import": [
-    {
-      "name": "alexa-layouts",
-      "version": "1.7.0"
-    }
-  ],
-  "mainTemplate": {
-    "parameters": [
-      "payload"
+    "type": "APL",
+    "version": "2024.3",
+    "description": "Documento APL de Apresentação do Fundo Imobiliário XPML11.",
+    "theme": "dark",
+    "import": [
+        {
+            "name": "alexa-layouts",
+            "version": "1.7.0"
+        }
     ],
-    "items": [
-      {
-        "type": "Container",
-        "height": "100vh",
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
         "items": [
-          {
-            "type": "AlexaBackground",
-            "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
-            "backgroundScale": "best-fill"
-          },
-          {
-            "type": "Container",
-            "height": "100vh",
-            "width": "100vw",
-            "items": [
-              {
-                "type": "AlexaHeader",
-                "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
-                "headerSubtitle": "Houve queda de 0,5% no valor do fundo XPML11",
-                "headerDivider": true,
-                "headerAttributionImage": "https://lh5.googleusercontent.com/d/1-_HOuqzwJ9zqwUCnpuZHy9e90vUfKlHY",
-                "headerAttributionText": "by Cleber Gobira",
-                "headerBackgroundColor": "rgba(0, 0, 0, 0.5)",
-                "headerAttributionOpacity": 0.7,
-                "headerBackButton": true,
-                "headerBackButtonCommand": {
-                  "type":"SendEvent",
-                  "arguments":["goBack"]
-                },
-                "paddingTop": "@spacingSmall"
-              },
-              {
-                "scrollDirection": "vertical",
-                "childWidths": [
-                    "815dp",
-                    "365dp"
-                ],
-                "childWidth": [
-                    "815dp",
-                    "365dp"
-                ],
-                "type": "GridSequence",
-                "childHeight": "100%",
+            {
+                "type": "Container",
                 "height": "100vh",
-                "width": "100vw",
-                "padding": "50dp",
                 "items": [
-                  {
-                    "type": "TouchWrapper",
-                    "onPress": [
-                      {
-                        "type": "SendEvent",
-                        "arguments": ["touch"]
-                      }
-                    ],
-                    "item": {
-                      "type": "Text",
-                      "text": "Atualizações do Fundo XPML11",
-                      "fontSize": "52dp",
-                      "textAlign": "left",
-                      "paddingRight": "20dp",
-                      "style": "textStyleDisplay4",
-                      "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                      "id": "financeContent1"
+                    {
+                        "type": "AlexaBackground",
+                        "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+                        "backgroundScale": "best-fill"
+                    },
+                    {
+                        "type": "Container",
+                        "height": "100vh",
+                        "width": "100vw",
+                        "items": [
+                            {
+                                "type": "AlexaHeader",
+                                "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
+                                "headerSubtitle": "Houve queda de 0,5% no valor do fundo XPML11",
+                                "headerDivider": true,
+                                "headerAttributionImage": "https://lh5.googleusercontent.com/d/1-_HOuqzwJ9zqwUCnpuZHy9e90vUfKlHY",
+                                "headerAttributionText": "by Cleber Gobira",
+                                "headerBackgroundColor": "rgba(0, 0, 0, 0.5)",
+                                "headerAttributionOpacity": 0.7,
+                                "headerBackButton": true,
+                                "headerBackButtonCommand": {
+                                    "type": "SendEvent",
+                                    "arguments": [
+                                        "goBack"
+                                    ]
+                                },
+                                "paddingTop": "@spacingSmall"
+                            },
+                            {
+                                "scrollDirection": "vertical",
+                                "childWidths": [
+                                    "815dp",
+                                    "365dp"
+                                ],
+                                "childWidth": [
+                                    "815dp",
+                                    "365dp"
+                                ],
+                                "type": "GridSequence",
+                                "childHeight": "100%",
+                                "height": "100vh",
+                                "width": "100vw",
+                                "padding": "50dp",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "touch"
+                                                ]
+                                            }
+                                        ],
+                                        "items": [
+                                            {
+                                                "type": "Container",
+                                                "width": "815dp",
+                                                "paddingTop": "0dp",
+                                                "paddingLeft": "0dp",
+                                                "paddingRight": "0dp",
+                                                "paddingBottom": "0dp",
+                                                "items": [
+                                                    {
+                                                        "type": "Text",
+                                                        "text": "Atualizações do Fundo XPML11<br><br>* Houve alta de 0,33% na cota<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67",
+                                                        "fontSize": "52dp",
+                                                        "textAlign": "left",
+                                                        "height": "400dp",
+                                                        "paddingRight": "20dp",
+                                                        "style": "textStyleDisplay4",
+                                                        "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                        "id": "financeDados"
+                                                    },
+                                                    {
+                                                        "type": "Container",
+                                                        "height": "160dp",                                                        
+                                                        "paddingTop": "0dp",
+                                                        "paddingLeft": "0dp",
+                                                        "paddingRight": "0dp",
+                                                        "paddingBottom": "0dp",
+                                                        "items": [
+                                                            {
+                                                                "text": "ALERTA:",
+                                                                "fontSize": "42dp",
+                                                                "type": "Text",                                                                
+                                                                "paddingTop": "12dp",
+                                                                "paddingBottom": "12dp"
+                                                            },
+                                                            {
+                                                                "text": "• HOJE:\u2003--\u2003R$\u2003 90,73\u2003 --\u2003• 01/02/2025: \u2003R$\u2003 98,75<br>• 25/01/2025:\u2003R$\u200398,78",
+                                                                "fontSize": "30dp",
+                                                                "type": "Text",
+                                                                "height": "320dp",                                                                                                                               
+                                                                "paddingBottom": "12dp",
+                                                                "id": "financeAlerta"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Container",
+                                        "width": "100%",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "Histórico",
+                                                "fontSize": "28dp",
+                                                "fontWeight": "bold",
+                                                "textAlign": "center",
+                                                "paddingBottom": "10dp"
+                                            },
+                                            {
+                                                "type": "ScrollView",
+                                                "height": "500dp",
+                                                "width": "300dp",
+                                                "item": [
+                                                    {
+                                                        "type": "Text",
+                                                        "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73",
+                                                        "fontSize": "24dp",
+                                                        "textAlign": "right",
+                                                        "style": "textStyleDisplay4",
+                                                        "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
+                                                        "id": "financeHistorico"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     }
-                  },
-                  {
-                    "type": "Container",
-                    "width": "100%",
-                    "items": [
-                      {
-                        "type": "Text",
-                        "text": "Histórico",
-                        "fontSize": "28dp",
-                        "fontWeight": "bold",
-                        "textAlign": "center",
-                        "paddingBottom": "10dp"
-                      },
-                      {
-                        "type": "Text",
-                        "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73",
-                        "fontSize": "24dp",
-                        "textAlign": "right",
-                        "style": "textStyleDisplay4",
-                        "speech": "${payload.longTextTemplateData.properties.plantInfoSpeech}",
-                        "id": "financeContent2"
-                      }
-                    ]
-                  }
                 ]
-              }
-            ]
-          }
+            }
         ]
-      }
-    ]
-  }
+    },
+    "layouts": {}
 }
