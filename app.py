@@ -168,7 +168,7 @@ def web_scrape_knri():
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 # ============================================================================================
 
-# =====::::: CLASSE E INTENTS DA SKILL ALEXA :::::=====
+# =====::::: CLASSES E INTENTS DA SKILL ALEXA :::::=====
 
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
@@ -362,49 +362,32 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
 
     def handle(self, handler_input):
-        slots = handler_input.request_envelope.request.intent.slots
         session_attr = handler_input.attributes_manager.session_attributes
-        logger.info(f"Session Attributes: {session_attr}")
 
-        # Primeira interação: perguntar o valor do alerta
-        if "alertValue" not in session_attr:
-            alert_value = get_slot_value(handler_input, "alertValue")
-            logger.info(f"Alert Value Slot: {alert_value}")
-            if alert_value:
-                session_attr["alertValue"] = alert_value
-                speech_text = "Qual é o nome do fundo FII?"
-                reprompt = "Por favor, me diga o nome do fundo FII."
-                handler_input.response_builder.speak(speech_text).ask(reprompt)
-            else:
-                speech_text = "Qual é o valor do alerta?"
-                reprompt = "Por favor, me diga o valor do alerta."
-                handler_input.response_builder.speak(speech_text).ask(reprompt)
-            handler_input.attributes_manager.session_attributes = session_attr
-            return handler_input.response_builder.set_should_end_session(False).response
+        # Verifica se o valor do alerta já foi solicitado
+        if "AlertValue" not in session_attr:
+            session_attr["AlertValue"] = None
+            speech_text = "Qual é o valor do alerta em reais?"
+            reprompt_text = "Por favor, me diga o valor do alerta em reais."
+        elif session_attr["AlertValue"] is None:
+            alert_value = handler_input.request_envelope.request.intent.slots["valor"].value
+            session_attr["AlertValue"] = alert_value
+            speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+            reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+        else:
+            fund_name = handler_input.request_envelope.request.intent.slots["fundo"].value
+            alert_value = session_attr["AlertValue"]
+            session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+            speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+            reprompt_text = None
+            session_attr["AlertValue"] = None  # Reset AlertValue for future use
 
-        # Segunda interação: perguntar o fundo FII
-        elif "fundName" not in session_attr:
-            fund_name = get_slot_value(handler_input, "fundName")
-            logger.info(f"Fund Name Slot: {fund_name}")
-            if fund_name:
-                alert_value = session_attr["alertValue"]
-                session_attr["fundName"] = fund_name
-            
-                # Armazenar no banco de dados Back4App
-                
-                logger.info('\n Começar a gravar\n')
-                sufixo = f"alert_value_{fund_name.lower()}"
-                valor = alert_value
-                grava_historico.gravar_historico(sufixo, valor)
-            
-                speech_text = f"Alerta de preço de {alert_value} reais para o fundo {fund_name} criado com sucesso."
-                return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
-            else:
-                speech_text = "Qual é o nome do fundo FII?"
-                reprompt = "Por favor, me diga o nome do fundo FII."
-                handler_input.response_builder.speak(speech_text).ask(reprompt)
-            handler_input.attributes_manager.session_attributes = session_attr
-            return handler_input.response_builder.set_should_end_session(False).response
+        handler_input.response_builder.speak(speech_text)
+        if reprompt_text:
+            handler_input.response_builder.ask(reprompt_text)
+
+        return handler_input.response_builder.response   
+# ============================================================================================
 
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
