@@ -357,6 +357,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
+# Classe para criar um alerta de preço.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -370,12 +371,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             speech_text = "Qual é o valor do alerta em reais?"
             reprompt_text = "Por favor, me diga o valor do alerta em reais."
         elif session_attr["AlertValue"] is None:
-            alert_value = handler_input.request_envelope.request.intent.slots["valor"].value
+            alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
             session_attr["AlertValue"] = alert_value
             speech_text = "Para qual fundo você gostaria de criar esse alerta?"
             reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
         else:
-            fund_name = handler_input.request_envelope.request.intent.slots["fundo"].value
+            fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
             alert_value = session_attr["AlertValue"]
             session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
             speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
