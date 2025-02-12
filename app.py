@@ -375,7 +375,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
                 alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
                 if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value}.{alert_value_cents}"
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
@@ -389,6 +389,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                     speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
                     reprompt_text = None
+                    
+                    logger.info('\n Começar a gravar\n')
+                    sufixo = f"alert_value_{fund_name.lower()}"
+                    valor = alert_value
+                    grava_historico.gravar_historico(sufixo, valor)
+                    
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
                     logging.info(f"\n alert_value_{fund_name.lower()}\n")
