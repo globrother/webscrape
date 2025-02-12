@@ -396,7 +396,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     grava_historico.gravar_historico(sufixo, valor)
                     historico = grava_historico.ler_historico(sufixo)
                     hist_alert_xpml = grava_historico.gerar_texto_historico(historico)
-                    logging.info(f"\n Histórico de alertas para {fund_name}: {hist_alert_xpml}\n")
+                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
                     
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
