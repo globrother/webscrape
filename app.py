@@ -369,18 +369,19 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             # Verifica se o valor do alerta já foi solicitado
             if "AlertValue" not in session_attr:
                 session_attr["AlertValue"] = None
-                speech_text = "Qual é o valor do alerta em reais?"
-                reprompt_text = "Por favor, me diga o valor do alerta em reais."
+                speech_text = "Qual é o valor do alerta em reais e centavos?"
+                reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
             elif session_attr["AlertValue"] is None:
                 alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
-                if alert_value:
-                    session_attr["AlertValue"] = alert_value
+                alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
+                if alert_value and alert_value_cents:
+                    session_attr["AlertValue"] = f"{alert_value}.{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Alerta Criado para: {alert_value}\n")
+                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
                 else:
                     speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais."
+                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
             else:
                 fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
                 if fund_name:
@@ -390,7 +391,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     reprompt_text = None
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
-                    logging.info(f"\n Alert_value_{fund_name.lower()}\n")
+                    logging.info(f"\n alert_value_{fund_name.lower()}\n")
                 else:
                     speech_text = "Desculpe, não consegui entender o nome do fundo. Por favor, diga novamente."
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
