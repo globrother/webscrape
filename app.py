@@ -390,7 +390,49 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         if reprompt_text:
             handler_input.response_builder.ask(reprompt_text)
 
-        return handler_input.response_builder.response   
+        return handler_input.response_builder.response
+    
+class CreatePriceAlertIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        # Verifica se o valor do alerta já foi solicitado
+        if "AlertValue" not in session_attr:
+            session_attr["AlertValue"] = None
+            speech_text = "Qual é o valor do alerta em reais?"
+            reprompt_text = "Por favor, me diga o valor do alerta em reais."
+        elif session_attr["AlertValue"] is None:
+            alert_value = handler_input.request_envelope.request.intent.slots.get("alertValue", {}).get("value")
+            if alert_value:
+                session_attr["AlertValue"] = alert_value
+                speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                logging.info(f"\n Alerta Criado para: {alert_value}\n")
+            else:
+                speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o valor do alerta em reais."
+        else:
+            fund_name = handler_input.request_envelope.request.intent.slots.get("fundName", {}).get("value")
+            if fund_name:
+                alert_value = session_attr["AlertValue"]
+                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                reprompt_text = None
+                session_attr["AlertValue"] = None  # Reset AlertValue for future use
+                logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
+                logging.info(f"\n Alert_value_{fund_name.lower()}\n")
+            else:
+                speech_text = "Desculpe, não consegui entender o nome do fundo. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+
+        handler_input.response_builder.speak(speech_text)
+        if reprompt_text:
+            handler_input.response_builder.ask(reprompt_text)
+
+        return handler_input.response_builder.response  
 # ============================================================================================
 
 class SelectFundIntentHandler(AbstractRequestHandler):
