@@ -197,7 +197,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
         
         return handler_input.response_builder.set_should_end_session(False).response
-
 # ============================================================================================
 
 class ShowSecondScreenHandler(AbstractRequestHandler):
@@ -516,6 +515,14 @@ class TouchHandler(AbstractRequestHandler):
                 RenderDocumentDirective(
                     token="textDisplayToken2",
                     document=apl_document_mxrf
+                )
+            ).add_directive(
+                    ExecuteCommandsDirective(
+                    token="textDisplayToken3",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["showThirdScreen"], delay=1)
+                    ]
                 )
             ).speak(f"Próximo:<break time='500ms'/>\n{voz_mxrf11}").set_should_end_session(False)
             
