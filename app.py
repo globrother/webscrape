@@ -110,7 +110,8 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 def web_scrape_xpml(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
     # Recupera hist_alert_xpml da sessão
-    hist_alert_xpml = session_attr.get("hist_alert_xpml", "")
+    hist_alert_xpml = session_attr.get("hist_alert_xpml", "vazio")
+    logging.info(f"\n Histórico de alertas: {hist_alert_xpml}\n")
     
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xpml11
