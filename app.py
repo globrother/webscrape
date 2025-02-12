@@ -107,10 +107,11 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
-def web_scrape_xpml(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    # Recupera hist_alert_xpml da sessão
-    hist_alert_xpml = session_attr.get("hist_alert_xpml", "valor padrão")
+def web_scrape_xpml():
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = "alert_value_xpml"
+    historico = grava_historico.ler_historico(sufixo)
+    hist_alert_xpml = grava_historico.gerar_texto_historico(historico)
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml}\n")
     
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
@@ -122,7 +123,7 @@ def web_scrape_xpml(handler_input):
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
-def web_scrape_mxrf(handler_input):
+def web_scrape_mxrf():
     card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
@@ -132,7 +133,7 @@ def web_scrape_mxrf(handler_input):
      
     return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
-def web_scrape_xplg(handler_input):
+def web_scrape_xplg():
     card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xplg11
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
@@ -142,7 +143,7 @@ def web_scrape_xplg(handler_input):
     
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
     
-def web_scrape_btlg(handler_input):
+def web_scrape_btlg():
     card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
@@ -152,7 +153,7 @@ def web_scrape_btlg(handler_input):
     
     return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
     
-def web_scrape_kncr(handler_input):
+def web_scrape_kncr():
     card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
@@ -162,7 +163,7 @@ def web_scrape_kncr(handler_input):
     
     return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
     
-def web_scrape_knri(handler_input):
+def web_scrape_knri():
     card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
@@ -182,7 +183,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml(handler_input)
+        _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
@@ -221,7 +222,7 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
         
     def handle(self, handler_input):
-        _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf(handler_input)        
+        _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
         session_attr = handler_input.attributes_manager.session_attributes
         
         if not session_attr.get("userInteracted"):
@@ -251,7 +252,7 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
             "showThirdScreen" in handler_input.request_envelope.request.arguments
 
     def handle(self, handler_input):
-        _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg(handler_input)
+        _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
         session_attr = handler_input.attributes_manager.session_attributes
         
         if not session_attr.get("userInteracted"):
@@ -283,7 +284,7 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg(handler_input)
+        _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fourthScreen" # Atualiza o estado para "fourthScreen"
         handler_input.response_builder.add_directive(
@@ -315,7 +316,7 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr(handler_input)
+        _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fifthScreen" # Atualiza o estado para "fifthScreen"
         handler_input.response_builder.add_directive(
@@ -348,7 +349,7 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         
-        _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri(handler_input)
+        _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "endedScreen" # Atualiza o estado para "endedScreen"
         handler_input.response_builder.add_directive(
@@ -404,7 +405,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
                     
                     # Armazena hist_alert_xpml na sessão
-                    session_attr["hist_alert_xpml"] = hist_alert_xpml
+                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
                     
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
