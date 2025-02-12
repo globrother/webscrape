@@ -383,6 +383,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             reprompt_text = None
             session_attr["AlertValue"] = None  # Reset AlertValue for future use
 
+        logging.info(f"\n Alerta Criado para: {alert_value}\n")
+        logging.info(f"\n Alert_value_{fund_name.lower()}\n")
         handler_input.response_builder.speak(speech_text)
         if reprompt_text:
             handler_input.response_builder.ask(reprompt_text)
