@@ -375,6 +375,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             session_attr["AlertValue"] = alert_value
             speech_text = "Para qual fundo você gostaria de criar esse alerta?"
             reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+            logging.info(f"\n Alerta Criado para: {alert_value}\n")
         else:
             fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
             alert_value = session_attr["AlertValue"]
@@ -382,9 +383,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
             reprompt_text = None
             session_attr["AlertValue"] = None  # Reset AlertValue for future use
-
-        logging.info(f"\n Alerta Criado para: {alert_value}\n")
-        logging.info(f"\n Alert_value_{fund_name.lower()}\n")
+            logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
+            logging.info(f"\n Alert_value_{fund_name.lower()}\n")
+            
         handler_input.response_builder.speak(speech_text)
         if reprompt_text:
             handler_input.response_builder.ask(reprompt_text)
