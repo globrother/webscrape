@@ -111,7 +111,8 @@ def web_scrape_xpml():
     # Adiciona a geração do texto do histórico de alertas
     sufixo = "alert_value_xpml"
     historico = grava_historico.ler_historico(sufixo)
-    hist_alert_xpml = grava_historico.gerar_texto_historico(historico)
+    aux = "alert"
+    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml}\n")
     
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
