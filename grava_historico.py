@@ -139,7 +139,7 @@ def gravar_historico(sufixo, valor):
 def ler_historico(sufixo):
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.\n")
-        return []
+        return
     
     nome_classe = obter_nome_classe(sufixo)
     logger.info(f"\n Iniciando Leitura de: {nome_classe}\n")
@@ -156,21 +156,24 @@ def ler_historico(sufixo):
     })
     resultados = json.loads(connection.getresponse().read())
     #historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
+    historico = [{"data": resultado['data']} for resultado in resultados['results']]
+
     connection.close()
-    historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
+    #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     logger.info(f"valor de hitórico: {historico}")
     return historico
     
 def gerar_texto_historico(historico, aux):
+    logger.info("\n Iniciando Gerar Histórico\n")
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"]}\u2003{registro["tempo"]}:\u2003{registro["valor"]}' for registro in historico]
+        linhas = [f'• {registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}']
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
     else:
-        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}:\u2003{registro["valor"]}' for registro in historico]
+        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
 """
