@@ -21,4 +21,5 @@ ENV CLIENT_KEY=${CLIENT_KEY}
 EXPOSE 8080
 
 # Define o comando de inicialização da aplicação
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]
+# CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
