@@ -171,6 +171,6 @@ def gerar_texto_historico(historico, aux):
         logger.info("\n Histórico gerado \n")
         return "<br>".join(linhas)
     else:
-        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
