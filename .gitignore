@@ -4,3 +4,29 @@
 #historico_btlg.json
 #historico_kncr.json
 #historico_knri.json
+
+# Ignorar arquivos de configuração do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignorar diretórios de ambientes virtuais
+venv/
+.venv/
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos de compilação
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar arquivos de configuração do IDE
+.vscode/
+.idea/
+
+# Ignorar arquivos de banco de dados local
+*.sqlite3
+
+# Ignorar arquivos de dependências
+node_modules/
