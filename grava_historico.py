@@ -160,14 +160,7 @@ def ler_historico(sufixo):
     #logger.info(f"valor de hitórico: {historico}")
     return historico
 
-def gerar_texto_historico(historico, aux):
-    if aux == "alert":
-        # split para pegar apenas a data sem a hora 
-        linhas = [f'• {registro["data"].split("\u2003")[0]}:\u2003{registro["valor"]}' for registro in historico]
-        linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-        logger.info("\n Histórico gerado\n")
-        return "<br>".join(linhas)
-    else:
-        linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico gerado\n")
-        return "<br>".join(linhas)
+def gerar_texto_historico(historico):
+    linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
+    logger.info("\n Histórico gerado\n")
+    return "<br>".join(linhas)

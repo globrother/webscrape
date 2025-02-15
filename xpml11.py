@@ -99,10 +99,9 @@ def get_xpml(requests, BeautifulSoup):
         #logging.info("começar a chamar função de gravar Veja") 
         sufixo = "xpml"
         valor = f"R$ {xpml11_0}"
-        aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
-        hist_text_xpml = grava_historico.gerar_texto_historico(historico, aux)
+        hist_text_xpml = grava_historico.gerar_texto_historico(historico)
         
         #print(f"Texto para Histórico: {hist_text_xpml}")
 
