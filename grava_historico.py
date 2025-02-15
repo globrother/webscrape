@@ -60,11 +60,12 @@ def gravar_historico(sufixo, valor):
     logger.info(f"\n Função gravar iniciada em: {nome_classe}\n")
     
     data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
-    hora_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
-    data_hora_atual = f"{data_atual}\u2003{hora_atual}"
-    #print(hora_atual)
+    tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
+    #data_tempo_atual = f"{data_atual}\u2003{tempo_atual}"
+    #print(tempo_atual)
     novo_registro = {
-        "data": data_hora_atual,
+        "data": data_atual,
+        "tempo": tempo_atual,
         "valor": valor  # Valor já formatado como string
     }
 
@@ -138,7 +139,7 @@ def gravar_historico(sufixo, valor):
 def ler_historico(sufixo):
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.\n")
-        return
+        return []
     
     nome_classe = obter_nome_classe(sufixo)
     logger.info(f"\n Iniciando Leitura de: {nome_classe}\n")
@@ -154,12 +155,25 @@ def ler_historico(sufixo):
         "X-Parse-REST-API-Key": REST_API_KEY
     })
     resultados = json.loads(connection.getresponse().read())
-    historico = [{"data": resultado['data'], "valor": resultado['valor']} for resultado in resultados['results']]
+    historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
     connection.close()
     #historico = [{'data': '24/01/2025\u200317:53', 'valor': 'R$ 9,16'}]
     #logger.info(f"valor de hitórico: {historico}")
     return historico
-
+    
+def gerar_texto_historico(historico, aux):
+    if aux == "alert":
+        # Usar a nova coluna "tempo"
+        linhas = [f'• {registro["data"]}\u2003{registro["tempo"]}:\u2003{registro["valor"]}' for registro in historico]
+        if len(linhas) > 1:
+            linhas = [f'{linhas[0]}\u2003{linhas[1]}']
+        logger.info("\n Histórico gerado\n")
+        return "<br>".join(linhas)
+    else:
+        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}:\u2003{registro["valor"]}' for registro in historico]
+        logger.info("\n Histórico gerado\n")
+        return "<br>".join(linhas)
+"""
 def gerar_texto_historico(historico, aux):
     if aux == "alert":
         # split para pegar apenas a data sem a hora 
@@ -171,3 +185,4 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
+"""
