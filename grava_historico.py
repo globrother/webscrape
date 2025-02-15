@@ -156,7 +156,7 @@ def ler_historico(sufixo):
     })
     resultados = json.loads(connection.getresponse().read())
     #historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
-    historico = [{"tempo": resultado['tempo']} for resultado in resultados['results']]
+    historico = [{"data": resultado['data'],"tempo": resultado['tempo']} for resultado in resultados['results']]
 
     connection.close()
     #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
@@ -170,9 +170,9 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'• {registro["tempo"]}' for registro in historico]
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-        logger.info("\n Histórico gerado\n")
+        logger.info("\n Histórico gerado \n")
         return "<br>".join(linhas)
     else:
-        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
