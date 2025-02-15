@@ -158,7 +158,7 @@ def ler_historico(sufixo):
     historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
     connection.close()
     #historico = [{'data': '24/01/2025\u200317:53', 'valor': 'R$ 9,16'}]
-    #logger.info(f"valor de hitórico: {historico}")
+    logger.info(f"valor de hitórico: {historico}")
     return historico
     
 def gerar_texto_historico(historico, aux):
