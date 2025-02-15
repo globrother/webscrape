@@ -83,9 +83,10 @@ def get_xplg(requests, BeautifulSoup):
         
         sufixo = "xplg"
         valor = f"R$ {xplg11_0}"
+        aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
-        hist_text_xplg = grava_historico.gerar_texto_historico(historico)
+        hist_text_xplg = grava_historico.gerar_texto_historico(historico, aux)
 
         return card_xplg11, variac_xplg11, hist_text_xplg
 

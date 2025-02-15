@@ -85,9 +85,10 @@ def get_kncr(requests, BeautifulSoup):
         
         sufixo = "kncr"
         valor = f"R$ {kncr11_0}"
+        aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
-        hist_text_kncr = grava_historico.gerar_texto_historico(historico)
+        hist_text_kncr = grava_historico.gerar_texto_historico(historico, aux)
 
         return card_kncr11, variac_kncr11, hist_text_kncr
 

@@ -86,9 +86,10 @@ def get_btlg(requests, BeautifulSoup):
         
         sufixo = "btlg"
         valor = f"R$ {btlg11_0}"
+        aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
-        hist_text_btlg = grava_historico.gerar_texto_historico(historico)
+        hist_text_btlg = grava_historico.gerar_texto_historico(historico, aux)
         
         return card_btlg11, variac_btlg11, hist_text_btlg
 
