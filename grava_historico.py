@@ -168,7 +168,7 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'• {registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}\u2003{linhas[2]}']
-        logger.info("\n Histórico gerado \n")
+        logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
