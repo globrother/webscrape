@@ -157,7 +157,7 @@ def ler_historico(sufixo):
     resultados = json.loads(connection.getresponse().read())
     historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
     connection.close()
-    #historico = [{'data': '24/01/2025\u200317:53', 'valor': 'R$ 9,16'}]
+    historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     logger.info(f"valor de hitórico: {historico}")
     return historico
     
