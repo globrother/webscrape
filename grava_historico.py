@@ -167,7 +167,7 @@ def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        linhas = [f'• {registro["tempo"]}' for registro in historico]
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}']
         logger.info("\n Histórico gerado\n")
@@ -176,16 +176,3 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'{registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
-"""
-def gerar_texto_historico(historico, aux):
-    if aux == "alert":
-        # split para pegar apenas a data sem a hora 
-        linhas = [f'• {registro["data"].split("\u2003")[0]}:\u2003{registro["valor"]}' for registro in historico]
-        linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-        logger.info("\n Histórico gerado\n")
-        return "<br>".join(linhas)
-    else:
-        linhas = [f'{registro["data"]}:\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico gerado\n")
-        return "<br>".join(linhas)
-"""
