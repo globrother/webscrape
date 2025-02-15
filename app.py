@@ -108,11 +108,18 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
 def web_scrape_xpml():
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = "alert_value_xpml"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml} \n")
+    
     card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xpml
-    #apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = "Novo texto para financeHistorico"
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
@@ -197,7 +204,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
         
         return handler_input.response_builder.set_should_end_session(False).response
-
 # ============================================================================================
 
 class ShowSecondScreenHandler(AbstractRequestHandler):
@@ -375,7 +381,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
                 alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
                 if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    session_attr["AlertValue"] = f"{alert_value}.{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
@@ -384,7 +390,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
             else:
                 fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
-                if fund_name:
+                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+                if fund_name and fund_name.lower() in allowed_funds:
                     alert_value = session_attr["AlertValue"]
                     session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                     speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
@@ -394,12 +401,18 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     sufixo = f"alert_value_{fund_name.lower()}"
                     valor = alert_value
                     grava_historico.gravar_historico(sufixo, valor)
+                    historico = grava_historico.ler_historico(sufixo)
+                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico)
+                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+                    
+                    # Armazena hist_alert_xpml na sessão
+                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
                     
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
                     logging.info(f"\n alert_value_{fund_name.lower()}\n")
                 else:
-                    speech_text = "Desculpe, não consegui entender o nome do fundo. Por favor, diga novamente."
+                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
 
             handler_input.response_builder.speak(speech_text)
@@ -515,6 +528,14 @@ class TouchHandler(AbstractRequestHandler):
                 RenderDocumentDirective(
                     token="textDisplayToken2",
                     document=apl_document_mxrf
+                )
+            ).add_directive( # Esse boco ainda não funciona ver como fazer
+                    ExecuteCommandsDirective(
+                    token="textDisplayToken3",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["showThirdScreen"], delay=1)
+                    ]
                 )
             ).speak(f"Próximo:<break time='500ms'/>\n{voz_mxrf11}").set_should_end_session(False)
             
