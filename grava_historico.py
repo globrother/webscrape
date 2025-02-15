@@ -155,24 +155,22 @@ def ler_historico(sufixo):
         "X-Parse-REST-API-Key": REST_API_KEY
     })
     resultados = json.loads(connection.getresponse().read())
-    #historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
-    historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':')} for resultado in resultados['results']]
-
+    historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
     connection.close()
     #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
-    logger.info(f"valor de hitórico: {historico}")
+    #logger.info(f"valor de hitórico: {historico}")
     return historico
     
 def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["tempo"]}' for registro in historico]
+        linhas = [f'• {registro["tempo"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}']
         logger.info("\n Histórico gerado \n")
         return "<br>".join(linhas)
     else:
-        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}' for registro in historico]
+        linhas = [f'{registro["data"]}\u2003{registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico gerado\n")
         return "<br>".join(linhas)
