@@ -115,12 +115,20 @@ def web_scrape_xpml():
     hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml} \n")
     
-    card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
+    xpml11_0, card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xpml
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+    
+    # Comparar valores e adicionar aviso de fala se necessário
+    #alert_value = grava_historico.ler_historico("alert_value_xpml")
+    if historico:
+        alert_value_float = float(historico.replace(',', '.'))
+        xpml11_0_float = float(xpml11_0.replace(',', '.'))
+        if xpml11_0_float <= alert_value_float:
+            voz_xpml11 += f"\n<break time='500ms'/>Aviso: Alerta de preço da cota atingido em ({xpml11_0})! Repito, Alerta de preço atingido."
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
@@ -381,7 +389,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
                 alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
                 if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value}.{alert_value_cents}"
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")

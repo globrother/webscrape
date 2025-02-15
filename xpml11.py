@@ -107,7 +107,7 @@ def get_xpml(requests, BeautifulSoup):
         #print(f"Texto para Histórico: {hist_text_xpml}")
 
         #logging.info(f"\nVeja os valores:> {hist_text_xpml}\n") 
-        return card_xpml11, variac_xpml11, hist_text_xpml
+        return xpml11_0, card_xpml11, variac_xpml11, hist_text_xpml
 
     except Exception as e:
         logging.info(f"\n Ocorreu um erro em xpml: {e}\n")
