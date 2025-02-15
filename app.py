@@ -400,9 +400,10 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     logger.info('\n Começar a gravar\n')
                     sufixo = f"alert_value_{fund_name.lower()}"
                     valor = alert_value
+                    aux = "alert"
                     grava_historico.gravar_historico(sufixo, valor)
                     historico = grava_historico.ler_historico(sufixo)
-                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico)
+                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
                     logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
                     logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
                     
@@ -411,7 +412,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     
                     session_attr["AlertValue"] = None  # Reset AlertValue for future use
                     logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
-                    logging.info(f"\n alert_value_{fund_name.lower()}\n")
                 else:
                     speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
