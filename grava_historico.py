@@ -155,7 +155,7 @@ def ler_historico(sufixo):
         "X-Parse-REST-API-Key": REST_API_KEY
     })
     resultados = json.loads(connection.getresponse().read())
-    historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
+    #historico = [{"data": resultado['data'], "tempo": resultado['tempo'], "valor": resultado['valor']} for resultado in resultados['results']]
     connection.close()
     historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     logger.info(f"valor de hitórico: {historico}")
