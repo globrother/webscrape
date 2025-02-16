@@ -116,6 +116,8 @@ def comparador(historico, cota_atual, voz_fundo):
             if cota_atual_float <= alert_value_float:
                 voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
                 return voz_fundo
+            else: 
+                return voz_fundo
 
 # =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
 
