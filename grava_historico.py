@@ -166,6 +166,7 @@ def gerar_texto_historico(historico, aux):
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
+        logger.info(f"\n Linhas antes: {linhas}\n")
         if len(linhas) > 1:
             linhas = [f'{linhas[0]}\u2003{linhas[1]}']
         logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
