@@ -124,6 +124,7 @@ def comparador(historico, cota_atual, voz_fundo):
             except ValueError as e:
                 logging.error(f"Erro ao converter valores para float: {e}")
     else:
+        logging.info(":::::: ----> SE NÃO")
         logging.info("\n Histórico está vazio ou não é uma lista válida \n")
     
     return voz_fundo
