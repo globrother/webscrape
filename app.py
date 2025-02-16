@@ -121,11 +121,13 @@ def web_scrape_xpml():
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xpml
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
-    logging.info(f"\n Valor do Alerta: {historico} \n")
+    
     # Comparar valores e adicionar aviso de fala se necessário
     #alert_value = grava_historico.ler_historico("alert_value_xpml")
-    if historico:
-        alert_value_float = float(historico.replace(',', '.'))
+    alert_value = {historico[0]["valor"]}
+    logging.info(f"\n Valor do Alerta: {alert_value} \n")
+    if alert_value:
+        alert_value_float = float(alert_value.replace(',', '.'))
         xpml11_0_float = float(xpml11_0.replace(',', '.'))
         if xpml11_0_float <= alert_value_float:
             voz_xpml11 += f"\n<break time='500ms'/>Aviso: Alerta de preço da cota atingido em ({xpml11_0})! Repito, Alerta de preço atingido."
