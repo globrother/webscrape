@@ -164,18 +164,12 @@ def ler_historico(sufixo):
 def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     
-    # Verificar se todos os registros têm as chaves esperadas
-    for registro in historico:
-        if not all(key in registro for key in ["data", "valor"]):
-            logger.error("\n Registro inválido encontrado no histórico\n")
-            return "Erro: Registro inválido encontrado no histórico"
-    
     if aux == "alert":
         # Verificar se o histórico está vazio
-        if not historico:
-            logger.info("\n Histórico está vazio\n")
-            linhas = "•\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO <br> •\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO"
-            return linhas
+        #if not historico:
+            #logger.info("\n Histórico está vazio\n")
+            #linhas = "•\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO <br> •\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO"
+            #return linhas
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info(f"\n Linhas antes Len: {linhas}\n")
