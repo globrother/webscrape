@@ -128,10 +128,10 @@ def web_scrape_xpml():
     logging.info(f"\n Valor do Alerta: {alert_value} \n")
     logging.info(f"\n Valor Atual da Cota: {xpml11_0} \n")
     if alert_value:
-        alert_value_float = float(alert_value.replace(',', '.'))
+        alert_value_float = float(alert_value.replace("R$ ", "").replace(',', '.'))
         xpml11_0_float = float(xpml11_0.replace(',', '.'))
         if xpml11_0_float <= alert_value_float:
-            voz_xpml11 += f"\n<break time='500ms'/>Aviso: Alerta de preço da cota atingido em ({xpml11_0})! Repito, Alerta de preço atingido."
+            voz_xpml11 += f"\n<break time='900ms'/>Aviso: Alerta de preço da cota atingido em ({xpml11_0})<break time='500ms'/>! Repito, Alerta de preço atingido."
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
