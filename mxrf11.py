@@ -89,7 +89,7 @@ def get_mxrf(requests, BeautifulSoup):
         historico = grava_historico.ler_historico(sufixo)
         hist_text_mxrf = grava_historico.gerar_texto_historico(historico, aux)
 
-        return card_mxrf11, variac_mxrf11, hist_text_mxrf
+        return mxrf11_0, card_mxrf11, variac_mxrf11, hist_text_mxrf
 
     except Exception as e:
         logging.info(f"\n Ocorreu um erro em {sufixo}: {e}\n")

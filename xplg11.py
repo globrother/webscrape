@@ -88,7 +88,7 @@ def get_xplg(requests, BeautifulSoup):
         historico = grava_historico.ler_historico(sufixo)
         hist_text_xplg = grava_historico.gerar_texto_historico(historico, aux)
 
-        return card_xplg11, variac_xplg11, hist_text_xplg
+        return xplg11_0, card_xplg11, variac_xplg11, hist_text_xplg
 
     except Exception as e:
         logging.info(f"Ocorreu um erro em {sufixo}: {e}")
