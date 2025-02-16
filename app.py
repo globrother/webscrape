@@ -102,6 +102,21 @@ doc_apl_knri = "apl_knri.json"
 apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
 # ============================================================================================
 
+def comparador(historico, cota_atual, voz_fundo):
+    # Comparar valores e adicionar aviso de fala se necessário
+    alert_value = historico[0]["valor"].replace("R$ ", "")
+    logging.info(f"\n Valor do Alerta: {alert_value} \n")
+    logging.info(f"\n Valor Atual da Cota: {cota_atual} \n")
+    if alert_value:
+        alert_value_float = float(alert_value.replace(',', '.'))
+        cota_atual_float = float(cota_atual.replace(',', '.'))
+        logging.info(f"\n Valor de alert_value_float: {alert_value_float} \n")
+        logging.info(f"\n Valor de xpml11_0: {cota_atual_float} \n")
+        if cota_atual_float <= alert_value_float:
+            voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
+            return voz_fundo
+
+
 # =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
 
 # Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
@@ -122,8 +137,11 @@ def web_scrape_xpml():
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
-    # Comparar valores e adicionar aviso de fala se necessário
-    #alert_value = grava_historico.ler_historico("alert_value_xpml")
+    cota_atual = xpml11_0
+    voz_fundo = voz_xpml11
+    voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
+    
+    """# Comparar valores e adicionar aviso de fala se necessário
     alert_value = historico[0]["valor"].replace("R$ ", "")
     logging.info(f"\n Valor do Alerta: {alert_value} \n")
     logging.info(f"\n Valor Atual da Cota: {xpml11_0} \n")
@@ -133,7 +151,8 @@ def web_scrape_xpml():
         logging.info(f"\n Valor de alert_value_float: {alert_value_float} \n")
         logging.info(f"\n Valor de xpml11_0: {xpml11_0_float} \n")
         if xpml11_0_float <= alert_value_float:
-            voz_xpml11 += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em R$ ({xpml11_0})!<break time='500ms'/> Repito, Alerta de preço atingido."
+            voz_xpml11 += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({xpml11_0})!<break time='500ms'/> Repito, Alerta de preço atingido."
+"""
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
