@@ -171,10 +171,10 @@ def web_scrape_mxrf():
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
     
-    cota_atual = mxrf11_0
-    voz_fundo = voz_mxrf11
-    voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
-    logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
+    #cota_atual = mxrf11_0
+    #voz_fundo = voz_mxrf11
+    #voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
+    #logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
     
     return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
