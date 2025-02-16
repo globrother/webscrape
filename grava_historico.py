@@ -174,15 +174,12 @@ def gerar_texto_historico(historico, aux):
         if not all(key in registro for key in ["data", "valor"]):
             logger.error("\n Registro inválido encontrado no histórico\n")
             return "Erro: Registro inválido encontrado no histórico"
-        if aux != "alert" and "tempo" not in registro:
-            logger.error("\n Registro inválido encontrado no histórico\n")
-            return "Erro: Registro inválido encontrado no histórico"
     
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info(f"\n Linhas antes: {linhas}\n")
-        if len(linhas) > 1:
+        logger.info(f"\n Linhas antes Len: {len(linhas)} : {linhas}\n")
+        if len(linhas) > 4:
             linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}'
         logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
         return linhas
