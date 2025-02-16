@@ -119,6 +119,7 @@ def comparador(historico, cota_atual, voz_fundo):
                 
                 # Comparar os valores e adicionar aviso de fala se necessário
                 if cota_atual_float <= alert_value_float:
+                    logging.info(":::::: ----> PASSOU")
                     voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
             except ValueError as e:
                 logging.error(f"Erro ao converter valores para float: {e}")
