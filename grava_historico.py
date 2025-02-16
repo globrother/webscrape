@@ -160,8 +160,38 @@ def ler_historico(sufixo):
     #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     #logger.info(f"valor de hitórico: {historico}")
     return historico
-    
+
 def gerar_texto_historico(historico, aux):
+    logger.info("\n Iniciando Gerar Histórico\n")
+    
+    # Verificar se o histórico está vazio
+    if not historico:
+        logger.info("\n Histórico está vazio\n")
+        return "Histórico está vazio"
+    
+    # Verificar se todos os registros têm as chaves esperadas
+    for registro in historico:
+        if not all(key in registro for key in ["data", "valor"]):
+            logger.error("\n Registro inválido encontrado no histórico\n")
+            return "Erro: Registro inválido encontrado no histórico"
+        if aux != "alert" and "tempo" not in registro:
+            logger.error("\n Registro inválido encontrado no histórico\n")
+            return "Erro: Registro inválido encontrado no histórico"
+    
+    if aux == "alert":
+        # Usar a nova coluna "tempo"
+        linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
+        logger.info(f"\n Linhas antes: {linhas}\n")
+        if len(linhas) > 1:
+            linhas = [f'{linhas[0]}<br>{linhas[1]}']
+        logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
+        return "<br>".join(linhas)
+    else:
+        linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        logger.info("\n Histórico de fundo gerado\n")
+        return "<br>".join(linhas)
+ 
+"""def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     if aux == "alert":
         # Usar a nova coluna "tempo"
@@ -174,4 +204,4 @@ def gerar_texto_historico(historico, aux):
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)
+        return "<br>".join(linhas)"""
