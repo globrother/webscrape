@@ -124,7 +124,7 @@ def web_scrape_xpml():
     
     # Comparar valores e adicionar aviso de fala se necessário
     #alert_value = grava_historico.ler_historico("alert_value_xpml")
-    alert_value = {historico[0]["valor"]}
+    alert_value = historico[0]["valor"]
     logging.info(f"\n Valor do Alerta: {alert_value} \n")
     logging.info(f"\n Valor Atual da Cota: {xpml11_0} \n")
     if alert_value:
