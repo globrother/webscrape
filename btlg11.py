@@ -91,7 +91,7 @@ def get_btlg(requests, BeautifulSoup):
         historico = grava_historico.ler_historico(sufixo)
         hist_text_btlg = grava_historico.gerar_texto_historico(historico, aux)
         
-        return card_btlg11, variac_btlg11, hist_text_btlg
+        return btlg11_0, card_btlg11, variac_btlg11, hist_text_btlg
 
     except Exception as e:
         logging.info(f"Ocorreu um erro em {sufixo}: {e}")

@@ -90,7 +90,7 @@ def get_kncr(requests, BeautifulSoup):
         historico = grava_historico.ler_historico(sufixo)
         hist_text_kncr = grava_historico.gerar_texto_historico(historico, aux)
 
-        return card_kncr11, variac_kncr11, hist_text_kncr
+        return kncr11_0, card_kncr11, variac_kncr11, hist_text_kncr
 
     except Exception as e:
         logging.info(f"Ocorreu um erro em {sufixo}: {e}")

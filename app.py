@@ -116,7 +116,6 @@ def comparador(historico, cota_atual, voz_fundo):
             voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
             return voz_fundo
 
-
 # =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
 
 # Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
@@ -141,28 +140,15 @@ def web_scrape_xpml():
     voz_fundo = voz_xpml11
     voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
-    """# Comparar valores e adicionar aviso de fala se necessário
-    alert_value = historico[0]["valor"].replace("R$ ", "")
-    logging.info(f"\n Valor do Alerta: {alert_value} \n")
-    logging.info(f"\n Valor Atual da Cota: {xpml11_0} \n")
-    if alert_value:
-        alert_value_float = float(alert_value.replace(',', '.'))
-        xpml11_0_float = float(xpml11_0.replace(',', '.'))
-        logging.info(f"\n Valor de alert_value_float: {alert_value_float} \n")
-        logging.info(f"\n Valor de xpml11_0: {xpml11_0_float} \n")
-        if xpml11_0_float <= alert_value_float:
-            voz_xpml11 += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({xpml11_0})!<break time='500ms'/> Repito, Alerta de preço atingido."
-"""
-    
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
 def web_scrape_mxrf():
     # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_xpml"
+    sufixo = "alert_value_mxrf"
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert_mxrf = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_mxrf} \n")
+    logging.info(f"\n Recuperando hist_alert_mxrf da sessão: {hist_alert_mxrf} \n")
     
     mxrf11_0, card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_mxrf11
@@ -180,11 +166,11 @@ def web_scrape_mxrf():
     
 def web_scrape_xplg():
     # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_xpml"
+    sufixo = "alert_value_xplg"
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert_xplg = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xplg} \n")
+    logging.info(f"\n Recuperando hist_alert_xplg da sessão: {hist_alert_xplg} \n")
     
     xplg11_0, card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xplg11
@@ -201,32 +187,67 @@ def web_scrape_xplg():
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
     
 def web_scrape_btlg():
-    card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = "alert_value_btlg"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert_btlg = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_btlg da sessão: {hist_alert_btlg} \n")
+    
+    btlg11_0, card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
     apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_btlg
+    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_btlg
     voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_btlg}\n")
+    
+    cota_atual = btlg11_0
+    voz_fundo = voz_btlg11
+    voz_btlg11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
     
 def web_scrape_kncr():
-    card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
+    sufixo = "alert_value_kncr"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert_kncr = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_kncr da sessão: {hist_alert_kncr} \n")
+    
+    kncr11_0, card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
     apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_kncr
+    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_kncr
     voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_kncr}\n")
+    
+    cota_atual = kncr11_0
+    voz_fundo = voz_kncr11
+    voz_kncr11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
     
 def web_scrape_knri():
-    card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = "alert_value_knri"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert_knri = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_knri da sessão: {hist_alert_knri} \n")
+    
+    knri11_0, card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
     apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_knri
+    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_knri
     voz_knri11 = card_knri11.replace(
         '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
+    
+    cota_atual = knri11_0
+    voz_fundo = voz_knri11
+    voz_knri11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 # ============================================================================================

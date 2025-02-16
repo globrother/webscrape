@@ -85,7 +85,7 @@ def get_knri(requests, BeautifulSoup):
         historico = grava_historico.ler_historico(sufixo)
         hist_text_knri = grava_historico.gerar_texto_historico(historico, aux)
         
-        return card_knri11, variac_knri11, hist_text_knri
+        return knri11_0, card_knri11, variac_knri11, hist_text_knri
 
     except Exception as e:
         logging.info(f"Ocorreu um erro em {sufixo}: {e}")
