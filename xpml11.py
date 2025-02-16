@@ -87,7 +87,7 @@ def get_xpml(requests, BeautifulSoup):
             f"• Valor atual da cota: R$ {xpml11_0}<br>"
             f"• Dividend Yield: {dyxpml11_3}%<br>"
             f"• P/VP: {pvpxpml11_6}<br>"
-            f"• Último rendimento: R$ {divpcxpml11_16}"
+            f"• Último rendimento: R$ {divpcxpml11_16}..."
         )
         #logging.info(f"\n Veja o valor de Card:> {card_xpml11}\n")
         
