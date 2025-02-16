@@ -167,6 +167,7 @@ def gerar_texto_historico(historico, aux):
     # Verificar se o histórico está vazio
     if not historico:
         logger.info("\n Histórico está vazio\n")
+        linhas = "•\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO <br> •\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO"
         return "Histórico está vazio"
     
     # Verificar se todos os registros têm as chaves esperadas
