@@ -103,21 +103,29 @@ apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chama
 # ============================================================================================
 
 def comparador(historico, cota_atual, voz_fundo):
-    # Comparar valores e adicionar aviso de fala se necessário
+    # Verificar se o histórico contém pelo menos um registro
     if len(historico) >= 1:
-        alert_value = historico[0]["valor"].replace("R$ ", "")
+        alert_value = historico[0].get("valor", "").replace("R$ ", "")
         logging.info(f"\n Valor do Alerta: {alert_value} \n")
         logging.info(f"\n Valor Atual da Cota: {cota_atual} \n")
+        
+        # Verificar se o valor do alerta é válido
         if alert_value:
-            alert_value_float = float(alert_value.replace(',', '.'))
-            cota_atual_float = float(cota_atual.replace(',', '.'))
-            logging.info(f"\n Valor de alert_value_float: {alert_value_float} \n")
-            logging.info(f"\n Valor de xpml11_0: {cota_atual_float} \n")
-            if cota_atual_float <= alert_value_float:
-                voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
-                return voz_fundo
-            else: 
-                return voz_fundo
+            try:
+                alert_value_float = float(alert_value.replace(',', '.'))
+                cota_atual_float = float(cota_atual.replace(',', '.'))
+                logging.info(f"\n Valor de alert_value_float: {alert_value_float} \n")
+                logging.info(f"\n Valor de cota_atual_float: {cota_atual_float} \n")
+                
+                # Comparar os valores e adicionar aviso de fala se necessário
+                if cota_atual_float <= alert_value_float:
+                    voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
+            except ValueError as e:
+                logging.error(f"Erro ao converter valores para float: {e}")
+    else:
+        logging.info("\n Histórico está vazio ou não é uma lista válida \n")
+    
+    return voz_fundo
 
 # =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
 
