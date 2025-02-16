@@ -126,6 +126,7 @@ def web_scrape_xpml():
     #alert_value = grava_historico.ler_historico("alert_value_xpml")
     alert_value = {historico[0]["valor"]}
     logging.info(f"\n Valor do Alerta: {alert_value} \n")
+    logging.info(f"\n Valor Atual da Cota: {xpml11_0} \n")
     if alert_value:
         alert_value_float = float(alert_value.replace(',', '.'))
         xpml11_0_float = float(xpml11_0.replace(',', '.'))
