@@ -149,7 +149,7 @@ def web_scrape_xpml():
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
-    #cota_atual = xpml11_0
+    cota_atual = xpml11_0
     #voz_fundo = voz_xpml11
     #voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
@@ -171,7 +171,7 @@ def web_scrape_mxrf():
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
     
-    #cota_atual = mxrf11_0
+    cota_atual = mxrf11_0
     #voz_fundo = voz_mxrf11
     #voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
     #logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
@@ -195,8 +195,8 @@ def web_scrape_xplg():
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_xplg}\n")
     
     cota_atual = xplg11_0
-    voz_fundo = voz_xplg11
-    voz_xplg11 = comparador(historico, cota_atual, voz_fundo)
+    #voz_fundo = voz_xplg11
+    #voz_xplg11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
     
@@ -217,8 +217,8 @@ def web_scrape_btlg():
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_btlg}\n")
     
     cota_atual = btlg11_0
-    voz_fundo = voz_btlg11
-    voz_btlg11 = comparador(historico, cota_atual, voz_fundo)
+    #voz_fundo = voz_btlg11
+    #voz_btlg11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
     
@@ -238,8 +238,8 @@ def web_scrape_kncr():
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_kncr}\n")
     
     cota_atual = kncr11_0
-    voz_fundo = voz_kncr11
-    voz_kncr11 = comparador(historico, cota_atual, voz_fundo)
+    #voz_fundo = voz_kncr11
+    #voz_kncr11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
     
@@ -260,8 +260,8 @@ def web_scrape_knri():
         '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
     
     cota_atual = knri11_0
-    voz_fundo = voz_knri11
-    voz_knri11 = comparador(historico, cota_atual, voz_fundo)
+    #voz_fundo = voz_knri11
+    #voz_knri11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 # ============================================================================================
