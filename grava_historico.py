@@ -178,9 +178,8 @@ def gerar_texto_historico(historico, aux):
     
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        tam = len(linhas)
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info(f"\n Linhas antes Len: {tam} : {linhas}\n")
+        logger.info(f"\n Linhas antes Len: {linhas}\n")
         if len(linhas) > 1:
             if len(linhas) >= 4:
                 linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}'
