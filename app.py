@@ -157,13 +157,25 @@ def web_scrape_xpml():
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
 def web_scrape_mxrf():
-    card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = "alert_value_xpml"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert_mxrf = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_mxrf} \n")
+    
+    mxrf11_0, card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_mxrf
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_mxrf
     voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
-     
+    
+    cota_atual = mxrf11_0
+    voz_fundo = voz_mxrf11
+    voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
+    
     return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
     
 def web_scrape_xplg():
