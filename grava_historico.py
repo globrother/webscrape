@@ -161,7 +161,7 @@ def ler_historico(sufixo):
     #logger.info(f"valor de hitórico: {historico}")
     return historico
 
-def gerar_texto_historico(historico, aux):
+"""def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     
     if aux == "alert":
@@ -188,9 +188,9 @@ def gerar_texto_historico(historico, aux):
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)
+        return "<br>".join(linhas)"""
  
-"""def gerar_texto_historico(historico, aux):
+def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     if aux == "alert":
         # Usar a nova coluna "tempo"
@@ -203,4 +203,4 @@ def gerar_texto_historico(historico, aux):
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)"""
+        return "<br>".join(linhas)
