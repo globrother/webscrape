@@ -192,13 +192,15 @@ def ler_historico(sufixo):
  
 def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
+    
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info(f"\n Linhas antes: {linhas}\n")
         if len(linhas) > 1:
-            linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-        logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
+            linhas = [f'{linhas[0]}']
+            #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
+        logger.info(f"Histórico de alerta gerado: {linhas}\n")
         return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
