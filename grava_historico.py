@@ -9,7 +9,7 @@ import time
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-logger.info(' Função Gravar Histórico Iniciada\n')
+logger.info('--> Função Gravar Histórico Iniciada\n')
 
 # Configurar a conexão com o Back4App
 APPLICATION_ID = os.getenv("APPLICATION_ID")
@@ -59,7 +59,7 @@ def gravar_historico(sufixo, valor):
     
     logger.info(f"\n Função gravar iniciada em: {nome_classe}\n")
     
-    data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
+    data_atual = datetime.datetime.now(brt_tz).strftime("%d/%m/%Y")
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
     #data_tempo_atual = f"{data_atual}\u2003{tempo_atual}"
     #print(tempo_atual)
@@ -203,7 +203,7 @@ def gerar_texto_historico(historico, aux):
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info(f"\n Linhas antes: {linhas}\n")
+        logging.info(f"\n Linhas antes: {linhas}\n")
         if len(linhas) > 1:
             if len(linhas) >= 4:
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
