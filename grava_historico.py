@@ -198,6 +198,8 @@ def gerar_texto_historico(historico, aux):
         logger.info("\n Histórico está vazio\n")
         return "VAZIO"
     
+    logging.info("Iniciando condição")
+    
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
@@ -211,7 +213,7 @@ def gerar_texto_historico(historico, aux):
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}']
             logger.info(f"Hist alerta gerado: {linhas}\n")
         else:
-            linhas = [linhas[0]]
+            linhas = [{linhas[0]}]
         #if len(linhas) > 1:
             #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
         logger.info(f"Histórico de alerta gerado: {linhas}\n")
