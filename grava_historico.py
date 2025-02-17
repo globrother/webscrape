@@ -9,7 +9,7 @@ import time
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-logger.info('--> Função Gravar Histórico Iniciada\n')
+logger.info('--> Preparando para gerenciar o hitórico ...\n')
 
 # Configurar a conexão com o Back4App
 APPLICATION_ID = os.getenv("APPLICATION_ID")
@@ -39,25 +39,27 @@ def testar_conexao():
         })
         response = connection.getresponse()
         if response.status == 200:
-            logger.info("\n Conexão bem-sucedida com o servidor Back4App.\n")
+            logger.info("\nConexão bem-sucedida com o servidor Back4App.\n")
             connection.close()
             return True
         else:
-            logger.error(f"\n Falha ao conectar com o servidor Back4App. Status: {response.status}\n")
+            logger.error(f"\nFalha ao conectar com o servidor Back4App. Status: {response.status}\n")
             connection.close()
             return False
     except Exception as e:
-        logger.error(f"\n Erro ao conectar com o servidor Back4App: {e}\n")
+        logger.error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
         return False
 
 def gravar_historico(sufixo, valor):
+    logging.info("--> Iniciando Gravar Histórico\n")
+    
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.")
         return
     
     nome_classe = obter_nome_classe(sufixo)
     
-    logger.info(f"\n Função gravar iniciada em: {nome_classe}\n")
+    logger.info(f"Função gravar iniciada para: {nome_classe}\n")
     
     data_atual = datetime.datetime.now(brt_tz).strftime("%d/%m/%Y")
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
@@ -83,7 +85,7 @@ def gravar_historico(sufixo, valor):
 
     if resultado['results'] and resultado['results'][0]['valor'] == valor:
         #logger.info(f"Valor zero da tabela: {resultado['results'][0]['valor']}")
-        print("\n O valor é igual ao último registrado. Não será gravado novamente.\n")
+        print("\nO valor é igual ao último registrado. Não será gravado novamente.\n")
         connection.close()
         return
 
@@ -116,11 +118,11 @@ def gravar_historico(sufixo, valor):
     })
     logger.info(f"\n Verificando Contagem de registros em: {nome_classe}\n")
     response = connection.getresponse()
-    logger.info(f"\n Response status: {response.status}\n")  # Adiciona log do status da resposta
+    logger.info(f"Response status: {response.status}\n")  # Adiciona log do status da resposta
     data = response.read()
     #logger.info(f"Dados da resposta: {data}") 
     total_registros = json.loads(data).get('count', 0)
-    logger.info(f"\n Histórico Gravado com total de registros igual a {total_registros}\n")
+    logger.info(f"Histórico Gravado com total de registros igual a {total_registros}\n")
     
     if total_registros > limite_registros:
         connection.request('GET', f'/classes/{nome_classe}?order=-createdAt&skip={limite_registros}', '', {
@@ -137,6 +139,8 @@ def gravar_historico(sufixo, valor):
             connection.close()
 
 def ler_historico(sufixo):
+    logging.info("--> Iniciando Ler Histórico\n")
+    
     if not testar_conexao():
         print("\n Erro ao conectar com o servidor Back4App.\n")
         return
@@ -191,12 +195,12 @@ def ler_historico(sufixo):
         return "<br>".join(linhas)"""
  
 def gerar_texto_historico(historico, aux):
-    logger.info("\n Iniciando Gerar Histórico\n")
+    logger.info("--> Iniciando Gerar Histórico\n")
     
     # Verificar se o histórico está vazio
     if not historico:
         logger.info("\n Histórico está vazio\n")
-        return "VAZIO"
+        return "• 00/00/0000\u2003R$ 0,00"
     
     logging.info("Iniciando condição")
     

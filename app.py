@@ -150,8 +150,8 @@ def web_scrape_xpml():
     voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
     
     cota_atual = xpml11_0
-    #voz_fundo = voz_xpml11
-    #voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
+    voz_fundo = voz_xpml11
+    voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
     
