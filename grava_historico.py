@@ -209,7 +209,7 @@ def gerar_texto_historico(historico, aux):
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}']
             else:
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-            logger.info(f"Histórico de alerta gerado: {linhas}\n")
+            logger.info(f"Hist alerta gerado: {linhas}\n")
         else:
             linhas = [linhas[0]]
         #if len(linhas) > 1:
