@@ -196,7 +196,7 @@ def gerar_texto_historico(historico, aux):
     # Verificar se o histórico está vazio
     if not historico:
         logger.info("\n Histórico está vazio\n")
-        return ""
+        return "VAZIO"
     
     if aux == "alert":
         # Usar a nova coluna "tempo"
