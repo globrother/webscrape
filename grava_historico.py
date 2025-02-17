@@ -193,6 +193,11 @@ def ler_historico(sufixo):
 def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")
     
+    # Verificar se o histórico está vazio
+    if not historico:
+        logger.info("\n Histórico está vazio\n")
+        return ""
+    
     if aux == "alert":
         # Usar a nova coluna "tempo"
         linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
