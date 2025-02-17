@@ -214,8 +214,8 @@ def gerar_texto_historico(historico, aux):
             linhas = [linhas[0]]
         #if len(linhas) > 1:
             #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-            #logger.info(f"Histórico de alerta gerado: {linhas}\n")
-        #return "<br>".join(linhas)
+        logger.info(f"Histórico de alerta gerado: {linhas}\n")
+        return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
