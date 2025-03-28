@@ -20,8 +20,8 @@ logger.info('Função iniciada')
 def get_dadosfii(fii):
     #logging.info("ANTES DA REQUISIÇÃO GET_XPML VEJA<<<<<<<<")
     try:
-        fii = "xpml11" # apagar depois
-        url = "https://statusinvest.com.br/fundos-imobiliarios/" & fii
+        #fii = "xpml11" # apagar depois
+        url = "https://statusinvest.com.br/fundos-imobiliarios/" + fii
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
