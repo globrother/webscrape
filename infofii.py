@@ -109,7 +109,7 @@ def get_dadosfii(fii):
         # meu_historico = grava_historico.ler_historico("historico_xpml.json")
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
         #logging.info("começar a chamar função de gravar Veja") 
-        sufixo = fii
+        sufixo = fii[:-2] #extrai os ultimos 2 caracteres de fii
         valor = f"R$ {cota_fii}"
         aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
