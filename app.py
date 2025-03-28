@@ -40,7 +40,7 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 # Não se esqueça de duplicar um arquivo nome-do-fundo.py ...
 # ... e alterar o nome da função get_xxxx e todas as variáveis.
 from infofii import get_dadosfii
-from xpml11 import get_xpml
+#from xpml11 import get_xpml
 from mxrf11 import get_mxrf
 from xplg11 import get_xplg
 from btlg11 import get_btlg
