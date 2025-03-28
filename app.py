@@ -39,6 +39,7 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 # IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
 # Não se esqueça de duplicar um arquivo nome-do-fundo.py ...
 # ... e alterar o nome da função get_xxxx e todas as variáveis.
+from infofii import get_dadosfii
 from xpml11 import get_xpml
 from mxrf11 import get_mxrf
 from xplg11 import get_xplg
@@ -142,18 +143,18 @@ def web_scrape_xpml():
     hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml} \n")
     
-    xpml11_0, card_xpml11, variac_xpml11, hist_text_xpml = get_xpml(requests, BeautifulSoup) # ,_ significa que a variável variac_xpml11 não será utilizada
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xpml11
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xpml
+    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii("xpml") # ,_ significa que a variável variac_xpml11 não será utilizada
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
+    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
-    voz_xpml11 = card_xpml11.replace('<br>', '\n<break time="500ms"/>')
+    voz_xpml11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
     
-    cota_atual = xpml11_0
+    cota_atual = cota_fii
     voz_fundo = voz_xpml11
     voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
-    return card_xpml11, variac_xpml11, hist_text_xpml, apl_document_xpml, voz_xpml11
+    return card_fii, variac_fii, hist_text_fii, apl_document_xpml, voz_xpml11
     
 def web_scrape_mxrf():
     # Adiciona a geração do texto do histórico de alertas
