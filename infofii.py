@@ -89,7 +89,7 @@ def get_dadosfii(fii):
             arrow_fii = "&#x2B06;"
             aux_fii = "alta"
                 
-        variac_fii = (f"Houve {aux_fii} de <b>{var_fii}  {arrow_fii}</b> na cota do FII {.upper()} (hoje X ontem).")
+        variac_fii = (f"Houve {aux_fii} de <b>{var_fii}  {arrow_fii}</b> na cota do FII {fii.upper()} (hoje X ontem).")
         #variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
         
         #logging.info(f"Veja o valor de Variac_xpml:> {variac_xpml11}")
