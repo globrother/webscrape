@@ -41,8 +41,8 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 # ... e alterar o nome da função get_xxxx e todas as variáveis.
 from infofii import get_dadosfii
 #from xpml11 import get_xpml
-from mxrf11 import get_mxrf
-from xplg11 import get_xplg
+#from mxrf11 import get_mxrf
+#from xplg11 import get_xplg
 from btlg11 import get_btlg
 from kncr11 import get_kncr
 from knri11 import get_knri
@@ -165,20 +165,21 @@ def web_scrape_mxrf():
     hist_alert_mxrf = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_mxrf da sessão: {hist_alert_mxrf} \n")
     
-    mxrf11_0, card_mxrf11, variac_mxrf11, hist_text_mxrf = get_mxrf(requests, BeautifulSoup)
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_mxrf11
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_mxrf11
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_mxrf
+    fii = "mxrf11"
+    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii)
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
+    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_mxrf
-    voz_mxrf11 = card_mxrf11.replace('<br>', '\n<break time="500ms"/>')
+    voz_mxrf11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
     
-    cota_atual = mxrf11_0
+    cota_atual = cota_fii
     #voz_fundo = voz_mxrf11
     #voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
     #logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
     
-    return card_mxrf11, variac_mxrf11, hist_text_mxrf, apl_document_mxrf, voz_mxrf11   
+    return card_fii, variac_fii, hist_text_fii, apl_document_mxrf, voz_mxrf11   
     
 def web_scrape_xplg():
     # Adiciona a geração do texto do histórico de alertas
@@ -188,19 +189,20 @@ def web_scrape_xplg():
     hist_alert_xplg = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_xplg da sessão: {hist_alert_xplg} \n")
     
-    xplg11_0, card_xplg11, variac_xplg11, hist_text_xplg = get_xplg(requests, BeautifulSoup)
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_xplg11
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_xplg11
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_xplg
+    fii = "xplg11"
+    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii)
+    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
+    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
+    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xplg
-    voz_xplg11 = card_xplg11.replace('<br>', '\n<break time="500ms"/>')
+    voz_xplg11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
     #logger.info(f"\nDOCUMENTO APL:\n{apl_document_xplg}\n")
     
-    cota_atual = xplg11_0
+    cota_atual = cota_fii
     #voz_fundo = voz_xplg11
     #voz_xplg11 = comparador(historico, cota_atual, voz_fundo)
     
-    return card_xplg11, variac_xplg11, hist_text_xplg, apl_document_xplg, voz_xplg11
+    return card_fii, variac_fii, hist_text_fii, apl_document_xplg, voz_xplg11
     
 def web_scrape_btlg():
     # Adiciona a geração do texto do histórico de alertas
