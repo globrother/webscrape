@@ -143,7 +143,8 @@ def web_scrape_xpml():
     hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml} \n")
     
-    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii("xpml") # ,_ significa que a variável variac_xpml11 não será utilizada
+    fii = "xpml"
+    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
     apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
