@@ -182,8 +182,7 @@ def web_scrape_xpml():
     voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_fii, variac_fii, hist_text_fii, apl_document_xpml, voz_xpml11
-'''
-    
+
 def web_scrape_mxrf():
     # Adiciona a geração do texto do histórico de alertas
     sufixo = "alert_value_mxrf"
@@ -206,7 +205,7 @@ def web_scrape_mxrf():
     #voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
     #logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
     
-    return card_fii, variac_fii, hist_text_fii, apl_document_mxrf, voz_mxrf11   
+    return card_fii, variac_fii, hist_text_fii, apl_document_mxrf, voz_mxrf11 
     
 def web_scrape_xplg():
     # Adiciona a geração do texto do histórico de alertas
@@ -230,6 +229,7 @@ def web_scrape_xplg():
     #voz_xplg11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_fii, variac_fii, hist_text_fii, apl_document_xplg, voz_xplg11
+'''
     
 def web_scrape_btlg():
     # Adiciona a geração do texto do histórico de alertas
@@ -347,7 +347,8 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 "showSecondScreen"]
         
     def handle(self, handler_input):
-        _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()        
+        fundo = "mxrf11"
+        _, _, _, apl_document, voz = web_scrape(fundo)        
         session_attr = handler_input.attributes_manager.session_attributes
         
         if not session_attr.get("userInteracted"):
@@ -355,10 +356,10 @@ class ShowSecondScreenHandler(AbstractRequestHandler):
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="textDisplayToken2",
-                        document=apl_document_mxrf
+                        document=apl_document
                     )
                     
-                ).speak(f"<break time='1s'/>\n{voz_mxrf11}<break time='500ms'/>").add_directive(
+                ).speak(f"<break time='1s'/>\n{voz}<break time='500ms'/>").add_directive(
                     ExecuteCommandsDirective(
                         token="textDisplayToken2",
                         commands=[
@@ -377,7 +378,8 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
             "showThirdScreen" in handler_input.request_envelope.request.arguments
 
     def handle(self, handler_input):
-        _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
+        fundo = "xplg11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         
         if not session_attr.get("userInteracted"):
@@ -385,9 +387,9 @@ class ShowThirdScreenHandler(AbstractRequestHandler):
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken3",
-                    document=apl_document_xplg
+                    document=apl_document
                 )  
-            ).speak(f"<break time='1s'/>\n{voz_xplg11}").add_directive(
+            ).speak(f"<break time='1s'/>\n{voz}").add_directive(
                 ExecuteCommandsDirective(
                     token="textDisplayToken3",
                     commands=[
@@ -583,15 +585,15 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             voice_prompt = voz
             document = apl_document
         elif fundo in ["MXRF11", "MXRF", "Eme xis erre efi"]:
-            _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
-            document = apl_document_mxrf
+            _, _, _, apl_document, voz = web_scrape("mxrf11")
+            document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_mxrf11
+            voice_prompt = voz
         elif fundo in ["XPLG11", "XPLG", "Xispê éle gê"]:
-            _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
-            document = apl_document_xplg
+            _, _, _, apl_document, voz = web_scrape("xplg11")
+            document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_xplg11
+            voice_prompt = voz
         elif fundo in ["BTLG11", "BTLG", "Bêtê éle gê"]:
             _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
             document = apl_document_btlg
@@ -649,11 +651,11 @@ class TouchHandler(AbstractRequestHandler):
         if "state" in session_attr and session_attr["state"] == "firstScreen":
             session_attr["state"] = "secondScreen"
             handler_input.response_builder.speak("Ok")
-            _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
+            _, _, _, apl_document, voz = web_scrape("mxrf11")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken2",
-                    document=apl_document_mxrf
+                    document=apl_document
                 )
             ).add_directive( # Esse boco ainda não funciona ver como fazer
                     ExecuteCommandsDirective(
@@ -663,17 +665,17 @@ class TouchHandler(AbstractRequestHandler):
                             arguments=["showThirdScreen"], delay=1)
                     ]
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz_mxrf11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
-            _, _, _, apl_document_xplg, voz_xplg11 = web_scrape_xplg()
+            _, _, _, apl_document, voz = web_scrape_xplg("xplg11")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken3",
-                    document=apl_document_xplg
+                    document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz_xplg11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
