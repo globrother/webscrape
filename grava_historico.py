@@ -108,7 +108,7 @@ def gravar_historico(sufixo, valor):
     if len(sufixo) > 6:
         limite_registros = 5
     else:
-        limite_registros = 250
+        limite_registros = 500
     
     connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
     connection.connect()

@@ -135,6 +135,31 @@ def comparador(historico, cota_atual, voz_fundo):
 # Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
+
+def web_scrape(fundo):
+    doc_apl = f"apl_{fundo}.json"
+    apl_document = _load_apl_document(doc_apl)
+    # Adiciona a geração do texto do histórico de alertas
+    sufixo = f"alert_value_{fundo}"
+    historico = grava_historico.ler_historico(sufixo)
+    aux = "alert"
+    hist_alert = grava_historico.gerar_texto_historico(historico, aux)
+    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
+    
+    fii = fundo
+    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
+    voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
+    
+    cota_atual = cota_fii
+    voz_fundo = voz
+    voz = comparador(historico, cota_atual, voz_fundo)
+    
+    return card_fii, variac_fii, hist_text_fii, apl_document, voz
+'''
 def web_scrape_xpml():
     # Adiciona a geração do texto do histórico de alertas
     sufixo = "alert_value_xpml"
@@ -156,6 +181,7 @@ def web_scrape_xpml():
     voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_fii, variac_fii, hist_text_fii, apl_document_xpml, voz_xpml11
+'''
     
 def web_scrape_mxrf():
     # Adiciona a geração do texto do histórico de alertas
@@ -279,14 +305,16 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+        #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+        fundo = "xpml11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz_xpml11}").add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
-                document=apl_document_xpml
+                document=apl_document
             )
         ).add_directive(
             ExecuteCommandsDirective(
@@ -549,10 +577,10 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         # Define o documento APL e a resposta de voz com base no fundo selecionado
         if fundo in ["XPML11", "XPML", "Xispê eme éle"]:
             time.sleep(1)
-            _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+            _, _, _, apl_document, voz = web_scrape("xpml11")
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_xpml11
-            document = apl_document_xpml
+            voice_prompt = voz
+            document = apl_document
         elif fundo in ["MXRF11", "MXRF", "Eme xis erre efi"]:
             _, _, _, apl_document_mxrf, voz_mxrf11 = web_scrape_mxrf()
             document = apl_document_mxrf
@@ -677,13 +705,13 @@ class TouchHandler(AbstractRequestHandler):
             ).speak(f"Próximo:<break time='500ms'/>\n{voz_knri11}").set_should_end_session(False)  
         else:
             session_attr["state"] = "firstScreen"
-            _, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
+            _, _, _, apl_document, voz = web_scrape("xpml11")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken1",
-                    document=apl_document_xpml
+                    document=apl_document
                 )
-            ).speak(f"Recomeçando:<break time='500ms'/>\n{voz_xpml11}").set_should_end_session(False)
+            ).speak(f"Recomeçando:<break time='500ms'/>\n{voz}").set_should_end_session(False)
 
         handler_input.attributes_manager.session_attributes = session_attr
         return handler_input.response_builder.set_should_end_session(False).response    
