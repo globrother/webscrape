@@ -137,10 +137,11 @@ def comparador(historico, cota_atual, voz_fundo):
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
 def web_scrape(fundo):
-    doc_apl = f"apl_{fundo}.json"
+    fundo_fii = fundo[:-2] #extrai os ultimos 2 caracteres de fii
+    doc_apl = f"apl_{fundo_fii}.json"
     apl_document = _load_apl_document(doc_apl)
     # Adiciona a geração do texto do histórico de alertas
-    sufixo = f"alert_value_{fundo}"
+    sufixo = f"alert_value_{fundo_fii}"
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)
@@ -306,7 +307,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
         #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-        fundo = "xpml"
+        fundo = "xpml11"
         _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
