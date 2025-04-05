@@ -28,3 +28,30 @@ def web_scrape(fundo):
 
 
  _, _, _, apl_document, voz = web_scrape("xpml11")
+ 
+ 
+ {
+    "version": "2024.3",
+    "session": {
+        "new": true,
+        "sessionId": "SessionId.random-session-id",
+        "application": {
+            "applicationId": "amzn1.ask.skill.random-skill-id"
+        },
+        "attributes": {},
+        "user": {
+            "userId": "amzn1.ask.account.random-user-id"
+        }
+    },
+    "request": {
+        "type": "LaunchRequestHandler",
+        "requestId": "RequestId.random-request-id",
+        "timestamp": "2025-04-04T22:14:00Z",
+        "locale": "pt-BR",
+        "intent": {
+            "name": "LaunchRequestHandler",
+            "confirmationStatus": "NONE",
+            "slots": {}
+        }
+    }
+}
