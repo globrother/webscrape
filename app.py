@@ -182,119 +182,7 @@ def web_scrape_xpml():
     voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
     
     return card_fii, variac_fii, hist_text_fii, apl_document_xpml, voz_xpml11
-
-def web_scrape_mxrf():
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_mxrf"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_mxrf = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_mxrf da sessão: {hist_alert_mxrf} \n")
-    
-    fii = "mxrf11"
-    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii)
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
-    apl_document_mxrf['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_mxrf
-    voz_mxrf11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
-    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_mxrf}\n")
-    
-    cota_atual = cota_fii
-    #voz_fundo = voz_mxrf11
-    #voz_mxrf11 = comparador(historico, cota_atual, voz_fundo)
-    #logger.info(f"\n Valor de voz_mxrf11: {voz_mxrf11} \n")
-    
-    return card_fii, variac_fii, hist_text_fii, apl_document_mxrf, voz_mxrf11 
-    
-def web_scrape_xplg():
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_xplg"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_xplg = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_xplg da sessão: {hist_alert_xplg} \n")
-    
-    fii = "xplg11"
-    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii)
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
-    apl_document_xplg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xplg
-    voz_xplg11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
-    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_xplg}\n")
-    
-    cota_atual = cota_fii
-    #voz_fundo = voz_xplg11
-    #voz_xplg11 = comparador(historico, cota_atual, voz_fundo)
-    
-    return card_fii, variac_fii, hist_text_fii, apl_document_xplg, voz_xplg11
 '''
-    
-def web_scrape_btlg():
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_btlg"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_btlg = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_btlg da sessão: {hist_alert_btlg} \n")
-    
-    btlg11_0, card_btlg11, variac_btlg11, hist_text_btlg = get_btlg(requests, BeautifulSoup)
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_btlg11
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_btlg11
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_btlg
-    apl_document_btlg['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_btlg
-    voz_btlg11 = card_btlg11.replace('<br>', '\n<break time="500ms"/>')
-    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_btlg}\n")
-    
-    cota_atual = btlg11_0
-    #voz_fundo = voz_btlg11
-    #voz_btlg11 = comparador(historico, cota_atual, voz_fundo)
-    
-    return card_btlg11, variac_btlg11, hist_text_btlg, apl_document_btlg, voz_btlg11
-    
-def web_scrape_kncr():
-    sufixo = "alert_value_kncr"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_kncr = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_kncr da sessão: {hist_alert_kncr} \n")
-    
-    kncr11_0, card_kncr11, variac_kncr11, hist_text_kncr = get_kncr(requests, BeautifulSoup)
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_kncr11
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_kncr11
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_kncr
-    apl_document_kncr['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_kncr
-    voz_kncr11 = card_kncr11.replace('<br>', '\n<break time="500ms"/>')
-    #logger.info(f"\nDOCUMENTO APL:\n{apl_document_kncr}\n")
-    
-    cota_atual = kncr11_0
-    #voz_fundo = voz_kncr11
-    #voz_kncr11 = comparador(historico, cota_atual, voz_fundo)
-    
-    return card_kncr11, variac_kncr11, hist_text_kncr, apl_document_kncr, voz_kncr11
-    
-def web_scrape_knri():
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_knri"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_knri = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_knri da sessão: {hist_alert_knri} \n")
-    
-    knri11_0, card_knri11, variac_knri11, hist_text_knri = get_knri(requests, BeautifulSoup) # Último fundo a ser chamado na alexa
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_knri11
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_knri11
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_knri
-    apl_document_knri['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_knri
-    voz_knri11 = card_knri11.replace(
-        '<br>', '\n<break time="500ms"/>').replace('KNRI11', 'K N R I onze')
-    
-    cota_atual = knri11_0
-    #voz_fundo = voz_knri11
-    #voz_knri11 = comparador(historico, cota_atual, voz_fundo)
-    
-    return card_knri11, variac_knri11, hist_text_knri, apl_document_knri, voz_knri11
 # ============================================================================================
 
 # =====::::: CLASSES E INTENTS DA SKILL ALEXA :::::=====
@@ -410,16 +298,16 @@ class ShowFourthScreenHandler(AbstractRequestHandler):
                 "showFourthScreen"]
 
     def handle(self, handler_input):
-        
-        _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
+        fundo = "btlg11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fourthScreen" # Atualiza o estado para "fourthScreen"
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken4",
-                document=apl_document_btlg
+                document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz_btlg11}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken4",
                 commands=[
@@ -442,16 +330,16 @@ class ShowFifthScreenHandler(AbstractRequestHandler):
                 "showFifthScreen"]
 
     def handle(self, handler_input):
-        
-        _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
+        fundo = "kncr11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "fifthScreen" # Atualiza o estado para "fifthScreen"
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken5",
-                document=apl_document_kncr
+                document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz_kncr11}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken5",
                 commands=[
@@ -475,16 +363,16 @@ class ShowEndedScreenHandler(AbstractRequestHandler):
                 "showEndedScreen"]
 
     def handle(self, handler_input):
-        
-        _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
+        fundo = "knri11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "endedScreen" # Atualiza o estado para "endedScreen"
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken6",
-                document=apl_document_knri
+                document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz_knri11}").set_should_end_session(False)
+        ).speak(f"<break time='1s'/>\n{voz}").set_should_end_session(False)
         #os._exit(0) # Finalizar servidor Flask
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
@@ -595,20 +483,20 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
         elif fundo in ["BTLG11", "BTLG", "Bêtê éle gê"]:
-            _, _, _, apl_document_btlg, voz_btlg11 = web_scrape_btlg()
-            document = apl_document_btlg
+            _, _, _, apl_document, voz = web_scrape("btlg11")
+            document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_btlg11
+            voice_prompt = voz
         elif fundo in ["KNCR11","KNCR", "CA ene cê erre"]:
-            _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
-            document = apl_document_kncr
+            _, _, _, apl_document, voz = web_scrape("kncr11")
+            document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_kncr11
+            voice_prompt = voz
         elif fundo in ["KNRI11", "KNRI", "Ca ene erri i"]:
-            _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
-            document = apl_document_knri
+            _, _, _, apl_document, voz = web_scrape("knri11")
+            document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz_knri11
+            voice_prompt = voz
         else:
             response_text = "Desculpe, não consegui encontrar o fundo solicitado."
 
@@ -669,7 +557,7 @@ class TouchHandler(AbstractRequestHandler):
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
-            _, _, _, apl_document, voz = web_scrape_xplg("xplg11")
+            _, _, _, apl_document, voz = web_scrape("xplg11")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken3",
@@ -679,33 +567,33 @@ class TouchHandler(AbstractRequestHandler):
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
-            _, _, _, apl_document_xpml, voz_btlg11 = web_scrape_btlg()
+            _, _, _, apl_document, voz = web_scrape("btlg11")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken4",
-                    document=apl_document_btlg
+                    document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz_btlg11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fourthScreen":
             session_attr["state"] = "fifthScreen"
-            _, _, _, apl_document_kncr, voz_kncr11 = web_scrape_kncr()
+            _, _, _, apl_document, voz = web_scrape()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken5",
-                    document=apl_document_kncr
+                    document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz_kncr11}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "fifthScreen":
             session_attr["state"] = "endedScreen"
-            _, _, _, apl_document_knri, voz_knri11 = web_scrape_knri()
+            _, _, _, apl_document, voz = web_scrape()
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="textDisplayToken6",
-                    document=apl_document_knri
+                    document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz_knri11}").set_should_end_session(False)  
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)  
         else:
             session_attr["state"] = "firstScreen"
             _, _, _, apl_document, voz = web_scrape("xpml11")
