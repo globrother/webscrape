@@ -442,7 +442,7 @@ class TouchHandler(AbstractRequestHandler):
                             arguments=["showThirdScreen"], delay=1)
                     ]
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>Próximo.\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
@@ -452,7 +452,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken3",
                     document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>Próximo.\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
