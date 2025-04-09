@@ -59,6 +59,16 @@ app = Flask(__name__)
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
+# Mapeamento de Estados e Fundos
+state_fund_mapping = {
+    "firstScreen": ("xpml11", "secondScreen"),
+    "secondScreen": ("mxrf11", "thirdScreen"),
+    "thirdScreen": ("xplg11", "fourthScreen"),
+    "fourthScreen": ("btlg11", "fifthScreen"),
+    "fifthScreen": ("kncr11", "endedScreen"),
+    "endedScreen": ("knri11", None)  # Último estado
+}
+
 def _load_apl_document(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -213,163 +223,47 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
-class ShowSecondScreenHandler(AbstractRequestHandler):
-    # ::::: 2 :::::
-    """
+class DynamicScreenHandler(AbstractRequestHandler):
+    def __init__(self, state_fund_mapping):
+        self.state_fund_mapping = state_fund_mapping
+
     def can_handle(self, handler_input):
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showSecondScreen"]
-    """
-    def can_handle(self, handler_input):
-        #time.sleep(5)
-        #return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            #"showSecondScreen" in handler_input.request_envelope.request.arguments
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showSecondScreen"]
-        
-    def handle(self, handler_input):
-        fundo = "mxrf11"
-        _, _, _, apl_document, voz = web_scrape(fundo)        
         session_attr = handler_input.attributes_manager.session_attributes
-        
-        if not session_attr.get("userInteracted"):
-                session_attr["state"] = "secondScreen" # Atualiza o estado para "secondScreen"
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="textDisplayToken2",
-                        document=apl_document
-                    )
-                    
-                ).speak(f"<break time='1s'/>\n{voz}<break time='500ms'/>").add_directive(
-                    ExecuteCommandsDirective(
-                        token="textDisplayToken2",
-                        commands=[
-                            SendEventCommand(
-                                arguments=["showThirdScreen"], delay=1)
-                        ]
-                    )
-                )
-        return handler_input.response_builder.set_should_end_session(False).response
-# ============================================================================================
-
-class ShowThirdScreenHandler(AbstractRequestHandler):
-    # ::::: 3 :::::
-    def can_handle(self, handler_input):
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            "showThirdScreen" in handler_input.request_envelope.request.arguments
+        current_state = session_attr.get("state", "firstScreen")
+        return current_state in self.state_fund_mapping
 
     def handle(self, handler_input):
-        fundo = "xplg11"
+        session_attr = handler_input.attributes_manager.session_attributes
+        current_state = session_attr.get("state", "firstScreen")
+
+        # Obtenha o fundo e o próximo estado do mapeamento
+        fundo, next_state = self.state_fund_mapping[current_state]
+
+        # Chame a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
-        session_attr = handler_input.attributes_manager.session_attributes
-        
-        if not session_attr.get("userInteracted"):
-            session_attr["state"] = "thirdScreen" # Atualiza o estado para "thirdScreen"
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken3",
-                    document=apl_document
-                )  
-            ).speak(f"<break time='1s'/>\n{voz}").add_directive(
-                ExecuteCommandsDirective(
-                    token="textDisplayToken3",
-                    commands=[
-                        SendEventCommand(
-                            arguments=["showFourthScreen"], delay=1)
-                    ]
-                )
-            )
-        #time.sleep(3)
-        return handler_input.response_builder.set_should_end_session(False).response
-# ============================================================================================
 
-class ShowFourthScreenHandler(AbstractRequestHandler):
-    # ::::: 4 :::::
-    def can_handle(self, handler_input):
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showFourthScreen"]
+        # Atualize o estado para o próximo
+        session_attr["state"] = next_state
 
-    def handle(self, handler_input):
-        fundo = "btlg11"
-        _, _, _, apl_document, voz = web_scrape(fundo)
-        session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "fourthScreen" # Atualiza o estado para "fourthScreen"
+        # Construa a resposta
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="textDisplayToken4",
+                token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
         ).speak(f"<break time='1s'/>\n{voz}").add_directive(
             ExecuteCommandsDirective(
-                token="textDisplayToken4",
+                token=f"textDisplayToken_{current_state}",
                 commands=[
                     SendEventCommand(
-                        arguments=["showFifthScreen"], delay=1) # Atraso em ms
+                        arguments=[f"show{next_state}"], delay=1
+                    )
                 ]
             )
         )
-        #time.sleep(3)
+
         return handler_input.response_builder.set_should_end_session(False).response
-# ============================================================================================
 
-# AQUI DEVE MUDAR DUAS VARIÁVEIS: apl_document_xxxxxx e voz_xxxxxx, AO ADICIONAR UM NOVO FUNDO
-# MUDAR TAMBÉM O NOME DA CLASSE: ShowXxxxxscreenHandler. ARGUMENT: showXxxxxScreen(2x). TOKEN: textDisplayTokenx.
-class ShowFifthScreenHandler(AbstractRequestHandler):
-    # ::::: 5 :::::
-    def can_handle(self, handler_input):
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showFifthScreen"]
-
-    def handle(self, handler_input):
-        fundo = "kncr11"
-        _, _, _, apl_document, voz = web_scrape(fundo)
-        session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "fifthScreen" # Atualiza o estado para "fifthScreen"
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="textDisplayToken5",
-                document=apl_document
-            )
-        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
-            ExecuteCommandsDirective(
-                token="textDisplayToken5",
-                commands=[
-                    SendEventCommand(
-                        arguments=["showEndedScreen"], delay=1)
-                ]
-            )
-        )
-        #time.sleep(3)
-        return handler_input.response_builder.set_should_end_session(False).response
-# ============================================================================================
-# ↓ ↓ ↓ ↓ ADICIONE NOVOS ↓ ↓ ↓ ↓ ↓ ↓ HANDLERS DE FUNDOS AQUI ↓ ↓ ↓ ↓
-    
-# ↑ ↑ ↑ ↑ ADICIONE NOVOS ↑ ↑ ↑ ↑ ↑ ↑ HANDLERS DE FUNDOS AQUI ↑ ↑ ↑ ↑
-# ESSE É O ULTIMO HANDLER, NÃO PRECISA MUDAR NADA AQUI APENAS MANTER
-class ShowEndedScreenHandler(AbstractRequestHandler):
-    # ::::: FINAL :::::
-    def can_handle(self, handler_input):
-        return is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input) and \
-            handler_input.request_envelope.request.arguments == [
-                "showEndedScreen"]
-
-    def handle(self, handler_input):
-        fundo = "knri11"
-        _, _, _, apl_document, voz = web_scrape(fundo)
-        session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "endedScreen" # Atualiza o estado para "endedScreen"
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="textDisplayToken6",
-                document=apl_document
-            )
-        ).speak(f"<break time='1s'/>\n{voz}").set_should_end_session(False)
-        #os._exit(0) # Finalizar servidor Flask
-        return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
 # Classe para criar um alerta de preço. 
@@ -669,11 +563,9 @@ def webhook():
 
     # Inicialize os handlers com card_xpml11
     launch_request_handler = LaunchRequestHandler()
-    show_second_screen_handler = ShowSecondScreenHandler()
-    show_third_screen_handler = ShowThirdScreenHandler()
-    show_fourth_screen_handler = ShowFourthScreenHandler()
-    show_fifth_screen_handler = ShowFifthScreenHandler()
-    show_ended_screen_handler = ShowEndedScreenHandler()
+    dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
+
+
     select_fund_intent_handler = SelectFundIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     
@@ -685,11 +577,7 @@ def webhook():
 
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
-    sb.add_request_handler(show_second_screen_handler)
-    sb.add_request_handler(show_third_screen_handler)
-    sb.add_request_handler(show_fourth_screen_handler)
-    sb.add_request_handler(show_fifth_screen_handler)
-    sb.add_request_handler(show_ended_screen_handler)
+    sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(select_fund_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
     
