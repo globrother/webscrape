@@ -432,6 +432,7 @@ class TouchHandler(AbstractRequestHandler):
 
         # Chama a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
+        voz = "Esse é um teste"
 
         # Constrói a resposta
         handler_input.response_builder.speak(f"Próximo! {voz}").add_directive(
