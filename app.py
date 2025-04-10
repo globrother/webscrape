@@ -435,7 +435,7 @@ class TouchHandler(AbstractRequestHandler):
         voz = "Esse é um teste"
 
         # Constrói a resposta
-        handler_input.response_builder.speak(f"Próximo! {voz}").add_directive(
+        handler_input.response_builder.speak(f"Próximo! ").add_directive(
             RenderDocumentDirective(
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
