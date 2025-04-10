@@ -415,6 +415,7 @@ class TouchHandler(AbstractRequestHandler):
         return False
 
     def handle(self, handler_input):
+        logging.info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", "firstScreen")
@@ -446,100 +447,7 @@ class TouchHandler(AbstractRequestHandler):
 
         return handler_input.response_builder.set_should_end_session(False).response
 #============================================================================================
-"""
-class TouchHandler(AbstractRequestHandler):
 
-    def can_handle(self, handler_input):
-        print("Verificando evento de toque...")
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            print("Tipo de evento é UserEvent")
-            if "touch" in handler_input.request_envelope.request.arguments:
-                print("Evento de toque detectado")
-                return True
-        return False
-
-    def handle(self, handler_input):
-        print("Manejando evento de toque...")
-
-        # Recupera os atributos de sessão
-        session_attr = handler_input.attributes_manager.session_attributes
-        if not session_attr:
-            session_attr = {}
-        
-        print(f"Estado atual: {session_attr.get('state')}")
-        #time.sleep(1)
-        # Continuação da lógica baseada no estado armazenado
-        if "state" in session_attr and session_attr["state"] == "firstScreen":
-            session_attr["state"] = "secondScreen"
-            handler_input.response_builder.speak("Ok")
-            _, _, _, apl_document, voz = web_scrape("mxrf11")
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken2",
-                    document=apl_document
-                )
-            ).add_directive( # Esse boco ainda não funciona ver como fazer
-                    ExecuteCommandsDirective(
-                    token="textDisplayToken3",
-                    commands=[
-                        SendEventCommand(
-                            arguments=["showThirdScreen"], delay=1)
-                    ]
-                )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
-            
-        elif "state" in session_attr and session_attr["state"] == "secondScreen":
-            session_attr["state"] = "thirdScreen"
-            _, _, _, apl_document, voz = web_scrape("xplg11")
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken3",
-                    document=apl_document
-                )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
-            
-        elif "state" in session_attr and session_attr["state"] == "thirdScreen":
-            session_attr["state"] = "fourthScreen"
-            _, _, _, apl_document, voz = web_scrape("btlg11")
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken4",
-                    document=apl_document
-                )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
-            
-        elif "state" in session_attr and session_attr["state"] == "fourthScreen":
-            session_attr["state"] = "fifthScreen"
-            _, _, _, apl_document, voz = web_scrape()
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken5",
-                    document=apl_document
-                )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
-            
-        elif "state" in session_attr and session_attr["state"] == "fifthScreen":
-            session_attr["state"] = "endedScreen"
-            _, _, _, apl_document, voz = web_scrape()
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken6",
-                    document=apl_document
-                )
-            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)  
-        else:
-            session_attr["state"] = "firstScreen"
-            _, _, _, apl_document, voz = web_scrape("xpml11")
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken1",
-                    document=apl_document
-                )
-            ).speak(f"Recomeçando:<break time='500ms'/>\n{voz}").set_should_end_session(False)
-
-        handler_input.attributes_manager.session_attributes = session_attr
-        return handler_input.response_builder.set_should_end_session(False).response    
-"""
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
@@ -609,11 +517,8 @@ def webhook():
     # Inicialize os handlers com card_xpml11
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
-
-
     select_fund_intent_handler = SelectFundIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
-    
     touch_handler = TouchHandler(state_fund_mapping)
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
@@ -625,7 +530,6 @@ def webhook():
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(select_fund_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
-    
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
