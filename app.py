@@ -433,6 +433,13 @@ class TouchHandler(AbstractRequestHandler):
         # Obtém o fundo e o próximo estado do mapeamento
         fundo, next_state = self.state_fund_mapping[current_state]
 
+        # Verifica se é o último estado
+        if current_state == "endedScreen":
+            voz_prefix = "Recomeçando!"
+            next_state = "firstScreen"  # Reinicia para o primeiro estado
+        else:
+            voz_prefix = "Próximo!"
+        
         # Atualiza o estado para o próximo
         session_attr["state"] = next_state
 
@@ -440,7 +447,7 @@ class TouchHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Constrói a resposta
-        handler_input.response_builder.speak(f"Próximo! <break time='1s'/>\n{voz}").add_directive(
+        handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
