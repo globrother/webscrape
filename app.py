@@ -396,7 +396,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     token="textDisplayToken",
                     document=document
                 )
-            ).speak(f"{response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
+            ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
         else:
             handler_input.response_builder.speak(response_text).set_should_end_session(False)
 
