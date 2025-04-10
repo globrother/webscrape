@@ -251,7 +251,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
+        ).speak(f"Próximo! <break time='1s'/>\n{voz}").add_directive(
             ExecuteCommandsDirective(
                 token=f"textDisplayToken_{current_state}",
                 commands=[
