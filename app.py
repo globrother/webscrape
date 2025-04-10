@@ -434,12 +434,12 @@ class TouchHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Constrói a resposta
-        handler_input.response_builder.add_directive(
+        handler_input.response_builder.speak(f"Próximo!<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"Próximo!<break time='1s'/>\n{voz}")
+        )
 
         # Define o próximo estado na sessão
         handler_input.attributes_manager.session_attributes = session_attr
