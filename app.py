@@ -434,7 +434,7 @@ class TouchHandler(AbstractRequestHandler):
         fundo, next_state = self.state_fund_mapping[current_state]
 
         # Verifica se é o último estado
-        if current_state == "endedScreen":
+        if current_state == "firstScreen":
             voz_prefix = "Recomeçando!"
             next_state = "firstScreen"  # Reinicia para o primeiro estado
         else:
