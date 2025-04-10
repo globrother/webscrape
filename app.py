@@ -228,6 +228,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
+        # Verifica se NÃO é um evento de toque
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", "firstScreen")
         return current_state in self.state_fund_mapping
@@ -251,7 +256,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"Próximo! <break time='1s'/>\n{voz}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
             ExecuteCommandsDirective(
                 token=f"textDisplayToken_{current_state}",
                 commands=[
@@ -435,7 +440,7 @@ class TouchHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Constrói a resposta
-        handler_input.response_builder.speak("Próximo!").add_directive(
+        handler_input.response_builder.speak(f"Próximo! <break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
