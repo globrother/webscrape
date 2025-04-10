@@ -404,6 +404,50 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
+    def __init__(self, state_fund_mapping):
+        self.state_fund_mapping = state_fund_mapping
+
+    def can_handle(self, handler_input):
+        # Verifica se o evento é um UserEvent e contém "touch"
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            if "touch" in handler_input.request_envelope.request.arguments:
+                return True
+        return False
+
+    def handle(self, handler_input):
+        # Recupera os atributos de sessão
+        session_attr = handler_input.attributes_manager.session_attributes
+        current_state = session_attr.get("state", "firstScreen")
+
+        # Verifica se o estado atual está no mapeamento
+        if current_state not in self.state_fund_mapping:
+            # Se o estado não for encontrado, reinicia para o primeiro estado
+            current_state = "firstScreen"
+
+        # Obtém o fundo e o próximo estado do mapeamento
+        fundo, next_state = self.state_fund_mapping[current_state]
+
+        # Atualiza o estado para o próximo
+        session_attr["state"] = next_state
+
+        # Chama a função web_scrape para obter os dados do fundo
+        _, _, _, apl_document, voz = web_scrape(fundo)
+
+        # Constrói a resposta
+        handler_input.response_builder.add_directive(
+            RenderDocumentDirective(
+                token=f"textDisplayToken_{current_state}",
+                document=apl_document
+            )
+        ).speak(f"Próximo!<break time='1s'/>\n{voz}")
+
+        # Define o próximo estado na sessão
+        handler_input.attributes_manager.session_attributes = session_attr
+
+        return handler_input.response_builder.set_should_end_session(False).response
+#============================================================================================
+"""
+class TouchHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         print("Verificando evento de toque...")
@@ -442,7 +486,7 @@ class TouchHandler(AbstractRequestHandler):
                             arguments=["showThirdScreen"], delay=1)
                     ]
                 )
-            ).speak(f"Próximo:<break time='500ms'/>Próximo.\n{voz}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "secondScreen":
             session_attr["state"] = "thirdScreen"
@@ -452,7 +496,7 @@ class TouchHandler(AbstractRequestHandler):
                     token="textDisplayToken3",
                     document=apl_document
                 )
-            ).speak(f"Próximo:<break time='500ms'/>Próximo.\n{voz}").set_should_end_session(False)
+            ).speak(f"Próximo:<break time='500ms'/>\n{voz}").set_should_end_session(False)
             
         elif "state" in session_attr and session_attr["state"] == "thirdScreen":
             session_attr["state"] = "fourthScreen"
@@ -495,6 +539,7 @@ class TouchHandler(AbstractRequestHandler):
 
         handler_input.attributes_manager.session_attributes = session_attr
         return handler_input.response_builder.set_should_end_session(False).response    
+"""
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
@@ -548,7 +593,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
         
         # Em vez de encerrar, vamos definir uma mensagem padrão
-        handler_input.response_builder.speak("<break time='500ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
+        handler_input.response_builder.speak("<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("\n Encerrando Aplicativo...\n")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response
@@ -569,7 +614,7 @@ def webhook():
     select_fund_intent_handler = SelectFundIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     
-    touch_handler = TouchHandler()
+    touch_handler = TouchHandler(state_fund_mapping)
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
     
