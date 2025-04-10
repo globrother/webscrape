@@ -436,7 +436,7 @@ class TouchHandler(AbstractRequestHandler):
         # Verifica se é o último estado
         if current_state == "firstScreen":
             voz_prefix = "Recomeçando!"
-            next_state = "firstScreen"  # Reinicia para o primeiro estado
+            # next_state = "firstScreen"  # Reinicia para o primeiro estado
         else:
             voz_prefix = "Próximo!"
         
