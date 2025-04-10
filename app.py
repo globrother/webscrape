@@ -434,7 +434,7 @@ class TouchHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Constrói a resposta
-        handler_input.response_builder.speak(f"Próximo! {"Esse é um teste de fala"}").add_directive(
+        handler_input.response_builder.speak(f"Próximo! {voz}").add_directive(
             RenderDocumentDirective(
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
