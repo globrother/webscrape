@@ -192,7 +192,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="textDisplayToken1",
                 document=apl_document
             )
-        ).add_directive(
+        )
+        '''.add_directive(
             ExecuteCommandsDirective(
                 token="textDisplayToken1",
                 commands=[
@@ -200,7 +201,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                         arguments=["showSecondScreen"], delay=1)
                 ]
             )
-        )
+        )'''
         
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================

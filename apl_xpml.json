@@ -66,6 +66,15 @@
                                 "paddingBottom": "20dp",
                                 "items": [
                                     {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "touch"
+                                                ]
+                                            }
+                                        ],
                                         "items": [
                                             {
                                                 "type": "Container",
