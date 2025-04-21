@@ -210,6 +210,10 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
+        
+        request_type = handler_input.request_envelope.request.object_type
+        logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
+        
         # Verifica se NÃO é um evento de toque
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             logging.info("DynamicScreenHandler ignorado para eventos de toque.")
@@ -260,10 +264,16 @@ class TouchHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
+        
+        request_type = handler_input.request_envelope.request.object_type
+        logging.info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
+        
         # Verifica se o evento é um UserEvent e contém "touch"
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             if "touch" in handler_input.request_envelope.request.arguments:
+                logging.info("TouchHandler acionado.")
                 return True
+        logging.info("TouchHandler NÃO acionado.")
         return False
 
     def handle(self, handler_input):
@@ -470,6 +480,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
     método para essa solicitação."""
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        logging.info("CatchAllRequestHandler: Verificando solicitação.")
         return True
 
     def handle(self, handler_input):
