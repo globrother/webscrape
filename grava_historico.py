@@ -163,6 +163,7 @@ def ler_historico(sufixo):
     connection.close()
     #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     #logger.info(f"valor de hitórico: {historico}")
+    logger.info("::--------------------------------------------------------::")
     return historico
 
 """def gerar_texto_historico(historico, aux):
@@ -215,15 +216,15 @@ def gerar_texto_historico(historico, aux):
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}']
             else:
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-            logger.info(f"Hist alerta gerado: {linhas}\n")
+            logger.info(f"Hist alerta gerado: {linhas}\n::--------------------------------------------------------::")
         else:
             logging.info("Um registro encontrado\n")
             linhas = [linhas[0]]
         #if len(linhas) > 1:
             #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-        logger.info(f"Histórico de alerta gerado: {linhas}\n")
+        logger.info(f"Histórico de alerta gerado: {linhas}\n::--------------------------------------------------------::")
         return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico de fundo gerado\n")
+        logger.info("\n Histórico de fundo gerado\n::--------------------------------------------------------::")
         return "<br>".join(linhas)
