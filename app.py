@@ -211,12 +211,14 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # Verifica se NÃO é um evento de toque
-        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            #return False
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", "firstScreen")
+        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
         return current_state in self.state_fund_mapping
 
     def handle(self, handler_input):
@@ -252,6 +254,58 @@ class DynamicScreenHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(False).response
 
 # ============================================================================================
+
+class TouchHandler(AbstractRequestHandler):
+    def __init__(self, state_fund_mapping):
+        self.state_fund_mapping = state_fund_mapping
+
+    def can_handle(self, handler_input):
+        # Verifica se o evento é um UserEvent e contém "touch"
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            if "touch" in handler_input.request_envelope.request.arguments:
+                return True
+        return False
+
+    def handle(self, handler_input):
+        logging.info("TouchHandler: handle chamado.")
+        # Recupera os atributos de sessão
+        session_attr = handler_input.attributes_manager.session_attributes
+        current_state = session_attr.get("state", "firstScreen")
+
+        # Verifica se o estado atual está no mapeamento
+        if current_state not in self.state_fund_mapping:
+            # Se o estado não for encontrado, reinicia para o primeiro estado
+            current_state = "firstScreen"
+
+        # Obtém o fundo e o próximo estado do mapeamento
+        fundo, next_state = self.state_fund_mapping[current_state]
+
+        # Verifica se é o último estado
+        if current_state == "firstScreen":
+            voz_prefix = "Recomeçando!"
+            # next_state = "firstScreen"  # Reinicia para o primeiro estado
+        else:
+            voz_prefix = "Próximo!"
+        
+        # Atualiza o estado para o próximo
+        session_attr["state"] = next_state
+
+        # Chama a função web_scrape para obter os dados do fundo
+        _, _, _, apl_document, voz = web_scrape(fundo)
+
+        # Constrói a resposta
+        handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
+            RenderDocumentDirective(
+                token=f"textDisplayToken_{current_state}",
+                document=apl_document
+            )
+        )
+
+        # Define o próximo estado na sessão
+        handler_input.attributes_manager.session_attributes = session_attr
+
+        return handler_input.response_builder.set_should_end_session(False).response
+#============================================================================================
 
 # Classe para criar um alerta de preço. 
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
@@ -390,58 +444,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-class TouchHandler(AbstractRequestHandler):
-    def __init__(self, state_fund_mapping):
-        self.state_fund_mapping = state_fund_mapping
-
-    def can_handle(self, handler_input):
-        # Verifica se o evento é um UserEvent e contém "touch"
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            if "touch" in handler_input.request_envelope.request.arguments:
-                return True
-        return False
-
-    def handle(self, handler_input):
-        logging.info("TouchHandler: handle chamado.")
-        # Recupera os atributos de sessão
-        session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
-
-        # Verifica se o estado atual está no mapeamento
-        if current_state not in self.state_fund_mapping:
-            # Se o estado não for encontrado, reinicia para o primeiro estado
-            current_state = "firstScreen"
-
-        # Obtém o fundo e o próximo estado do mapeamento
-        fundo, next_state = self.state_fund_mapping[current_state]
-
-        # Verifica se é o último estado
-        if current_state == "firstScreen":
-            voz_prefix = "Recomeçando!"
-            # next_state = "firstScreen"  # Reinicia para o primeiro estado
-        else:
-            voz_prefix = "Próximo!"
-        
-        # Atualiza o estado para o próximo
-        session_attr["state"] = next_state
-
-        # Chama a função web_scrape para obter os dados do fundo
-        _, _, _, apl_document, voz = web_scrape(fundo)
-
-        # Constrói a resposta
-        handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
-            RenderDocumentDirective(
-                token=f"textDisplayToken_{current_state}",
-                document=apl_document
-            )
-        )
-
-        # Define o próximo estado na sessão
-        handler_input.attributes_manager.session_attributes = session_attr
-
-        return handler_input.response_builder.set_should_end_session(False).response
-#============================================================================================
-
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
@@ -488,9 +490,9 @@ def webhook():
     # Inicialize os handlers com card_xpml11
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
+    touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
-    touch_handler = TouchHandler(state_fund_mapping)
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
     
@@ -499,9 +501,9 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(dynamic_screen_handler)
+    sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
-    sb.add_request_handler(touch_handler)
     sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
     
