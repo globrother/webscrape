@@ -165,29 +165,7 @@ def web_scrape(fundo):
     voz = comparador(historico, cota_atual, voz_fundo)
     
     return card_fii, variac_fii, hist_text_fii, apl_document, voz
-'''
-def web_scrape_xpml():
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = "alert_value_xpml"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert_xpml} \n")
-    
-    fii = "xpml11"
-    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
-    apl_document_xpml['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert_xpml
-    voz_xpml11 = card_fii.replace('<br>', '\n<break time="500ms"/>')
-    
-    cota_atual = cota_fii
-    voz_fundo = voz_xpml11
-    voz_xpml11 = comparador(historico, cota_atual, voz_fundo)
-    
-    return card_fii, variac_fii, hist_text_fii, apl_document_xpml, voz_xpml11
-'''
+
 # ============================================================================================
 
 # =====::::: CLASSES E INTENTS DA SKILL ALEXA :::::=====
@@ -200,11 +178,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
         #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-        fundo = "xpml11"
-        _, _, _, apl_document, voz = web_scrape(fundo)
+        
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["state"] = "firstScreen"
         
+        # Chama o fundo inicial
+        fundo = "xpml11"
+        _, _, _, apl_document, voz = web_scrape(fundo)
+
+        # Constrói a resposta inicial
         handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
@@ -489,33 +471,10 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         return True
 
     def handle(self, handler_input):
-        # Log para depuração
-        print("CatchAllRequestHandler acionado")
-        print(f"Tipo de Requisição: {handler_input.request_envelope.request}")
-        
-        # Verificar se é um FallbackIntent
-        if handler_input.request_envelope.request.object_type == "IntentRequest" and \
-            handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
-                print("FallbackIntent em CatchAllRequest detectado")
-                # Cria uma instância de TouchHandler
-                #touch_handler = TouchHandler()
-                
-                # Chama o método handle de TouchHandler
-                #return touch_handler.handle(handler_input)
-            
-            
-                # Não altere o estado e não forneça resposta audível
-                handler_input.response_builder.set_should_end_session(False)
-                return handler_input.response_builder.response
-        
-        # Mensagem padrão caso não seja um FallbackIntent
+        logging.info("CatchAllRequestHandler acionado")
         handler_input.response_builder.speak(
-            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
-        
-        # Em vez de encerrar, vamos definir uma mensagem padrão
-        handler_input.response_builder.speak("<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
-        logging.info("\n Encerrando Aplicativo...\n")
-        #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
+            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
+        ).set_should_end_session(False)
         return handler_input.response_builder.response
 # ============================================================================================
 
