@@ -194,15 +194,18 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 document=apl_document
             )
         )
-        """.add_directive(
+        
+        # Agende a navegação automática para o próximo fundo
+        handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
-                token=f"textDisplayToken1",
+                token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=1)
+                        arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
+                    )
                 ]
             )
-        )"""
+        )
         
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
@@ -212,7 +215,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
-        
         request_type = handler_input.request_envelope.request.object_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
@@ -220,6 +222,15 @@ class DynamicScreenHandler(AbstractRequestHandler):
         #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             #return False
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "autoNavigate":
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                return True
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
