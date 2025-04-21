@@ -187,21 +187,22 @@ class LaunchRequestHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Constrói a resposta inicial
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}").add_directive(
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
+        ).add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
                 document=apl_document
             )
         )
-        '''.add_directive(
+        """.add_directive(
             ExecuteCommandsDirective(
-                token="textDisplayToken1",
+                token=f"textDisplayToken1",
                 commands=[
                     SendEventCommand(
-                        arguments=["showSecondScreen"], delay=1)
+                        arguments=["autoNavigate"], delay=1)
                 ]
             )
-        )'''
+        )"""
         
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
@@ -216,9 +217,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
         # Verifica se NÃO é um evento de toque
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
+        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            #return False
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
@@ -245,7 +246,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz}").add_directive(
+        ).speak(f"<break time='1s'/>\n{voz}")
+        """.add_directive(
             ExecuteCommandsDirective(
                 token=f"textDisplayToken_{current_state}",
                 commands=[
@@ -254,7 +256,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     )
                 ]
             )
-        )
+        )"""
 
         return handler_input.response_builder.set_should_end_session(False).response
 
@@ -271,8 +273,10 @@ class TouchHandler(AbstractRequestHandler):
         
         # Verifica se o evento é um UserEvent e contém "touch"
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            if "touch" in handler_input.request_envelope.request.arguments:
-                logging.info("TouchHandler acionado.")
+            arguments = handler_input.request_envelope.request.arguments
+            logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "touch":
+                logging.info("TouchHandler acionado para evento de toque.")
                 return True
         logging.info("TouchHandler NÃO acionado.")
         return False
