@@ -211,9 +211,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # Verifica se NÃO é um evento de toque
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
+        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            #return False
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", "firstScreen")
