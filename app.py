@@ -384,6 +384,18 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 
+class SessionEndedRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_request_type("SessionEndedRequest")(handler_input)
+
+    def handle(self, handler_input):
+        logging.info("SessionEndedRequestHandler acionado.")
+        # Não faça nada e mantenha a sessão ativa
+        handler_input.response_builder.set_should_end_session(False)
+        return handler_input.response_builder.response
+    
+# ============================================================================================
+
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("SelectFundIntent")(handler_input)
@@ -504,6 +516,7 @@ def webhook():
     touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
+    session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
     
@@ -515,6 +528,7 @@ def webhook():
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
+    sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
     
