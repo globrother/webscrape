@@ -228,5 +228,4 @@ def gerar_texto_historico(historico, aux):
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
-        logger.info("--------------------------------------------------------:")
         return "<br>".join(linhas)
