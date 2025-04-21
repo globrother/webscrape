@@ -163,7 +163,7 @@ def ler_historico(sufixo):
     connection.close()
     #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
     #logger.info(f"valor de hitórico: {historico}")
-    logger.info("::--------------------------------------------------------::")
+    logger.info("--------------------------------------------------------:")
     return historico
 
 """def gerar_texto_historico(historico, aux):
@@ -197,6 +197,7 @@ def ler_historico(sufixo):
  
 def gerar_texto_historico(historico, aux):
     logger.info("--> Iniciando Gerar Histórico\n")
+    logger("--------------------------------------------------------:")
     
     # Verificar se o histórico está vazio
     if not historico:
