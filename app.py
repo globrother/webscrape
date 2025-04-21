@@ -247,6 +247,19 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 document=apl_document
             )
         ).speak(f"<break time='1s'/>\n{voz}")
+        
+        # Se houver um próximo estado, agende a navegação automática
+        if next_state:
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token=f"textDisplayToken_{current_state}",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
+                        )
+                    ]
+                )
+            )
         """.add_directive(
             ExecuteCommandsDirective(
                 token=f"textDisplayToken_{current_state}",
