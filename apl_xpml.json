@@ -37,7 +37,7 @@
                                 "headerAttributionText": "by Cleber Gobira",
                                 "headerBackgroundColor": "rgba(0, 0, 0, 0.5)",
                                 "headerAttributionOpacity": 0.7,
-                                "headerBackButton": true,
+                                "headerBackButton": false,
                                 "headerBackButtonCommand": {
                                     "type": "SendEvent",
                                     "arguments": [

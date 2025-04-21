@@ -215,9 +215,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
         # Verifica se NÃO é um evento de toque
-        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            #return False
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
