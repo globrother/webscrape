@@ -263,7 +263,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if current_state == "endedScreen":
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
-                "<break time='10s'/>Encerrando a skill. Até a próxima!"
+                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
             )
             return handler_input.response_builder.set_should_end_session(True).response
         
