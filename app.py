@@ -165,7 +165,7 @@ def web_scrape(fundo):
     ]
     
     # Determina o índice do fundo atual com base no mapeamento de estados
-    fundo_index = list(state_fund_mapping.keys()).index(fundo)
+    fundo_index = list(state_fund_mapping.keys())
     logging.info(f"o indice é: {fundo_index}")
     
     # Seleciona a imagem de fundo correspondente ao índice
