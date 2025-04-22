@@ -259,6 +259,14 @@ class DynamicScreenHandler(AbstractRequestHandler):
             )
         ).speak(f"<break time='1s'/>\n{voz}")
         
+        # Verifica se é o último estado
+        if current_state == "endedScreen":
+            logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
+            handler_input.response_builder.speak(
+                "<break time='10s'/>Encerrando a skill. Até a próxima!"
+            )
+            return handler_input.response_builder.set_should_end_session(True).response
+        
         # Se houver um próximo estado, agende a navegação automática
         if next_state:
             handler_input.response_builder.add_directive(
@@ -281,22 +289,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 ]
             )
         )"""
+
         return handler_input.response_builder.set_should_end_session(False).response
 
-        # Verifica se é o último estado
-        if current_state == "endedScreen":
-            logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token=f"textDisplayToken_{current_state}",
-                    commands=[
-                        SendEventCommand(
-                            arguments=["endSkill"], delay=10  # Aguarda 10 segundos antes de encerrar
-                        )
-                    ]
-                )
-            ).speak("<break time='10s'/>Encerrando a skill. Até a próxima!")
-            return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
