@@ -153,11 +153,29 @@ def web_scrape(fundo):
     logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
     
     fii = fundo
+    
+    # Lista de links de imagens de planos de fundo
+    background_images = [
+        "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+        "https://lh5.googleusercontent.com/d/1-9P8D-AJCsH6-S2ZSmSURlT8aGDGcgV4",
+        "https://lh5.googleusercontent.com/d/1-Eeo6Kr7MQQ1MTAtFnrYynkaqaDrU_LW",
+        "https://lh5.googleusercontent.com/d/1-8MRaljDqQKt6IlhTtlcKcEsFKO6psqF",
+        "https://lh5.googleusercontent.com/d/1-Eeo6Kr7MQQ1MTAtFnrYynkaqaDrU_LW",
+        "https://lh5.googleusercontent.com/d/1-CUhhgJDaGaTMJL6Ss0hdFENPb07F1FU",
+    ]
+    
+    # Determina o índice do fundo atual com base no mapeamento de estados
+    fundo_index = list(state_fund_mapping.keys()).index(fundo)
+    
+    # Seleciona a imagem de fundo correspondente ao índice
+    background_image = background_images[fundo_index % len(background_images)]
+    
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
+    apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
     
     cota_atual = cota_fii
@@ -257,13 +275,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz}")
+        ).speak(f"<break time='500ms'/>\n{voz}")
         
         # Verifica se é o último estado
         if current_state == "endedScreen":
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
-                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+                f"<break time='500ms'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
             )
             return handler_input.response_builder.set_should_end_session(True).response
         
