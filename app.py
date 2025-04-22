@@ -168,8 +168,8 @@ def web_scrape(fundo):
     #fundo_index = list(state_fund_mapping.keys()).index(fundo)
     
     # Seleciona a imagem de fundo correspondente ao índice
-    #background_image = background_images[fundo_index % len(background_images)]
-    #logging.info(f"o link é: {background_image}")
+    background_image = background_images[0 % len(background_images)]
+    logging.info(f"o link é: {background_image}")
     
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
