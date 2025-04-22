@@ -267,7 +267,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             )
             return handler_input.response_builder.set_should_end_session(True).response
         
-        # Se houver um próximo estado, agende a navegação automática
+        # Se houver um próximo estado, agende a navegação automática.
         if next_state:
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
