@@ -519,7 +519,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
     método para essa solicitação."""
-class CatchAllRequestHandler(AbstractRequestHandler):
+"""class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         logging.info("CatchAllRequestHandler: Verificando solicitação.")
         return True
@@ -529,6 +529,43 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(
             "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
         ).set_should_end_session(False)
+        return handler_input.response_builder.response"""
+# ============================================================================================
+
+class CatchAllRequestHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        logging.info("CatchAllRequestHandler: Verificando solicitação.")
+        return True
+
+    def handle(self, handler_input):
+        # Log para depuração
+        # print("CatchAllRequestHandler acionado")
+        logging.info("CatchAllRequestHandler acionado")
+        print(f"Tipo de Requisição: {handler_input.request_envelope.request}")
+        
+        # Verificar se é um FallbackIntent
+        if handler_input.request_envelope.request.object_type == "IntentRequest" and \
+            handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
+                print("FallbackIntent em CatchAllRequest detectado")
+                # Cria uma instância de TouchHandler
+                #touch_handler = TouchHandler()
+                
+                # Chama o método handle de TouchHandler
+                #return touch_handler.handle(handler_input)
+            
+            
+                # Não altere o estado e não forneça resposta audível
+                handler_input.response_builder.set_should_end_session(False)
+                return handler_input.response_builder.response
+        
+        # Mensagem padrão caso não seja um FallbackIntent
+        handler_input.response_builder.speak(
+            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
+        
+        # Em vez de encerrar, vamos definir uma mensagem padrão
+        handler_input.response_builder.speak("<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
+        logging.info("\n Encerrando Aplicativo...\n")
+        #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response
 # ============================================================================================
 
