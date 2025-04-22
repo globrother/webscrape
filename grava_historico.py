@@ -197,7 +197,6 @@ def ler_historico(sufixo):
  
 def gerar_texto_historico(historico, aux):
     logger.info("--> Iniciando Gerar Histórico\n")
-    logging.info("--------------------------------------------------------:")
     
     # Verificar se o histórico está vazio
     if not historico:
