@@ -144,7 +144,7 @@ def comparador(historico, cota_atual, voz_fundo):
 
 def web_scrape(fundo):
     fundo_fii = fundo[:-2] #extrai os ultimos 2 caracteres de fii
-    doc_apl = f"apl_{fundo_fii}.json"
+    doc_apl = "apl_xpml.json" #f"apl_{fundo_fii}.json"
     apl_document = _load_apl_document(doc_apl)
     # Adiciona a geração do texto do histórico de alertas
     sufixo = f"alert_value_{fundo_fii}"
