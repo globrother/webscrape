@@ -90,7 +90,7 @@ voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = No
    
 # Fazer o carregamento do Doc APL json para variável apl_document_xxxx.
 # Adicionar 2 linhas e fazer 4 alterações.
-doc_apl_xpml = "apl_xpml.json"
+'''doc_apl_xpml = "apl_xpml.json"
 apl_document_xpml = _load_apl_document(doc_apl_xpml)
 
 doc_apl_mxrf = "apl_mxrf.json"
@@ -106,7 +106,7 @@ doc_apl_kncr = "apl_kncr.json"
 apl_document_kncr = _load_apl_document(doc_apl_kncr)
 
 doc_apl_knri = "apl_knri.json"
-apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa
+apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa'''
 # ============================================================================================
 
 def comparador(historico, cota_atual, voz_fundo):
@@ -144,7 +144,7 @@ def comparador(historico, cota_atual, voz_fundo):
 
 def web_scrape(fundo):
     fundo_fii = fundo[:-2] #extrai os ultimos 2 caracteres de fii
-    doc_apl = "apl_xpml.json" #f"apl_{fundo_fii}.json"
+    doc_apl = "apl_fii.json" #f"apl_{fundo_fii}.json"
     apl_document = _load_apl_document(doc_apl)
     # Adiciona a geração do texto do histórico de alertas
     sufixo = f"alert_value_{fundo_fii}"
