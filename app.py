@@ -86,27 +86,6 @@ def _load_apl_document(file_path):
 apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
 voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
-# =====::::: CARREGAMENTO DO DOC APL JSON :::::=====
-   
-# Fazer o carregamento do Doc APL json para variável apl_document_xxxx.
-# Adicionar 2 linhas e fazer 4 alterações.
-'''doc_apl_xpml = "apl_xpml.json"
-apl_document_xpml = _load_apl_document(doc_apl_xpml)
-
-doc_apl_mxrf = "apl_mxrf.json"
-apl_document_mxrf = _load_apl_document(doc_apl_mxrf)
-
-doc_apl_xplg = "apl_xplg.json"
-apl_document_xplg = _load_apl_document(doc_apl_xplg)
-
-doc_apl_btlg = "apl_btlg.json"
-apl_document_btlg = _load_apl_document(doc_apl_btlg)
-
-doc_apl_kncr = "apl_kncr.json"
-apl_document_kncr = _load_apl_document(doc_apl_kncr)
-
-doc_apl_knri = "apl_knri.json"
-apl_document_knri = _load_apl_document(doc_apl_knri) # Último fundo a ser chamado na alexa'''
 # ============================================================================================
 
 def comparador(historico, cota_atual, voz_fundo):
@@ -143,9 +122,9 @@ def comparador(historico, cota_atual, voz_fundo):
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
 def web_scrape(fundo):
-    fundo_fii = fundo[:-2] #extrai os ultimos 2 caracteres de fii
-    doc_apl = "apl_fii.json" #f"apl_{fundo_fii}.json"
-    apl_document = _load_apl_document(doc_apl)
+    fundo_fii = fundo[:-2] # extrai os ultimos 2 caracteres de fii
+    doc_apl = "apl_fii.json" # f"apl_{fundo_fii}.json"
+    apl_document = _load_apl_document(doc_apl) # Carregar APL padrão de exibiçaõ dos fundos
     # Adiciona a geração do texto do histórico de alertas
     sufixo = f"alert_value_{fundo_fii}"
     historico = grava_historico.ler_historico(sufixo)
@@ -182,6 +161,8 @@ def web_scrape(fundo):
     logger.info(f"o link é: {background_image}")
     
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
+    
+    # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
@@ -308,16 +289,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     ]
                 )
             )
-        """.add_directive(
-            ExecuteCommandsDirective(
-                token=f"textDisplayToken_{current_state}",
-                commands=[
-                    SendEventCommand(
-                        arguments=[f"show{next_state}"], delay=1
-                    )
-                ]
-            )
-        )"""
 
         return handler_input.response_builder.set_should_end_session(False).response
 
@@ -556,18 +527,6 @@ class FallbackIntentHandler(AbstractRequestHandler):
 """Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
     método para essa solicitação."""
-"""class CatchAllRequestHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        logging.info("CatchAllRequestHandler: Verificando solicitação.")
-        return True
-
-    def handle(self, handler_input):
-        logging.info("CatchAllRequestHandler acionado")
-        handler_input.response_builder.speak(
-            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
-        ).set_should_end_session(False)
-        return handler_input.response_builder.response"""
-# ============================================================================================
 
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -604,6 +563,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         logging.info("\n Encerrando Aplicativo...\n")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response
+# ============================================================================================
 # ============================================================================================
 
 @app.route('/webscrape', methods=['POST'])
