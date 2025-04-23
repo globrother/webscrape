@@ -244,7 +244,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
+        current_state = session_attr.get("state", "secondScreen")
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
         return current_state in self.state_fund_mapping
 
