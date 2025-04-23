@@ -524,10 +524,11 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-"""Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
+"""
+    Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
-    método para essa solicitação."""
-
+    método para essa solicitação.
+"""
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         logging.info("CatchAllRequestHandler: Verificando solicitação.")
