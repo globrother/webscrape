@@ -186,7 +186,7 @@ def web_scrape(fundo):
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['headerSubtitle'] = variac_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
-    #apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
+    apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
     
     cota_atual = cota_fii
