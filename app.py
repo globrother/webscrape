@@ -250,7 +250,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
+        current_state = session_attr.get("state", "secondScreen")
 
         # Obtenha o fundo e o próximo estado do mapeamento
         fundo, next_state = self.state_fund_mapping[current_state]
