@@ -195,6 +195,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Chama o fundo inicial
         fundo = "xpml11"
         _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        # Atualiza o estado para o próximo
+        session_attr["state"] = "secondScreen"  # Atualiza para o próximo estado
 
         # Constrói a resposta inicial
         handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
@@ -244,13 +247,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "secondScreen")
+        current_state = session_attr.get("state", "firstScreen")
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
         return current_state in self.state_fund_mapping
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "secondScreen")
+        current_state = session_attr.get("state", "firstScreen")
 
         # Obtenha o fundo e o próximo estado do mapeamento
         fundo, next_state = self.state_fund_mapping[current_state]
