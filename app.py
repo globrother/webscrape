@@ -49,6 +49,7 @@ import grava_historico
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS 
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
+# Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -165,12 +166,19 @@ def web_scrape(fundo):
     ]
     
     # Determina o índice do fundo atual com base no mapeamento de estados
-    fundo_index = list(state_fund_mapping.keys())
-    print(f"fundo_index: {fundo_index}")
-    logging.info(f"o indice é: {fundo_index}")
+    # Determina a chave correspondente ao fundo atual
+    fundo_key = next((key for key, value in state_fund_mapping.items() if value[0] == fundo), None)
+
+    if fundo_key is not None:
+        fundo_index = list(state_fund_mapping.keys()).index(fundo_key)
+        logging.info(f"Índice do fundo '{fundo}' (chave '{fundo_key}'): {fundo_index}")
+    else:
+        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
+        fundo_index = 0  # Define um índice padrão ou tome outra ação apropriada
+        logging.info(f"Usando índice padrão: {fundo_index}")
     
     # Seleciona a imagem de fundo correspondente ao índice
-    background_image = background_images[0 % len(background_images)]
+    background_image = background_images[fundo_index % len(background_images)]
     logger.info(f"o link é: {background_image}")
     
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
