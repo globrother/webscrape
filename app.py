@@ -270,13 +270,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"<break time='500ms'/>\n{voz}")
+        ).speak(f"<break time='1s'/>\n{voz}")
         
         # Verifica se é o último estado
         if current_state == "endedScreen":
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
-                f"<break time='500ms'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
             )
             return handler_input.response_builder.set_should_end_session(True).response
         
@@ -287,7 +287,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     token=f"textDisplayToken_{current_state}",
                     commands=[
                         SendEventCommand(
-                            arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
+                            arguments=["autoNavigate"], delay=20000  # Aguarda 20 segundos antes de navegar
                         )
                     ]
                 )
