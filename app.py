@@ -287,7 +287,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     token=f"textDisplayToken_{current_state}",
                     commands=[
                         SendEventCommand(
-                            arguments=["autoNavigate"], delay=20000  # Aguarda 20 segundos antes de navegar
+                            arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
                         )
                     ]
                 )
