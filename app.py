@@ -153,7 +153,21 @@ def web_scrape(fundo):
         "https://lh5.googleusercontent.com/d/1-CUhhgJDaGaTMJL6Ss0hdFENPb07F1FU"
     ]
     
-    # Determina o índice do fundo atual com base no mapeamento de estados
+    # Determina o índice do fundo atual com base no ID do estado
+    fundo_index = next((key for key, value in state_fund_mapping.items() if value == fundo), None)
+
+    if fundo_index is not None:
+        logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
+    else:
+        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
+        fundo_index = 1  # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
+        logging.info(f"Usando índice padrão: {fundo_index}")
+
+    # Seleciona a imagem de fundo correspondente ao índice
+    background_image = background_images[(fundo_index - 1) % len(background_images)]
+    logger.info(f"O link da imagem de fundo é: {background_image}")
+    
+    """# Determina o índice do fundo atual com base no mapeamento de estados
     # Determina a chave correspondente ao fundo atual
     fundo_key = next((key for key, value in state_fund_mapping.items() if value[0] == fundo), None)
 
@@ -167,7 +181,7 @@ def web_scrape(fundo):
     
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[fundo_index % len(background_images)]
-    logger.info(f"o link é: {background_image}")
+    logger.info(f"o link é: {background_image}")"""
     
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
     
