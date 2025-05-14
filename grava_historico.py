@@ -139,32 +139,36 @@ def gravar_historico(sufixo, valor):
             connection.close()
 
 def ler_historico(sufixo):
-    logging.info("--> Iniciando Ler Histórico\n")
-    
-    if not testar_conexao():
-        print("\n Erro ao conectar com o servidor Back4App.\n")
-        return
-    
-    nome_classe = obter_nome_classe(sufixo)
-    logger.info(f"\n Iniciando Leitura de: {nome_classe}\n")
-    
-    # Conexão ao servidor Back4App
-    connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
-    connection.connect()
-    logger.info(f"\n Conectando ao servidor para ler: {nome_classe}\n")
+    try:
+        logging.info("--> Iniciando Ler Histórico\n")
+        
+        if not testar_conexao():
+            print("\n Erro ao conectar com o servidor Back4App.\n")
+            return
+        
+        nome_classe = obter_nome_classe(sufixo)
+        logging.info(f"\n Iniciando Leitura de: {nome_classe}\n")
+        
+        # Conexão ao servidor Back4App
+        connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
+        connection.connect()
+        logger.info(f"\n Conectando ao servidor para ler: {nome_classe}\n")
 
-    # Requisição GET para recuperar objetos da classe ordenados por createdAt
-    connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY
-    })
-    resultados = json.loads(connection.getresponse().read())
-    historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
-    connection.close()
-    #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
-    #logger.info(f"valor de hitórico: {historico}")
-    logger.info("--------------------------------------------------------:")
-    return historico
+        # Requisição GET para recuperar objetos da classe ordenados por createdAt
+        connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
+            "X-Parse-Application-Id": APPLICATION_ID,
+            "X-Parse-REST-API-Key": REST_API_KEY
+        })
+        resultados = json.loads(connection.getresponse().read())
+        historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
+        connection.close()
+        #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
+        #logger.info(f"valor de hitórico: {historico}")
+        logger.info("--------------------------------------------------------:")
+        return historico
+    except Exception as e:
+        logging.error(f"Erro ao ler histórico: {e}")
+        return []  # Retorna uma lista vazia em caso de erro
 
 """def gerar_texto_historico(historico, aux):
     logger.info("\n Iniciando Gerar Histórico\n")

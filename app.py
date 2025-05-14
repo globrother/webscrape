@@ -61,15 +61,6 @@ app = Flask(__name__)
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 # Mapeamento de Estados e Fundos
-"""state_fund_mapping = {
-    "firstScreen": ("xpml11", "secondScreen"),
-    "secondScreen": ("mxrf11", "thirdScreen"),
-    "thirdScreen": ("xplg11", "fourthScreen"),
-    "fourthScreen": ("btlg11", "fifthScreen"),
-    "fifthScreen": ("kncr11", "endedScreen"),
-    "endedScreen": ("knri11", None)  # Último estado
-}"""
-
 state_fund_mapping = {
     1: "xpml11",
     2: "mxrf11",
@@ -98,8 +89,8 @@ voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = No
 # ============================================================================================
 
 def comparador(historico, cota_atual, voz_fundo):
-    # Verificar se o histórico contém pelo menos um registro
-    if len(historico) >= 1:
+    # Verificar se o histórico é válido e contém pelo menos um registro
+    if historico and isinstance(historico, list) and len(historico) >= 1:
         alert_value = historico[0].get("valor", "").replace("R$ ", "")
         logging.info(f"\n Valor do Alerta: {alert_value} \n")
         logging.info(f"\n Valor Atual da Cota: {cota_atual} \n")
