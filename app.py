@@ -61,13 +61,22 @@ app = Flask(__name__)
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 # Mapeamento de Estados e Fundos
-state_fund_mapping = {
+"""state_fund_mapping = {
     "firstScreen": ("xpml11", "secondScreen"),
     "secondScreen": ("mxrf11", "thirdScreen"),
     "thirdScreen": ("xplg11", "fourthScreen"),
     "fourthScreen": ("btlg11", "fifthScreen"),
     "fifthScreen": ("kncr11", "endedScreen"),
     "endedScreen": ("knri11", None)  # Último estado
+}"""
+
+state_fund_mapping = {
+    1: "xpml11",
+    2: "mxrf11",
+    3: "xplg11",
+    4: "btlg11",
+    5: "kncr11",
+    6: "knri11"  # Último estado
 }
 
 def _load_apl_document(file_path):
@@ -190,17 +199,20 @@ class LaunchRequestHandler(AbstractRequestHandler):
         #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         
         session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = "firstScreen"
+        session_attr["state"] = 1 # Estado inicial é o ID 1
+
         
         # Chama o fundo inicial
-        fundo = "xpml11"
+        fundo = state_fund_mapping[1]  # Obtém o nome do fundo pelo ID
         _, _, _, apl_document, voz = web_scrape(fundo)
         
         # Atualiza o estado para o próximo
-        session_attr["state"] = "secondScreen"  # Atualiza para o próximo estado
+        session_attr["state"] = 2  # Próximo estado é o ID 2
+
 
         # Constrói a resposta inicial
-        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
+        handler_input.response_builder.speak(
+            f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
         ).add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
@@ -236,6 +248,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             #return False
         
+        # Verifica se é um evento de navegação automática
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
@@ -247,19 +260,22 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
+        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
         return current_state in self.state_fund_mapping
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
+        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
 
-        # Obtenha o fundo e o próximo estado do mapeamento
-        fundo, next_state = self.state_fund_mapping[current_state]
+        # Obtenha o fundo atual do mapeamento
+        fundo = self.state_fund_mapping[current_state]
 
         # Chame a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        # Calcula o próximo estado
+        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
 
         # Atualize o estado para o próximo
         session_attr["state"] = next_state
@@ -273,7 +289,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         ).speak(f"<break time='1s'/>\n{voz}")
         
         # Verifica se é o último estado
-        if current_state == "endedScreen":
+        if next_state is None:
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
                 f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
@@ -281,17 +297,16 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(True).response
         
         # Se houver um próximo estado, agende a navegação automática.
-        if next_state:
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token=f"textDisplayToken_{current_state}",
-                    commands=[
-                        SendEventCommand(
-                            arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
-                        )
-                    ]
-                )
+        handler_input.response_builder.add_directive(
+            ExecuteCommandsDirective(
+                token=f"textDisplayToken_{current_state}",
+                commands=[
+                    SendEventCommand(
+                        arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
+                    )
+                ]
             )
+        )
 
         return handler_input.response_builder.set_should_end_session(False).response
 
