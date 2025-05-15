@@ -366,28 +366,31 @@ class TouchHandler(AbstractRequestHandler):
         logging.info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", "firstScreen")
+        current_state = session_attr.get("state", 1)
 
         # Verifica se o estado atual está no mapeamento
         if current_state not in self.state_fund_mapping:
             # Se o estado não for encontrado, reinicia para o primeiro estado
-            current_state = "firstScreen"
+            current_state = 1
 
-        # Obtém o fundo e o próximo estado do mapeamento
-        fundo, next_state = self.state_fund_mapping[current_state]
+        # Obtenha o fundo atual do mapeamento
+        fundo = self.state_fund_mapping[current_state]
 
         # Verifica se é o último estado
-        if current_state == "firstScreen":
+        if current_state == 1:
             voz_prefix = "Recomeçando!"
             # next_state = "firstScreen"  # Reinicia para o primeiro estado
         else:
             voz_prefix = "Próximo!"
-        
-        # Atualiza o estado para o próximo
-        session_attr["state"] = next_state
 
         # Chama a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        # Calcula o próximo estado
+        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
+
+        # Atualiza o estado para o próximo
+        session_attr["state"] = next_state
 
         # Constrói a resposta
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
