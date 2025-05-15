@@ -68,7 +68,8 @@ state_fund_mapping = {
     4: "btlg11",
     5: "kncr11",
     6: "knri11",
-    7: "rztr11"  # Último estado
+    7: "tgar11",
+    8: "rztr11"  # Último estado
 }
 
 def _load_apl_document(file_path):
