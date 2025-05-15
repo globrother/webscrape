@@ -576,18 +576,22 @@ class SelectFundIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
         session_attr = handler_input.attributes_manager.session_attributes
-        fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+        slots = handler_input.request_envelope.request.intent.slots
+        fundo = slots.get("fundName").value if slots.get("fundName") else None
+        #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
 
         # Verifica se estamos no meio de uma interação de criação de alerta de preço
         if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
-            fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+            slots = handler_input.request_envelope.request.intent.slots
+            fund_name = slots.get("fundName").value if slots.get("fundName") else None
             alert_value = session_attr["AlertValue"]
             session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
             speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
             session_attr["AlertValue"] = None  # Reset AlertValue for future use
         else:
             # Lógica normal para SelectFundIntent
-            fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+            slots = handler_input.request_envelope.request.intent.slots
+            fund_name = slots.get("fundName").value if slots.get("fundName") else None
             speech_text = f"Você selecionou o fundo {fund_name}."
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
