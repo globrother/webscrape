@@ -485,7 +485,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            
+            logging.info(f"Valor recebido para fund_name: {fund_name}")
+
             #allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
             allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
 
@@ -494,6 +495,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    logging.info(f"Valor recebido para fund_name: {fund_name}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
@@ -504,11 +506,14 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["alert_in_progress"] = True
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
-                speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
+                
             # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name and fund_name.lower() in allowed_funds:
+            elif fund_name.lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
