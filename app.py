@@ -74,24 +74,52 @@ state_fund_mapping = {
     8: "rztr11"  # Último estado
 }
 
+# Dicionário para letras em extenso (português)
+letras_extenso = {
+    "a": "a",
+    "b": "bê",
+    "c": "cê",
+    "d": "dê",
+    "e": "e",
+    "f": "efe",
+    "g": "gê",
+    "h": "agá",
+    "i": "i",
+    "j": "jota",
+    "k": "cá",
+    "l": "ele",
+    "m": "eme",
+    "n": "ene",
+    "o": "o",
+    "p": "pê",
+    "q": "quê",
+    "r": "erre",
+    "s": "esse",
+    "t": "tê",
+    "u": "u",
+    "v": "vê",
+    "w": "dáblio",
+    "x": "xis",
+    "y": "ípsilon",
+    "z": "zê"
+}
+
+def gerar_sinonimos(fundo):
+    # Exemplo: "mxrf"
+    letras = list(fundo)
+    # Sigla separada por espaço: "m x r f"
+    separado = " ".join(letras)
+    # Letras por extenso: "eme xis erre efe"
+    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
+    return [fundo, separado, extenso]
+
 def get_dynamic_entities_directive():
     fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
-    # Dicionário de sinônimos para cada fundo
-    synonyms_map = {
-        "xpml": ["xis pê eme ele", "xis p m l", "x p m l", "x p m l", "x p m l", "xpml"],
-        "mxrf": ["eme xis erre efe", "m x r f", "eme x r f", "m x r f", "mxrf"],
-        "xplg": ["xis pê ele gê", "x p l g", "xis p l g", "xplg"],
-        "btlg": ["bê tê ele gê", "b t l g", "btlg"],
-        "kncr": ["cá ene cê erre", "k n c r", "kncr"],
-        "knri": ["cá ene erre i", "k n r i", "knri"],
-        "tgar": ["tê gê a erre", "t g a r", "tgar"],
-        "rztr": ["erre zê tê erre", "r z t r", "rztr"],
-    }
     entities = [
         {
             "id": fundo,
             "name": {"value": fundo},
-            "synonyms": synonyms_map.get(fundo, [])
+            "synonyms": gerar_sinonimos(fundo)
         } for fundo in fundos
     ]
     return DynamicEntitiesDirective(
