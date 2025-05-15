@@ -410,6 +410,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                logging.info(f"Valor recebido para fund_name: {fund_name}")
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                 handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
