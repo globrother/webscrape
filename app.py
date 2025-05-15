@@ -32,7 +32,7 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
-from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective, EntityList
+from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
@@ -85,10 +85,10 @@ def get_dynamic_entities_directive():
     return DynamicEntitiesDirective(
         update_behavior="REPLACE",
         types=[
-            EntityList(
-                name="FUND_NAMES",  # O nome do seu slot type
-                values=entities
-            )
+            {
+                "name": "FUND_NAMES",  # O nome do seu slot type
+                "values": entities
+            }
         ]
     )
 
