@@ -343,135 +343,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
 # ============================================================================================
 
-class TouchHandler(AbstractRequestHandler):
-    def __init__(self, state_fund_mapping):
-        self.state_fund_mapping = state_fund_mapping
-
-    def can_handle(self, handler_input):
-        
-        request_type = handler_input.request_envelope.request.object_type
-        logging.info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
-        
-        # Verifica se o evento é um UserEvent e contém "touch"
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
-            if arguments and arguments[0] == "touch":
-                logging.info("TouchHandler acionado para evento de toque.")
-                return True
-        logging.info("TouchHandler NÃO acionado.")
-        return False
-
-    def handle(self, handler_input):
-        logging.info("TouchHandler: handle chamado.")
-        # Recupera os atributos de sessão
-        session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", 1)
-
-        # Verifica se o estado atual está no mapeamento
-        if current_state not in self.state_fund_mapping:
-            # Se o estado não for encontrado, reinicia para o primeiro estado
-            current_state = 1
-
-        # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[current_state]
-
-        # Verifica se é o último estado
-        if current_state == 1:
-            voz_prefix = "Recomeçando!"
-            # next_state = "firstScreen"  # Reinicia para o primeiro estado
-        else:
-            voz_prefix = "Próximo!"
-
-        # Chama a função web_scrape para obter os dados do fundo
-        _, _, _, apl_document, voz = web_scrape(fundo)
-        
-        # Calcula o próximo estado
-        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
-
-        # Atualiza o estado para o próximo
-        session_attr["state"] = next_state
-
-        # Constrói a resposta
-        handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
-            RenderDocumentDirective(
-                token=f"textDisplayToken_{current_state}",
-                document=apl_document
-            )
-        )
-
-        # Define o próximo estado na sessão
-        handler_input.attributes_manager.session_attributes = session_attr
-
-        return handler_input.response_builder.set_should_end_session(False).response
-#============================================================================================
-
-# Classe para criar um alerta de preço. 
-"""class CreatePriceAlertIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-
-        try:
-            # Verifica se o valor do alerta já foi solicitado
-            if "AlertValue" not in session_attr:
-                session_attr["AlertValue"] = None
-                speech_text = "Qual é o valor do alerta em reais e centavos?"
-                reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-            elif session_attr["AlertValue"] is None:
-                alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
-                alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
-                else:
-                    speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-            else:
-                fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
-                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-                if fund_name and fund_name.lower() in allowed_funds:
-                    alert_value = session_attr["AlertValue"]
-                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                    reprompt_text = None
-                    
-                    logger.info('\n Começar a gravar\n')
-                    sufixo = f"alert_value_{fund_name.lower()}"
-                    valor = f"R$ {alert_value}"
-                    aux = "alert"
-                    grava_historico.gravar_historico(sufixo, valor)
-                    historico = grava_historico.ler_historico(sufixo)
-                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-                    
-                    logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-                    
-                    # Armazena hist_alert_xpml na sessão
-                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
-                    
-                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
-                    logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
-                else:
-                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-
-            handler_input.response_builder.speak(speech_text)
-            if reprompt_text:
-                handler_input.response_builder.ask(reprompt_text)
-
-            return handler_input.response_builder.response
-
-        except Exception as e:
-            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response"""
-            
+# Classe para criar um alerta de preço.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -553,7 +425,135 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 
+class TouchHandler(AbstractRequestHandler):
+    def __init__(self, state_fund_mapping):
+        self.state_fund_mapping = state_fund_mapping
 
+    def can_handle(self, handler_input):
+        
+        request_type = handler_input.request_envelope.request.object_type
+        logging.info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
+        
+        # Verifica se o evento é um UserEvent e contém "touch"
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "touch":
+                logging.info("TouchHandler acionado para evento de toque.")
+                return True
+        logging.info("TouchHandler NÃO acionado.")
+        return False
+
+    def handle(self, handler_input):
+        logging.info("TouchHandler: handle chamado.")
+        # Recupera os atributos de sessão
+        session_attr = handler_input.attributes_manager.session_attributes
+        current_state = session_attr.get("state", 1)
+
+        # Verifica se o estado atual está no mapeamento
+        if current_state not in self.state_fund_mapping:
+            # Se o estado não for encontrado, reinicia para o primeiro estado
+            current_state = 1
+
+        # Obtenha o fundo atual do mapeamento
+        fundo = self.state_fund_mapping[current_state]
+
+        # Verifica se é o último estado
+        if current_state == 1:
+            voz_prefix = "Recomeçando!"
+            # next_state = "firstScreen"  # Reinicia para o primeiro estado
+        else:
+            voz_prefix = "Próximo!"
+
+        # Chama a função web_scrape para obter os dados do fundo
+        _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        # Calcula o próximo estado
+        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
+
+        # Atualiza o estado para o próximo
+        session_attr["state"] = next_state
+
+        # Constrói a resposta
+        handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
+            RenderDocumentDirective(
+                token=f"textDisplayToken_{current_state}",
+                document=apl_document
+            )
+        )
+
+        # Define o próximo estado na sessão
+        handler_input.attributes_manager.session_attributes = session_attr
+
+        return handler_input.response_builder.set_should_end_session(False).response
+#============================================================================================
+
+ 
+"""class CreatePriceAlertIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        try:
+            # Verifica se o valor do alerta já foi solicitado
+            if "AlertValue" not in session_attr:
+                session_attr["AlertValue"] = None
+                speech_text = "Qual é o valor do alerta em reais e centavos?"
+                reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+            elif session_attr["AlertValue"] is None:
+                alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
+                alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
+                if alert_value and alert_value_cents:
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
+                else:
+                    speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
+                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+            else:
+                fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+                if fund_name and fund_name.lower() in allowed_funds:
+                    alert_value = session_attr["AlertValue"]
+                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                    reprompt_text = None
+                    
+                    logger.info('\n Começar a gravar\n')
+                    sufixo = f"alert_value_{fund_name.lower()}"
+                    valor = f"R$ {alert_value}"
+                    aux = "alert"
+                    grava_historico.gravar_historico(sufixo, valor)
+                    historico = grava_historico.ler_historico(sufixo)
+                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+                    
+                    logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
+                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+                    
+                    # Armazena hist_alert_xpml na sessão
+                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
+                    
+                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
+                    logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
+                else:
+                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+
+            handler_input.response_builder.speak(speech_text)
+            if reprompt_text:
+                handler_input.response_builder.ask(reprompt_text)
+
+            return handler_input.response_builder.response
+
+        except Exception as e:
+            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
+            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response"""
+            
 # ============================================================================================
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
