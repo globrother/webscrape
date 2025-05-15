@@ -707,7 +707,6 @@ def webhook():
 
     # Inicialize os handlers com card_xpml11
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
-    search_query_handler = SearchQueryHandler()
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
@@ -720,7 +719,6 @@ def webhook():
 
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(create_price_alert_intent_handler)
-    sb.add_request_handler(search_query_handler)
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
