@@ -33,7 +33,7 @@ from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import (
-    DynamicEntitiesDirective, EntityListItem, EntityList)
+    DynamicEntitiesDirective, Entity, EntityList)
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
@@ -76,10 +76,9 @@ state_fund_mapping = {
 }
 
 def get_dynamic_entities_directive():
-    # Gera a lista de fundos a partir do seu mapeamento
     fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
     entities = [
-        EntityListItem(
+        Entity(
             id=fundo,
             name={"value": fundo}
         ) for fundo in fundos
