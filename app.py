@@ -486,7 +486,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            logging.info(f"Valor recebido para fund_name: {fund_name}")
 
             #allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
             allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
