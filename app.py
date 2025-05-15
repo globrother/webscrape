@@ -577,66 +577,77 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         return is_intent_name("SelectFundIntent")(handler_input)
 
     def handle(self, handler_input):
-        #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         fundo = slots.get("fundName").value if slots.get("fundName") else None
-        #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+
+        # Lista de fundos válidos baseada no mapeamento dinâmico
+        allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
 
         # Verifica se estamos no meio de uma interação de criação de alerta de preço
         if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
-            slots = handler_input.request_envelope.request.intent.slots
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
             alert_value = session_attr["AlertValue"]
-            if fund_name:
+            if fund_name and fund_name.lower() in allowed_funds:
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
                 session_attr["AlertValue"] = None  # Reset AlertValue for future use
             else:
-                speech_text = "Desculpe, você foi direcionado. Por favor, diga novamente."
+                fundos_disponiveis = ", ".join(allowed_funds)
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
                 handler_input.response_builder.speak(speech_text).ask(speech_text)
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
         else:
             # Lógica normal para SelectFundIntent
-            slots = handler_input.request_envelope.request.intent.slots
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            speech_text = f"Você selecionou o fundo {fund_name}."
+            if fundo and fundo.lower() in allowed_funds:
+                speech_text = f"Você selecionou o fundo {fundo}."
+            else:
+                fundos_disponiveis = ", ".join(allowed_funds)
+                speech_text = f"Desculpe, o fundo '{fundo}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                return handler_input.response_builder.response
 
         # Define o documento APL e a resposta de voz com base no fundo selecionado
-        if fundo in ["XPML11", "XPML", "Xispê eme éle"]:
+        document = None
+        voice_prompt = ""
+        response_text = ""
+        fundo_key = (fundo or "").lower()
+        if fundo_key == "xpml":
             time.sleep(1)
             _, _, _, apl_document, voz = web_scrape("xpml11")
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
             document = apl_document
-        elif fundo in ["MXRF11", "MXRF", "Eme xis erre efi"]:
+        elif fundo_key == "mxrf":
             _, _, _, apl_document, voz = web_scrape("mxrf11")
             document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
-        elif fundo in ["XPLG11", "XPLG", "Xispê éle gê"]:
+        elif fundo_key == "xplg":
             _, _, _, apl_document, voz = web_scrape("xplg11")
             document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
-        elif fundo in ["BTLG11", "BTLG", "Bêtê éle gê"]:
+        elif fundo_key == "btlg":
             _, _, _, apl_document, voz = web_scrape("btlg11")
             document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
-        elif fundo in ["KNCR11","KNCR", "CA ene cê erre"]:
+        elif fundo_key == "kncr":
             _, _, _, apl_document, voz = web_scrape("kncr11")
             document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
-        elif fundo in ["KNRI11", "KNRI", "Ca ene erri i"]:
+        elif fundo_key == "knri":
             _, _, _, apl_document, voz = web_scrape("knri11")
             document = apl_document
             response_text = f"Mostrando informações sobre o fundo {fundo}."
             voice_prompt = voz
         else:
-            response_text = "Desculpe, não consegui encontrar o fundo solicitado."
+            if fundo:
+                response_text = "Desculpe, não consegui encontrar o fundo solicitado."
+            # Se fundo for None, já tratou acima
 
         # Adiciona a resposta de fala e o documento APL, se aplicável
         if document:
@@ -647,7 +658,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 )
             ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
         else:
-            handler_input.response_builder.speak(response_text).set_should_end_session(False)
+            handler_input.response_builder.speak(speech_text if speech_text else response_text).set_should_end_session(False)
 
         return handler_input.response_builder.response
 # ============================================================================================
