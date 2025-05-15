@@ -594,7 +594,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 session_attr["AlertValue"] = None  # Reset AlertValue for future use
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                speech_text = f"Redirecionando... Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
                 handler_input.response_builder.speak(speech_text).ask(speech_text)
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
