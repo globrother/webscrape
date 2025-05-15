@@ -503,7 +503,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if reprompt_text:
                 handler_input.response_builder.ask(reprompt_text)
 
-            return handler_input.response_builder.response
+            return handler_input.response_builder.response.set_should_end_session(False)
 
         except Exception as e:
             logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
