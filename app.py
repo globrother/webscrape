@@ -495,7 +495,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name: {fund_name}")
+                    logging.info(f"Valor recebido para fund_name : {fund_name}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
