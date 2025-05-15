@@ -86,7 +86,7 @@ def get_dynamic_entities_directive():
         update_behavior="REPLACE",
         types=[
             {
-                "name": "FUND_NAMES",  # O nome do seu slot type
+                "name": "FUNDO_TYPES_xxxx",  # O nome do seu slot type
                 "values": entities
             }
         ]
