@@ -551,39 +551,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 
-"""class SearchQueryHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("AMAZON.SearchQuery")(handler_input)
 
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-
-        # Captura o que o usuário disse
-        query = get_slot_value(handler_input=handler_input, slot_name="query")
-        if not query:
-            # Tenta pegar o valor bruto do slot
-            slots = handler_input.request_envelope.request.intent.slots
-            query = slots.get("query").value if slots.get("query") else None
-
-        if query:
-            fund_name = query.lower().strip()
-            if fund_name in allowed_funds:
-                # Se estiver no fluxo de alerta, finalize o alerta
-                if "AlertValue" in session_attr and session_attr["AlertValue"]:
-                    alert_value = session_attr["AlertValue"]
-                    session_attr[f"alert_value_{fund_name}"] = alert_value
-                    session_attr["AlertValue"] = None
-                    speech_text = f"Alerta de preço criado para o fundo {fund_name.upper()}."
-                else:
-                    speech_text = f"Você selecionou o fundo {fund_name.upper()}."
-            else:
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: xpml, mxrf, xplg, btlg, kncr e knri."
-        else:
-            speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-
-        handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-        return handler_input.response_builder.response"""
 # ============================================================================================
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
