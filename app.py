@@ -32,8 +32,7 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
-from ask_sdk_model.dialog.dynamic_entities_directive import (
-    DynamicEntitiesDirective, Entity, EntityList)
+from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective, EntityList
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
@@ -78,10 +77,10 @@ state_fund_mapping = {
 def get_dynamic_entities_directive():
     fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
     entities = [
-        Entity(
-            id=fundo,
-            name={"value": fundo}
-        ) for fundo in fundos
+        {
+            "id": fundo,
+            "name": {"value": fundo}
+        } for fundo in fundos
     ]
     return DynamicEntitiesDirective(
         update_behavior="REPLACE",
