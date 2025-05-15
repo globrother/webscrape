@@ -500,7 +500,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     logging.info(f"Valor recebido para valor do alerta: {alert_value}")
                     logging.info(f"Valor recebido para centavos: {alert_value_cents}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
+                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
                 else:
                     session_attr["AlertValue"] = None
