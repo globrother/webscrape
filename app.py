@@ -390,6 +390,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             elif fund_name.lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                logging.info(f"Todos os slots recebidos: {slots}")
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
                 reprompt_text = None
 
