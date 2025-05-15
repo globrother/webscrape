@@ -458,6 +458,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
+            
+            allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
@@ -475,29 +477,27 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
             # Passo 3: Cria o alerta se tudo estiver preenchido
+            elif fund_name.lower() in allowed_funds:
+                alert_value = session_attr["AlertValue"]
+                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                reprompt_text = None
+
+                logger.info('\n Começar a gravar\n')
+                sufixo = f"alert_value_{fund_name.lower()}"
+                valor = f"R$ {alert_value}"
+                aux = "alert"
+                grava_historico.gravar_historico(sufixo, valor)
+                historico = grava_historico.ler_historico(sufixo)
+                hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+
+                logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
+                logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+
+                session_attr["AlertValue"] = None  # Reset para uso futuro
             else:
-                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-                if fund_name.lower() in allowed_funds:
-                    alert_value = session_attr["AlertValue"]
-                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                    reprompt_text = None
-
-                    logger.info('\n Começar a gravar\n')
-                    sufixo = f"alert_value_{fund_name.lower()}"
-                    valor = f"R$ {alert_value}"
-                    aux = "alert"
-                    grava_historico.gravar_historico(sufixo, valor)
-                    historico = grava_historico.ler_historico(sufixo)
-                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-
-                    logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-
-                    session_attr["AlertValue"] = None  # Reset para uso futuro
-                else:
-                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: xpml, mxrf, xplg, btlg, kncr e knri. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
 
             handler_input.response_builder.speak(speech_text)
             if reprompt_text:
