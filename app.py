@@ -33,7 +33,7 @@ from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import (
-    DynamicEntitiesDirective, ReplaceEntityDirective, EntityListItem, EntityList)
+    DynamicEntitiesDirective, EntityListItem, EntityList)
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
@@ -495,7 +495,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name : {fund_name}")
+                    logging.info(f"Valor recebido para fund_name: {fund_name}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
