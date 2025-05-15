@@ -387,7 +387,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
                 
             # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name.lower() in allowed_funds:
+            elif fund_name and fund_name.lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 logging.info(f"Todos os slots recebidos: {slots}")
@@ -411,7 +411,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
 
             handler_input.response_builder.speak(speech_text)
             if reprompt_text:
@@ -585,9 +587,15 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             slots = handler_input.request_envelope.request.intent.slots
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
             alert_value = session_attr["AlertValue"]
-            session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-            speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-            session_attr["AlertValue"] = None  # Reset AlertValue for future use
+            if fund_name:
+                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                session_attr["AlertValue"] = None  # Reset AlertValue for future use
+            else:
+                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
         else:
             # Lógica normal para SelectFundIntent
             slots = handler_input.request_envelope.request.intent.slots
