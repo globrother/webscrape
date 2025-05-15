@@ -666,11 +666,11 @@ def webhook():
     sb = SkillBuilder()
 
     # Inicialize os handlers com card_xpml11
+    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
-    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
@@ -678,11 +678,11 @@ def webhook():
     # go_back_handler = GoBackHandler()
 
     # Adicione os handlers ao SkillBuilder
+    sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
-    sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
