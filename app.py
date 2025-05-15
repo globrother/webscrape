@@ -32,6 +32,9 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
+from ask_sdk_model.dialog.dynamic_entities_directive import (
+    DynamicEntitiesDirective, ReplaceEntityDirective, EntityListItem, EntityList)
+from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -71,6 +74,25 @@ state_fund_mapping = {
     7: "tgar11",
     8: "rztr11"  # Último estado
 }
+
+def get_dynamic_entities_directive():
+    # Gera a lista de fundos a partir do seu mapeamento
+    fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+    entities = [
+        EntityListItem(
+            id=fundo,
+            name={"value": fundo}
+        ) for fundo in fundos
+    ]
+    return DynamicEntitiesDirective(
+        update_behavior="REPLACE",
+        types=[
+            EntityList(
+                name="FUND_NAMES",  # O nome do seu slot type
+                values=entities
+            )
+        ]
+    )
 
 def _load_apl_document(file_path):
     try:
@@ -470,6 +492,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
@@ -481,17 +504,11 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["alert_in_progress"] = True
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
-                 # Tenta capturar a resposta do usuário como SearchQuery ou outro slot
-                search_query = slots.get("SearchQuery").value if slots.get("SearchQuery") else None
-                possible_fund = (search_query or "").lower()
-                if possible_fund in allowed_funds:
-                    fund_name = possible_fund
-                else:
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    session_attr["alert_in_progress"] = True
+                speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                session_attr["alert_in_progress"] = True
             # Passo 3: Cria o alerta se tudo estiver preenchido
-            if fund_name and fund_name.lower() in allowed_funds:
+            elif fund_name and fund_name.lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
@@ -510,7 +527,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
-            elif fund_name:
+            else:
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
@@ -529,7 +546,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 
-class SearchQueryHandler(AbstractRequestHandler):
+"""class SearchQueryHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("AMAZON.SearchQuery")(handler_input)
 
@@ -561,7 +578,7 @@ class SearchQueryHandler(AbstractRequestHandler):
             speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
 
         handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.response"""
 # ============================================================================================
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
