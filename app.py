@@ -76,17 +76,29 @@ state_fund_mapping = {
 
 def get_dynamic_entities_directive():
     fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+    # Dicionário de sinônimos para cada fundo
+    synonyms_map = {
+        "xpml": ["xis pê eme ele", "xis p m l", "x p m l", "x p m l", "x p m l", "xpml"],
+        "mxrf": ["eme xis erre efe", "m x r f", "eme x r f", "m x r f", "mxrf"],
+        "xplg": ["xis pê ele gê", "x p l g", "xis p l g", "xplg"],
+        "btlg": ["bê tê ele gê", "b t l g", "btlg"],
+        "kncr": ["cá ene cê erre", "k n c r", "kncr"],
+        "knri": ["cá ene erre i", "k n r i", "knri"],
+        "tgar": ["tê gê a erre", "t g a r", "tgar"],
+        "rztr": ["erre zê tê erre", "r z t r", "rztr"],
+    }
     entities = [
         {
             "id": fundo,
-            "name": {"value": fundo}
+            "name": {"value": fundo},
+            "synonyms": synonyms_map.get(fundo, [])
         } for fundo in fundos
     ]
     return DynamicEntitiesDirective(
         update_behavior="REPLACE",
         types=[
             {
-                "name": "FUNDO_TYPES_xxxx",  # O nome do seu slot type
+                "name": "FUNDO_TYPES_xxxx",
                 "values": entities
             }
         ]
