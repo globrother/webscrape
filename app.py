@@ -267,6 +267,10 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
+        # Verifica se a criação de alerta está em progresso
+        if session_attr.get("alert_in_progress"):
+            return False
+        
         current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
         return current_state in self.state_fund_mapping
@@ -459,7 +463,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
             
-            allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+            #allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+            allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
@@ -468,16 +473,25 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
+                    session_attr["alert_in_progress"] = True
                 else:
                     session_attr["AlertValue"] = None
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+                    session_attr["alert_in_progress"] = True
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
-                speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                 # Tenta capturar a resposta do usuário como SearchQuery ou outro slot
+                search_query = slots.get("SearchQuery").value if slots.get("SearchQuery") else None
+                possible_fund = (search_query or "").lower()
+                if possible_fund in allowed_funds:
+                    fund_name = possible_fund
+                else:
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    session_attr["alert_in_progress"] = True
             # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name.lower() in allowed_funds:
+            if fund_name and fund_name.lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
@@ -495,9 +509,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
 
                 session_attr["AlertValue"] = None  # Reset para uso futuro
-            else:
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: xpml, mxrf, xplg, btlg, kncr e knri. Por favor, diga novamente."
+                session_attr["alert_in_progress"] = False
+            elif fund_name:
+                fundos_disponiveis = ", ".join(allowed_funds)
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                session_attr["alert_in_progress"] = True
 
             handler_input.response_builder.speak(speech_text)
             if reprompt_text:
@@ -510,6 +527,41 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
+# ============================================================================================
+
+class SearchQueryHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("AMAZON.SearchQuery")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+
+        # Captura o que o usuário disse
+        query = get_slot_value(handler_input=handler_input, slot_name="query")
+        if not query:
+            # Tenta pegar o valor bruto do slot
+            slots = handler_input.request_envelope.request.intent.slots
+            query = slots.get("query").value if slots.get("query") else None
+
+        if query:
+            fund_name = query.lower().strip()
+            if fund_name in allowed_funds:
+                # Se estiver no fluxo de alerta, finalize o alerta
+                if "AlertValue" in session_attr and session_attr["AlertValue"]:
+                    alert_value = session_attr["AlertValue"]
+                    session_attr[f"alert_value_{fund_name}"] = alert_value
+                    session_attr["AlertValue"] = None
+                    speech_text = f"Alerta de preço criado para o fundo {fund_name.upper()}."
+                else:
+                    speech_text = f"Você selecionou o fundo {fund_name.upper()}."
+            else:
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: xpml, mxrf, xplg, btlg, kncr e knri."
+        else:
+            speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+
+        handler_input.response_builder.speak(speech_text).set_should_end_session(False)
+        return handler_input.response_builder.response
 # ============================================================================================
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
@@ -667,6 +719,7 @@ def webhook():
 
     # Inicialize os handlers com card_xpml11
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
+    search_query_handler = SearchQueryHandler()
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
@@ -679,6 +732,7 @@ def webhook():
 
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(create_price_alert_intent_handler)
+    sb.add_request_handler(search_query_handler)
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
