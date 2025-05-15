@@ -366,6 +366,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     logging.info(f"Valor recebido para fund_name: {fund_name}")
                     logging.info(f"Valor recebido para valor do alerta: {alert_value}")
@@ -580,6 +581,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         fundo = slots.get("fundName").value if slots.get("fundName") else None
+        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
 
         # Lista de fundos válidos baseada no mapeamento dinâmico
         allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
