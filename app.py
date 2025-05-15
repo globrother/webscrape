@@ -592,7 +592,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
                 session_attr["AlertValue"] = None  # Reset AlertValue for future use
             else:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+                speech_text = "Desculpe, você foi direcionado. Por favor, diga novamente."
                 handler_input.response_builder.speak(speech_text).ask(speech_text)
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
