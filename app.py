@@ -308,7 +308,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        request_type = handler_input.request_envelope.request.type
+        request_type = handler_input.request_envelope.request_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
         # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
@@ -317,7 +317,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se é um evento de navegação automática
         # Só aceita UserEvent com argumento "autoNavigate"
-        if request.type == "Alexa.Presentation.APL.UserEvent":
+        if request_type == "Alexa.Presentation.APL.UserEvent":
             arguments = getattr(request, "arguments", [])
             if arguments and arguments[0] == "autoNavigate":
                 logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
