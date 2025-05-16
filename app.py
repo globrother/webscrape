@@ -532,72 +532,6 @@ class TouchHandler(AbstractRequestHandler):
 
         return handler_input.response_builder.set_should_end_session(False).response
 #============================================================================================
-
- 
-"""class CreatePriceAlertIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-
-        try:
-            # Verifica se o valor do alerta já foi solicitado
-            if "AlertValue" not in session_attr:
-                session_attr["AlertValue"] = None
-                speech_text = "Qual é o valor do alerta em reais e centavos?"
-                reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-            elif session_attr["AlertValue"] is None:
-                alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
-                alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
-                else:
-                    speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-            else:
-                fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
-                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-                if fund_name and fund_name.lower() in allowed_funds:
-                    alert_value = session_attr["AlertValue"]
-                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                    reprompt_text = None
-                    
-                    logger.info('\n Começar a gravar\n')
-                    sufixo = f"alert_value_{fund_name.lower()}"
-                    valor = f"R$ {alert_value}"
-                    aux = "alert"
-                    grava_historico.gravar_historico(sufixo, valor)
-                    historico = grava_historico.ler_historico(sufixo)
-                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-                    
-                    logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-                    
-                    # Armazena hist_alert_xpml na sessão
-                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
-                    
-                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
-                    logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
-                else:
-                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-
-            handler_input.response_builder.speak(speech_text)
-            if reprompt_text:
-                handler_input.response_builder.ask(reprompt_text)
-
-            return handler_input.response_builder.response
-
-        except Exception as e:
-            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response"""
             
 # ============================================================================================
 
@@ -654,8 +588,41 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         document = None
         voice_prompt = ""
         response_text = ""
+        
+        # Procura o fundo no mapeamento, independente de quantos existam
         fundo_key = (fundo or "").lower()
-        if fundo_key == "xpml":
+        fundo_full = None
+        
+        for v in state_fund_mapping.values():
+            if v.replace("11", "").lower() == fundo_key:
+                fundo_full = v
+                break
+
+        if fundo_full:
+            _, _, _, apl_document, voz = web_scrape(fundo_full)
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+            document = apl_document
+        else:
+            if fundo:
+                response_text = "Desculpe, não consegui encontrar o fundo solicitado."
+            # Se fundo for None, já tratou acima
+
+        # Adiciona a resposta de fala e o documento APL, se aplicável
+        if document:
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="textDisplayToken",
+                    document=document
+                )
+            ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
+        else:
+            handler_input.response_builder.speak(speech_text if speech_text else response_text).set_should_end_session(False)
+
+        return handler_input.response_builder.response
+        
+        
+        """if fundo_key == "xpml":
             time.sleep(1)
             _, _, _, apl_document, voz = web_scrape("xpml11")
             response_text = f"Mostrando informações sobre o fundo {fundo}."
@@ -702,7 +669,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         else:
             handler_input.response_builder.speak(speech_text if speech_text else response_text).set_should_end_session(False)
 
-        return handler_input.response_builder.response
+        return handler_input.response_builder.response"""
 # ============================================================================================
 
 # ============================================================================================

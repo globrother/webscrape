@@ -169,35 +169,6 @@ def ler_historico(sufixo):
     except Exception as e:
         logging.error(f"Erro ao ler histórico: {e}")
         return []  # Retorna uma lista vazia em caso de erro
-
-"""def gerar_texto_historico(historico, aux):
-    logger.info("\n Iniciando Gerar Histórico\n")
-    
-    if aux == "alert":
-        # Verificar se o histórico está vazio
-        #if not historico:
-            #logger.info("\n Histórico está vazio\n")
-            #linhas = "•\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO <br> •\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO"
-            #return linhas
-        # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info(f"\n Linhas antes Len: {linhas}\n")
-        if len(linhas) > 1:
-            if len(linhas) >= 4:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}'
-            elif len(linhas) == 3:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}'
-            else:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}'
-        else:
-            linhas = linhas[0]
-
-        logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
-        return linhas
-    else:
-        linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)"""
  
 def gerar_texto_historico(historico, aux):
     logger.info("--> Iniciando Gerar Histórico\n")
