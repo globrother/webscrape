@@ -556,6 +556,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         fundo = slots.get("fundName").value if slots.get("fundName") else None
+        logging.info("Entrou na Seleção Manual")
         # Enviando Dynamic Entities para preencher automaticamente os slots types
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
 
@@ -594,7 +595,8 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 # Atualiza o estado para o fundo selecionado
                 if fundo_state_id is not None:
                     session_attr["state"] = fundo_state_id
-                    session_attr["manual_selection"] = True # Flag para parar navegação automática 
+                    session_attr["manual_selection"] = True # Flag para parar navegação automática
+                    logging.info("Seleção manual feita, manual_selection=True") 
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fundo}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
