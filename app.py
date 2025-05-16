@@ -472,7 +472,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 speech_text = f"Você selecionou o fundo {fund_name}."
                 # Atualiza o estado para o fundo selecionado e pausa navegação automática
                 session_attr["state"] = fundo_state_id
-                session_attr["manual_selection"] = False
+                session_attr["manual_selection"] = True
                 logging.info(f"Seleção manual feita para {fund_name}, manual_selection=True")
             
                 # Recupera as informações do fundo e monta o documento APL
