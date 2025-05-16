@@ -307,17 +307,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
         request_type = handler_input.request_envelope.request.object_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
         # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
         if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
             return False
-        
-        # Verifica se NÃO é um evento de toque
-        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            #return False
         
         # Verifica se é um evento de navegação automática
         # Só aceita UserEvent com argumento "autoNavigate"
