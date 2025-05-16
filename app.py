@@ -327,11 +327,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        # Verifica se a criação de alerta está em progresso e para navegação automática
-        if session_attr.get("alert_in_progress"):
-            return False
-        # Pausa navegação automática se houve seleção manual
-        if session_attr.get("manual_selection"):
+        
+        # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
+        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
             return False
         
         current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
