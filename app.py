@@ -101,7 +101,7 @@ letras_extenso = {
     "w": "dáblio",
     "x": "xis",
     "y": "ípsilon",
-    "z": "zê"
+    "z": "ze"
 }
 
 def gerar_sinonimos(fundo):
