@@ -577,135 +577,86 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        
         # Enviando Dynamic Entities para preencher automaticamente os slots types
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         
-        slots = handler_input.request_envelope.request.intent.slots
-        fundo = slots.get("fundName").value if slots.get("fundName") else None
-        logging.info("Entrou na Seleção Manual")
-        logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
-
-        # Lista de fundos válidos baseada no mapeamento dinâmico
-        allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
-        
-        # Procura o fundo no mapeamento, independente de quantos existam
-        fundo_key = (fundo or "").lower()
-        fundo_full = None
-        fundo_state_id = None
-        # Atualiza o estado ao selecionar fundo
-        for state_id, v in state_fund_mapping.items():
-            if v.replace("11", "").lower() == fundo_key:
-                fundo_full = v
-                fundo_state_id = state_id
-                break
-
-        # Verifica se estamos no meio de uma interação de criação de alerta de preço
-        if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
+        try:
+            # Coleta os slots
+            slots = handler_input.request_envelope.request.intent.slots
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            alert_value = session_attr["AlertValue"]
-            if fund_name and fund_name.lower() in allowed_funds:
-                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                session_attr["AlertValue"] = None  # Reset AlertValue for future use
-            else:
-                fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Redirecionando... Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                handler_input.response_builder.speak(speech_text).ask(speech_text)
-                session_attr["alert_in_progress"] = True
+            logging.info("Entrou na Seleção Manual")
+            logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+
+            # Lista de fundos válidos baseada no mapeamento dinâmico
+            allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+        
+            # Passo 1: Checa se o fundo foi informado
+            if not fund_name:
+                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo que deseja visualizar."
+                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 return handler_input.response_builder.response
-        else:
+            
+            # Passo 2: Checa se o fundo é válido
+            # Procura o fundo no mapeamento, independente de quantos existam
+            fundo_key = fund_name.lower()
+            fundo_full = None
+            fundo_state_id = None
+            # Atualiza o estado ao selecionar fundo
+            for state_id, v in state_fund_mapping.items():
+                if v.replace("11", "").lower() == fundo_key:
+                    fundo_full = v
+                    fundo_state_id = state_id
+                    break
+
+            # Verifica se estamos no meio de uma interação de criação de alerta de preço
+            if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
+                fund_name = slots.get("fundName").value if slots.get("fundName") else None
+                alert_value = session_attr["AlertValue"]
+                if fund_name and fund_name.lower() in allowed_funds:
+                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
+                    session_attr["alert_in_progress"] = False
+                else:
+                    fundos_disponiveis = ", ".join(allowed_funds)
+                    speech_text = f"Redirecionando... Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                    handler_input.response_builder.speak(speech_text).ask(speech_text)
+                    session_attr["alert_in_progress"] = True
+                    return handler_input.response_builder.response
+                handler_input.response_builder.speak(speech_text)
+                return handler_input.response_builder.response
+            
             # Lógica normal para SelectFundIntent
-            if fundo and fundo.lower() in allowed_funds:
-                speech_text = f"Você selecionou o fundo {fundo}."
-                # Atualiza o estado para o fundo selecionado
-                if fundo_state_id is not None:
-                    session_attr["state"] = fundo_state_id
-                    session_attr["manual_selection"] = True # Flag para parar navegação automática
-                    logging.info("Seleção manual feita, manual_selection=True") 
+            if fund_name and fund_name.lower() in allowed_funds and fundo_full:
+                speech_text = f"Você selecionou o fundo {fund_name}."
+                # Atualiza o estado para o fundo selecionado e pausa navegação automática
+                session_attr["state"] = fundo_state_id
+                session_attr["manual_selection"] = True
+                logging.info(f"Seleção manual feita para {fund_name}, manual_selection=True")
+            
+                # Recupera as informações do fundo e monta o documento APL
+                _, _, _, apl_document, voz = web_scrape(fundo_full)
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="textDisplayToken",
+                        document=apl_document
+                    )
+                ).speak(f"{speech_text}<break time='500ms'/>\n{voz}").set_should_end_session(False)
+                return handler_input.response_builder.response
+            
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Desculpe, o fundo '{fundo}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo que deseja visualizar."
+                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 return handler_input.response_builder.response
 
-        # Define o documento APL e a resposta de voz com base no fundo selecionado
-        document = None
-        voice_prompt = ""
-        response_text = ""
-
-        if fundo_full:
-            _, _, _, apl_document, voz = web_scrape(fundo_full)
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-            document = apl_document
-        else:
-            if fundo:
-                response_text = "Desculpe, não consegui encontrar o fundo solicitado."
-            # Se fundo for None, já tratou acima
-
-        # Adiciona a resposta de fala e o documento APL, se aplicável
-        if document:
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken",
-                    document=document
-                )
-            ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
-        else:
-            handler_input.response_builder.speak(speech_text if speech_text else response_text).set_should_end_session(False)
-
-        return handler_input.response_builder.response
-        
-        
-        """if fundo_key == "xpml":
-            time.sleep(1)
-            _, _, _, apl_document, voz = web_scrape("xpml11")
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-            document = apl_document
-        elif fundo_key == "mxrf":
-            _, _, _, apl_document, voz = web_scrape("mxrf11")
-            document = apl_document
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-        elif fundo_key == "xplg":
-            _, _, _, apl_document, voz = web_scrape("xplg11")
-            document = apl_document
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-        elif fundo_key == "btlg":
-            _, _, _, apl_document, voz = web_scrape("btlg11")
-            document = apl_document
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-        elif fundo_key == "kncr":
-            _, _, _, apl_document, voz = web_scrape("kncr11")
-            document = apl_document
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-        elif fundo_key == "knri":
-            _, _, _, apl_document, voz = web_scrape("knri11")
-            document = apl_document
-            response_text = f"Mostrando informações sobre o fundo {fundo}."
-            voice_prompt = voz
-        else:
-            if fundo:
-                response_text = "Desculpe, não consegui encontrar o fundo solicitado."
-            # Se fundo for None, já tratou acima
-
-        # Adiciona a resposta de fala e o documento APL, se aplicável
-        if document:
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="textDisplayToken",
-                    document=document
-                )
-            ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
-        else:
-            handler_input.response_builder.speak(speech_text if speech_text else response_text).set_should_end_session(False)
-
-        return handler_input.response_builder.response"""
+        except Exception as e:
+            logging.error(f"Erro ao processar SelectFundIntent: {e}")
+            speech_text = "Desculpe, ocorreu um erro ao tentar mostrar o fundo. Por favor, tente novamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response
 # ============================================================================================
 
 # ============================================================================================
