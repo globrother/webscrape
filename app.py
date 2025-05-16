@@ -577,11 +577,14 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
+        
+        # Enviando Dynamic Entities para preencher automaticamente os slots types
+        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        
         slots = handler_input.request_envelope.request.intent.slots
         fundo = slots.get("fundName").value if slots.get("fundName") else None
         logging.info("Entrou na Seleção Manual")
-        # Enviando Dynamic Entities para preencher automaticamente os slots types
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
         # Lista de fundos válidos baseada no mapeamento dinâmico
         allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
