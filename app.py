@@ -325,10 +325,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
             logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             return False
         
-        # Verifica se o estado atual está no mapeamento
+        # Nunca aceite IntentRequest!
+        return False
+        
+        """# Verifica se o estado atual está no mapeamento
         current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping
+        return current_state in self.state_fund_mapping"""
         
         """ # Verifica se é um evento de navegação automática
         # Só aceita UserEvent com argumento "autoNavigate"
