@@ -308,7 +308,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        request_type = handler_input.request_envelope.request_type
+        request_type = handler_input.request_envelope.request.object_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
         # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
@@ -316,6 +316,21 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return False
         
         # Verifica se é um evento de navegação automática
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "autoNavigate":
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                return True
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        
+        # Verifica se o estado atual está no mapeamento
+        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
+        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
+        return current_state in self.state_fund_mapping
+        
+        """ # Verifica se é um evento de navegação automática
         # Só aceita UserEvent com argumento "autoNavigate"
         if request_type == "Alexa.Presentation.APL.UserEvent":
             arguments = getattr(request, "arguments", [])
@@ -326,7 +341,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return False
         
         # Nunca aceite IntentRequest!
-        return False
+        return False"""
     
         """if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
