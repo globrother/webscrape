@@ -310,13 +310,29 @@ class DynamicScreenHandler(AbstractRequestHandler):
         request_type = handler_input.request_envelope.request.object_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
+        # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
+        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
+            return False
+        
         # Verifica se NÃO é um evento de toque
         #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             #return False
         
         # Verifica se é um evento de navegação automática
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+        # Só aceita UserEvent com argumento "autoNavigate"
+        if request.object_type == "Alexa.Presentation.APL.UserEvent":
+            arguments = getattr(request, "arguments", [])
+            if arguments and arguments[0] == "autoNavigate":
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                return True
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        
+        # Nunca aceite IntentRequest!
+        return False
+    
+        """if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
             if arguments and arguments[0] == "autoNavigate":
@@ -328,13 +344,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
         
-        # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
-        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
-            return False
-        
         current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping
+        return current_state in self.state_fund_mapping """
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
