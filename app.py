@@ -327,8 +327,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        # Verifica se a criação de alerta está em progresso
+        # Verifica se a criação de alerta está em progresso e para navegação automática
         if session_attr.get("alert_in_progress"):
+            return False
+        # Pausa navegação automática se houve seleção manual
+        if session_attr.get("manual_selection"):
             return False
         
         current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
@@ -555,10 +558,22 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         fundo = slots.get("fundName").value if slots.get("fundName") else None
+        # Enviando Dynamic Entities para preencher automaticamente os slots types
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
 
         # Lista de fundos válidos baseada no mapeamento dinâmico
         allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+        
+        # Procura o fundo no mapeamento, independente de quantos existam
+        fundo_key = (fundo or "").lower()
+        fundo_full = None
+        fundo_state_id = None
+        # Atualiza o estado ao selecionar fundo
+        for state_id, v in state_fund_mapping.items():
+            if v.replace("11", "").lower() == fundo_key:
+                fundo_full = v
+                fundo_state_id = state_id
+                break
 
         # Verifica se estamos no meio de uma interação de criação de alerta de preço
         if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
@@ -578,6 +593,10 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             # Lógica normal para SelectFundIntent
             if fundo and fundo.lower() in allowed_funds:
                 speech_text = f"Você selecionou o fundo {fundo}."
+                # Atualiza o estado para o fundo selecionado
+                if fundo_state_id is not None:
+                    session_attr["state"] = fundo_state_id
+                    session_attr["manual_selection"] = True # Flag para parar navegação automática 
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fundo}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
@@ -588,15 +607,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         document = None
         voice_prompt = ""
         response_text = ""
-        
-        # Procura o fundo no mapeamento, independente de quantos existam
-        fundo_key = (fundo or "").lower()
-        fundo_full = None
-        
-        for v in state_fund_mapping.values():
-            if v.replace("11", "").lower() == fundo_key:
-                fundo_full = v
-                break
 
         if fundo_full:
             _, _, _, apl_document, voz = web_scrape(fundo_full)
