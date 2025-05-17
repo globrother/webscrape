@@ -413,10 +413,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
 # Classe para mostrar um fundo solicitado
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        return is_intent_name("SelectFundIntent")(handler_input)
+        return is_intent_name("SelectFundIntent")(handler_input) or \
+            is_intent_name("AMAZON.NextIntent")(handler_input)
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
+        intent_name = handler_input.request_envelope.request.intent.name
+
         # Enviando Dynamic Entities para preencher automaticamente os slots types
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         
@@ -467,6 +470,22 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
             
+            # Se for o intent padrão de continuar/próximo
+            if intent_name == "AMAZON.NextIntent":
+                session_attr.pop("manual_selection", None)
+                speech_text = "Continuando a navegação pelos fundos."
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token=f"textDisplayToken_{session_attr.get('state', 1)}",
+                        commands=[
+                            SendEventCommand(
+                                arguments=["autoNavigate"], delay=0
+                            )
+                        ]
+                    )
+                ).speak(speech_text).set_should_end_session(False)
+                return handler_input.response_builder.response
+            
             # Lógica normal para SelectFundIntent
             if fund_name and fund_name.lower() in allowed_funds and fundo_full:
                 speech_text = f"Você selecionou o fundo {fund_name}."
@@ -491,7 +510,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 reprompt_text = "Por favor, me diga o nome do fundo que deseja visualizar."
                 handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 return handler_input.response_builder.response
-
+        
         except Exception as e:
             logging.error(f"Erro ao processar SelectFundIntent: {e}")
             speech_text = "Desculpe, ocorreu um erro ao tentar mostrar o fundo. Por favor, tente novamente."
