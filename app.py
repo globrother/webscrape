@@ -419,9 +419,26 @@ class SelectFundIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
+        logging.info(f"Intent recebido: {intent_name}")
 
         # Enviando Dynamic Entities para preencher automaticamente os slots types
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        
+        # Se for o intent padrão de continuar/próximo
+        if intent_name == "AMAZON.NextIntent":
+            session_attr.pop("manual_selection", None)
+            speech_text = "Continuando a navegação pelos fundos."
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token=f"textDisplayToken_{session_attr.get('state', 1)}",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["autoNavigate"], delay=0
+                        )
+                    ]
+                )
+            ).speak(speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
         
         try:
             # Coleta os slots
@@ -468,22 +485,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     session_attr["alert_in_progress"] = True
                     return handler_input.response_builder.response
                 handler_input.response_builder.speak(speech_text)
-                return handler_input.response_builder.response
-            
-            # Se for o intent padrão de continuar/próximo
-            if intent_name == "AMAZON.NextIntent":
-                session_attr.pop("manual_selection", None)
-                speech_text = "Continuando a navegação pelos fundos."
-                handler_input.response_builder.add_directive(
-                    ExecuteCommandsDirective(
-                        token=f"textDisplayToken_{session_attr.get('state', 1)}",
-                        commands=[
-                            SendEventCommand(
-                                arguments=["autoNavigate"], delay=0
-                            )
-                        ]
-                    )
-                ).speak(speech_text).set_should_end_session(False)
                 return handler_input.response_builder.response
             
             # Lógica normal para SelectFundIntent
