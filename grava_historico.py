@@ -247,4 +247,5 @@ def adicionar_fundo(ativo_dict):
         "Content-Type": "application/json"
     }
     response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
+    logging.info(f"Arquivo gravado: {ativo_dict}\n")
     return response.json()

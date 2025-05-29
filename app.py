@@ -301,37 +301,47 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
-            return arguments and (arguments[0] == "siglaAtivo" or arguments[0] == "nomeAtivo")
+            return arguments and (
+                arguments[0] == "siglaAtivo" or
+                arguments[0] == "nomeAtivo" or
+                arguments[0] == "confirmarCadastro"
+            )
         return False
-
+    
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
-
+    
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
             speech_text = "Agora, digite o nome completo do ativo."
             handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
-
+    
         if arguments[0] == "nomeAtivo":
+            session_attr["novo_ativo_nome"] = arguments[1].strip()
+            speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
+            handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
+    
+        if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
-            nome = arguments[1].strip()
+            nome = session_attr.get("novo_ativo_nome")
             if not sigla or not nome:
                 handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask("Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
-
+    
             # Validação: sigla já existe?
             _, lista_ativos = grava_historico.carregar_ativos()
             siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
             if sigla in siglas_existentes:
                 handler_input.response_builder.speak(f"O ativo {sigla.upper()} já está cadastrado!").set_should_end_session(False)
                 return handler_input.response_builder.response
-
+    
             # Gerar novo state_id
             state_ids = [f['state_id'] for f in lista_ativos]
             novo_state_id = max(state_ids) + 1 if state_ids else 1
-
+    
             novo_ativo = {
                 "state_id": novo_state_id,
                 "codigo": sigla,
@@ -340,8 +350,9 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "ativo": True
             }
             grava_historico.adicionar_ativo(novo_ativo)
-            handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi cadastrado com sucesso!").set_should_end_session(False)
-            return handler_input.response_builder.response
+            handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi cadastrado com sucesso!").set_should_end_session(True)
+            return handler_input.response_builder.response    
+        
 
 class AddAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -382,40 +393,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Nunca aceite IntentRequest!
         return False
-        
-        """# Verifica se o estado atual está no mapeamento
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
-        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping"""
-        
-        """ # Verifica se é um evento de navegação automática
-        # Só aceita UserEvent com argumento "autoNavigate"
-        if request_type == "Alexa.Presentation.APL.UserEvent":
-            arguments = getattr(request, "arguments", [])
-            if arguments and arguments[0] == "autoNavigate":
-                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
-                return True
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
-        
-        # Nunca aceite IntentRequest!
-        return False"""
-    
-        """if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
-            if arguments and arguments[0] == "autoNavigate":
-                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
-                return True
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
-        
-        # Verifica se o estado atual está no mapeamento    
-        session_attr = handler_input.attributes_manager.session_attributes
-        
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
-        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping """
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
