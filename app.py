@@ -311,14 +311,14 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
             speech_text = "Agora, digite o nome completo do ativo."
-            handler_input.response_builder.speak(speech_text).set_should_end_session(False)
+            handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
 
         if arguments[0] == "nomeAtivo":
             sigla = session_attr.get("novo_ativo_sigla")
             nome = arguments[1].strip()
             if not sigla or not nome:
-                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").set_should_end_session(False)
+                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask("Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
