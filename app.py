@@ -65,18 +65,8 @@ app = Flask(__name__)
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_fund_mapping}")
-time.sleep(5)
-logging.info(f"\n A lista é: {lista_ativos}")
-"""state_fund_mapping = {
-    1: "xpml11",
-    2: "mxrf11",
-    3: "xplg11",
-    4: "btlg11",
-    5: "kncr11",
-    6: "knri11",
-    7: "tgar11",
-    8: "rztr11"  # Último estado
-}"""
+#time.sleep(5)
+#logging.info(f"\n A lista é: {lista_ativos}")
 
 # Dicionário para letras em extenso (português)
 letras_extenso = {
@@ -305,6 +295,66 @@ class LaunchRequestHandler(AbstractRequestHandler):
         
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
+
+class NovoAtivoUserEventHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            return arguments and (arguments[0] == "siglaAtivo" or arguments[0] == "nomeAtivo")
+        return False
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        arguments = handler_input.request_envelope.request.arguments
+
+        if arguments[0] == "siglaAtivo":
+            session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
+            speech_text = "Agora, digite o nome completo do ativo."
+            handler_input.response_builder.speak(speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
+
+        if arguments[0] == "nomeAtivo":
+            sigla = session_attr.get("novo_ativo_sigla")
+            nome = arguments[1].strip()
+            if not sigla or not nome:
+                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").set_should_end_session(False)
+                return handler_input.response_builder.response
+
+            # Validação: sigla já existe?
+            _, lista_ativos = grava_historico.carregar_ativos()
+            siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
+            if sigla in siglas_existentes:
+                handler_input.response_builder.speak(f"O ativo {sigla.upper()} já está cadastrado!").set_should_end_session(False)
+                return handler_input.response_builder.response
+
+            # Gerar novo state_id
+            state_ids = [f['state_id'] for f in lista_ativos]
+            novo_state_id = max(state_ids) + 1 if state_ids else 1
+
+            novo_ativo = {
+                "state_id": novo_state_id,
+                "codigo": sigla,
+                "nome": nome,
+                "apelido": sigla.replace("11", "").upper(),
+                "ativo": True
+            }
+            grava_historico.adicionar_ativo(novo_ativo)
+            handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi cadastrado com sucesso!").set_should_end_session(False)
+            return handler_input.response_builder.response
+
+class AddAtivoIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("AddAtivoIntent")(handler_input)
+
+    def handle(self, handler_input):
+        apl_document = _load_apl_document("apl_add_ativo.json")
+        handler_input.response_builder.add_directive(
+            RenderDocumentDirective(
+                token="addAtivoToken",
+                document=apl_document
+            )
+        ).speak("Digite a sigla e o nome completo do novo ativo.").set_should_end_session(False)
+        return handler_input.response_builder.response
 
 class DynamicScreenHandler(AbstractRequestHandler):
     def __init__(self, state_fund_mapping):
@@ -761,6 +811,8 @@ def webhook():
     # Inicialize os handlers com card_xpml11
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     launch_request_handler = LaunchRequestHandler()
+    add_ativo_intent_handler = AddAtivoIntentHandler()
+    novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
@@ -773,6 +825,8 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(launch_request_handler)
+    sb.add_request_handler(add_ativo_intent_handler)
+    sb.add_request_handler(novo_ativo_usesevent_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)

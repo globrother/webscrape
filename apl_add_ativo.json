@@ -1,0 +1,56 @@
+{
+  "type": "APL",
+  "version": "2024.3",
+  "description": "Documento APL de Entrada de Dados para Adicionar ativo",
+  "theme": "dark",
+  "mainTemplate": {
+    "parameters": ["payload"],
+    "items": [
+      {
+        "type": "Container",
+        "items": [
+          {
+            "type": "Text",
+            "text": "Digite a sigla do novo fundo:",
+            "style": "textStylePrimary1"
+          },
+          {
+            "type": "EditText",
+            "id": "fundoInput",
+            "hintText": "Ex: mxrf11",
+            "submitKeyType": "next",
+            "onSubmit": [
+              {
+                "type": "SendEvent",
+                "arguments": [
+                  "siglaFundo",
+                  "${event.source.value}"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "text": "Digite o nome completo do fundo:",
+            "style": "textStylePrimary1"
+          },
+          {
+            "type": "EditText",
+            "id": "nomeInput",
+            "hintText": "Ex: Maxi Renda",
+            "submitKeyType": "done",
+            "onSubmit": [
+              {
+                "type": "SendEvent",
+                "arguments": [
+                  "nomeFundo",
+                  "${event.source.value}"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

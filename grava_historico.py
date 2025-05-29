@@ -238,3 +238,13 @@ def carregar_ativos():
 
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
+
+def adicionar_fundo(ativo_dict):
+    url = "https://parseapi.back4app.com/classes/map_ativo"
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY,
+        "Content-Type": "application/json"
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
+    return response.json()
