@@ -63,7 +63,10 @@ app = Flask(__name__)
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 # Mapeamento de Estados e Fundos
-state_fund_mapping = {
+state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
+logging.info(f"\n O Mapa é: {state_fund_mapping}")
+logging.info(f"\n A lista é: {lista_ativos}")
+"""state_fund_mapping = {
     1: "xpml11",
     2: "mxrf11",
     3: "xplg11",
@@ -72,7 +75,7 @@ state_fund_mapping = {
     6: "knri11",
     7: "tgar11",
     8: "rztr11"  # Último estado
-}
+}"""
 
 # Dicionário para letras em extenso (português)
 letras_extenso = {

@@ -4,6 +4,7 @@ import os
 import http.client
 import json
 import logging
+import requests
 import time
 
 # Usar o logger para registrar mensagens
@@ -203,3 +204,37 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
         return "<br>".join(linhas)
+
+
+# Variáveis globais para cache
+_ativos_cache = None
+_ativos_cache_time = 0
+_CACHE_TTL = 60 * 10  # 10 minutos
+
+def carregar_ativos():
+    global _ativos_cache, _ativos_cache_time
+    agora = time.time()
+    # Se o cache existe e não expirou, retorna do cache
+    if _ativos_cache and (agora - _ativos_cache_time) < _CACHE_TTL:
+        return _ativos_cache
+
+    # Senão, busca do Back4App
+    url = "https://parseapi.back4app.com/classes/map_ativo?limit=1000"
+    print("APPLICATION_ID:", APPLICATION_ID)
+    print("REST_API_KEY:", REST_API_KEY)
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print("DEBUG resposta Back4App:", data)  # ou logger.info(...)
+    ativos = data['results']
+    state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['ativo']}
+    # Atualiza o cache
+    _ativos_cache = (state_fund_mapping, ativos)
+    _ativos_cache_time = agora
+    return _ativos_cache
+
+# Exemplo de uso:
+#state_fund_mapping, lista_ativos = carregar_ativos()
