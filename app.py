@@ -65,6 +65,7 @@ app = Flask(__name__)
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_fund_mapping}")
+time.sleep(5)
 logging.info(f"\n A lista é: {lista_ativos}")
 """state_fund_mapping = {
     1: "xpml11",
@@ -195,7 +196,7 @@ def web_scrape(fundo):
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)
-    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
+    #logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
     
     fii = fundo
     
@@ -221,7 +222,7 @@ def web_scrape(fundo):
 
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[(fundo_index - 1) % len(background_images)]
-    logger.info(f"O link da imagem de fundo é: {background_image}")
+    #logger.info(f"O link da imagem de fundo é: {background_image}")
     
     """# Determina o índice do fundo atual com base no mapeamento de estados
     # Determina a chave correspondente ao fundo atual
