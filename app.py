@@ -353,7 +353,7 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
                 token="addAtivoToken",
                 document=apl_document
             )
-        ).speak("Digite a sigla e o nome completo do novo ativo.").set_should_end_session(False)
+        ).speak("Digite a sigla e o nome completo do novo ativo.").ask("Por favor, digite a sigla do novo ativo.").set_should_end_session(False)
         return handler_input.response_builder.response
 
 class DynamicScreenHandler(AbstractRequestHandler):
