@@ -296,6 +296,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
+# ADICIONANDO NOVO ATIVO AO MAPEAMENTO
 class NovoAtivoUserEventHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
