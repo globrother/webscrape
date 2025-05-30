@@ -353,7 +353,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi cadastrado com sucesso!").set_should_end_session(True)
             return handler_input.response_builder.response    
         
-
+# HANDLER PARA ADICIONAR NOVO ATIVO
 class AddAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("AddAtivoIntent")(handler_input)
