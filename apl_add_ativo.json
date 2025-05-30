@@ -14,9 +14,6 @@
         }
     ],
     "mainTemplate": {
-        "parameters": [
-            "payload"
-        ],
         "items": [
             {
                 "type": "Container",

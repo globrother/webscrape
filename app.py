@@ -358,11 +358,12 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
         ).add_directive(
             RenderDocumentDirective(
-                token=f"textDisplayToken_{novo_state_id}",
+                token="mainScreenToken",  # Use sempre o mesmo token para exibição de fundos
                 document=apl_document
+                # Se seu APL usa datasources, adicione: , datasources={...}
             )
         ).set_should_end_session(False)
-        return handler_input.response_builder.response   
+        return handler_input.response_builder.response  
         
 # HANDLER PARA ADICIONAR NOVO ATIVO
 class AddAtivoIntentHandler(AbstractRequestHandler):
