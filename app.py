@@ -264,10 +264,10 @@ class LaunchRequestHandler(AbstractRequestHandler):
         from datetime import datetime
         hora = datetime.now().hour
         if 8 <= hora < 18:
-            ativos_ids = ativos_favoritos
+            ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
         else:
-            ativos_ids = list(state_fund_mapping.keys())
+            ativos_ids = sorted(state_fund_mapping.keys())
             session_attr["exibir_favoritos"] = False
 
         session_attr["ativos_ids"] = ativos_ids
@@ -450,7 +450,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        ativos_ids = session_attr.get("ativos_ids", list(self.state_fund_mapping.keys()))
+        ativos_ids = session_attr.get("ativos_ids", sorted(self.state_fund_mapping.keys()))
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get("state", ativos_ids[0]) # Estado inicial padrão é 1 
         try:
