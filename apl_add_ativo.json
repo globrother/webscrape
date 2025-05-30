@@ -16,10 +16,7 @@
     "mainTemplate": {
         "parameters": [
             "payload",
-            {
-            "name": "cadastrando",
-            "default": false
-            }
+            "cadastrando"
         ],
         "items": [
             {
