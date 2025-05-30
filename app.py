@@ -309,6 +309,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         return False
     
     def handle(self, handler_input):
+        global state_fund_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
     
