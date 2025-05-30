@@ -18,7 +18,7 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import time
-from datetime import datetime
+from datetime
 import pytz
 import os
 import json
@@ -269,7 +269,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         #hora = datetime.now().hour
         hora = datetime.datetime.now(brt_tz).strftime("%H")
         logging.info(f"$:=:$ $$$$$ $$$$$ Hora para favoritos: {hora}")
-        if 8 <= hora < 18:
+        if 8 <= hora < 19:
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
         else:
