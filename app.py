@@ -103,7 +103,7 @@ letras_extenso = {
     "z": "ze"
 }
 
-ativos_favoritos = ["1", "3", "5"]
+ativos_favoritos = [1, 3, 5]
 
 
 def gerar_sinonimos(fundo):
