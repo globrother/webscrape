@@ -150,7 +150,6 @@ def _load_apl_document(file_path):
         return None
 
 
-apl_document_xpml = apl_document_mxrf = apl_document_xplg = apl_document_btlg = apl_document_kncr = apl_document_knri = None
 voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ============================================================================================
@@ -316,7 +315,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=5
+                        arguments=["autoNavigate"], delay=5000
                     )
                 ]
             )
