@@ -389,7 +389,11 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="addAtivoToken",
-                document=apl_document
+                document=apl_document,
+                datasources={
+                    "payload": {},  # seus dados
+                    "cadastrando": False                
+                },
             )
         ).speak("Digite a sigla e o nome completo do novo ativo.").ask("Por favor, digite a sigla do novo ativo.").set_should_end_session(False)
         return handler_input.response_builder.response
