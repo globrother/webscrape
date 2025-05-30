@@ -350,7 +350,18 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "ativo": True
             }
             grava_historico.adicionar_ativo(novo_ativo)
-            handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi cadastrado com sucesso!").set_should_end_session(True)
+            
+            # Após cadastrar, retorne para exibição do primeiro fundo
+            fundo = state_fund_mapping[novo_state_id]
+            _, _, _, apl_document, voz = web_scrape(fundo)
+            handler_input.response_builder.speak(
+                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
+            ).add_directive(
+                RenderDocumentDirective(
+                    token="textDisplayToken1",
+                    document=apl_document
+                )
+            ).set_should_end_session(False)
             return handler_input.response_builder.response    
         
 # HANDLER PARA ADICIONAR NOVO ATIVO
