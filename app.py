@@ -358,7 +358,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
         ).add_directive(
             RenderDocumentDirective(
-                token="textDisplayToken1",
+                token=f"textDisplayToken_{novo_state_id}",
                 document=apl_document
             )
         ).set_should_end_session(False)
