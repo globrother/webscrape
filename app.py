@@ -98,7 +98,7 @@ letras_extenso = {
     "z": "ze"
 }
 
-ativos_favoritos = [1, 3, 5]
+ativos_favoritos = ["1", "3", "5"]
 
 def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
@@ -263,7 +263,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exemplo: exibir só favoritos durante o dia
         from datetime import datetime
         hora = datetime.now().hour
-        logging.info(f"Hora para favoritos: {hora}")
+        logging.info(f"$:=:$ $$$$$ $$$$$ Hora para favoritos: {hora}")
         if 8 <= hora < 18:
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
