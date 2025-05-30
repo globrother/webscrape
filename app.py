@@ -98,6 +98,8 @@ letras_extenso = {
     "z": "ze"
 }
 
+ativos_favoritos = [1, 3, 5]
+
 def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
     letras = list(fundo)
@@ -256,43 +258,50 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        # logging.debug(f"Handling LaunchRequest with card_xpml11: {self.card_xpml11}")
-        #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
-        
         session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = 1 # Estado inicial é o ID 1
-
         
-        # Chama o fundo inicial
-        fundo = state_fund_mapping[1]  # Obtém o nome do fundo pelo ID
+        # Exemplo: exibir só favoritos durante o dia
+        from datetime import datetime
+        hora = datetime.now().hour
+        if 8 <= hora < 18:
+            ativos_ids = ativos_favoritos
+            session_attr["exibir_favoritos"] = True
+        else:
+            ativos_ids = list(state_fund_mapping.keys())
+            session_attr["exibir_favoritos"] = False
+
+        session_attr["ativos_ids"] = ativos_ids
+        session_attr["state"] = ativos_ids[0]
+
+        fundo = state_fund_mapping[ativos_ids[0]]
         _, _, _, apl_document, voz = web_scrape(fundo)
-        
-        # Atualiza o estado para o próximo
-        session_attr["state"] = 2  # Próximo estado é o ID 2
 
-
-        # Constrói a resposta inicial
-        handler_input.response_builder.speak(
-            f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
-        ).add_directive(
+        handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
                 document=apl_document
             )
         )
         
-        # Agende a navegação automática para o próximo fundo
+        # Só fala se não for favoritos
+        if not session_attr.get("exibir_favoritos"):
+            handler_input.response_builder.speak(
+                f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
+            )
+        
+        
+        # Agende navegação automática
         handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
+                        arguments=["autoNavigate"], delay=5
                     )
                 ]
             )
         )
-        
+
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
@@ -437,25 +446,32 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 return True
             logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             return False
-        
-        # Nunca aceite IntentRequest!
-        return False
+        return False # Nunca aceite IntentRequest!
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
-
+        ativos_ids = session_attr.get("ativos_ids", list(self.state_fund_mapping.keys()))
+        exibir_favoritos = session_attr.get("exibir_favoritos", False)
+        current_state = session_attr.get("state", ativos_ids[0]) # Estado inicial padrão é 1 
+        try:
+            idx = ativos_ids.index(current_state)
+        except ValueError:
+            idx = 0
+        
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[current_state]
-
+        fundo = self.state_fund_mapping[ativos_ids[idx]]
         # Chame a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
         
         # Calcula o próximo estado
-        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
+        next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
+        if next_idx is not None:
+            session_attr["state"] = ativos_ids[next_idx]
+        else:
+            session_attr["state"] = None
 
         # Atualize o estado para o próximo
-        session_attr["state"] = next_state
+        #session_attr["state"] = next_state
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
@@ -463,27 +479,32 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz}")
+        )
         
-        # Verifica se é o último estado
+        # Só fala se não for favoritos
+        if not exibir_favoritos:
+            handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
+        
+        """# Verifica se é o último estado
         if next_state is None:
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
                 f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
             )
-            return handler_input.response_builder.set_should_end_session(True).response
+            return handler_input.response_builder.set_should_end_session(True).response"""
         
         # Se houver um próximo estado, agende a navegação automática.
-        handler_input.response_builder.add_directive(
-            ExecuteCommandsDirective(
-                token="mainScreenToken",
-                commands=[
-                    SendEventCommand(
-                        arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
-                    )
-                ]
+        if next_idx is not None:
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
+                        )
+                    ]
+                )
             )
-        )
 
         return handler_input.response_builder.set_should_end_session(False).response
 
