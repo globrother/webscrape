@@ -801,10 +801,16 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(
             "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
         
-        # Em vez de encerrar, vamos definir uma mensagem padrão
+        """# Em vez de encerrar, vamos definir uma mensagem padrão
         handler_input.response_builder.speak("<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("\n Encerrando Aplicativo...\n")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
+        return handler_input.response_builder.response"""
+        
+        handler_input.response_builder.speak(
+        "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
+        ).set_should_end_session(False)
+        logging.info("\n CatchAllRequestHandler: Mantendo a sessão ativa.\n")
         return handler_input.response_builder.response
 # ============================================================================================
 # ============================================================================================
