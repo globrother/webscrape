@@ -330,7 +330,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             session_attr.pop("novo_ativo_sigla", None)
             session_attr.pop("novo_ativo_nome", None)
             session_attr["manual_selection"] = True
-            session_attr["state"] = 1  # ou o state que desejar voltar
+            session_attr["state"] = 2  # ou o state que desejar voltar
         
             fundo = state_fund_mapping[1]  # Volta para o primeiro fundo, ou outro desejado
             _, _, _, apl_document, voz = web_scrape(fundo)
