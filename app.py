@@ -18,7 +18,7 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import time
-import datetime
+from datetime import datetime
 import pytz
 import os
 import json
@@ -267,9 +267,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
         
         # Exemplo: exibir só favoritos durante o dia
         #hora = datetime.now().hour
-        hora = datetime.datetime.now(brt_tz).strftime("%H")
+        hora = int(datetime.now(brt_tz).strftime("%H"))
         logging.info(f"$:=:$ $$$$$ $$$$$ Hora para favoritos: {hora}")
-        if "8" <= hora < "19":
+        if 8 <= hora < 19:
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
         else:
