@@ -18,6 +18,8 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import time
+from datetime import datetime
+import pytz
 import os
 import json
 import logging
@@ -54,6 +56,9 @@ import grava_historico
 # Usar o logger para registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+# Define o fuso horário para horário de Brasília
+brt_tz = pytz.timezone("America/Sao_Paulo")
 
 time.sleep(1)
 
@@ -261,8 +266,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         
         # Exemplo: exibir só favoritos durante o dia
-        from datetime import datetime
-        hora = datetime.now().hour
+        #hora = datetime.now().hour
+        hora = datetime.datetime.now(brt_tz).strftime("%H")
         logging.info(f"$:=:$ $$$$$ $$$$$ Hora para favoritos: {hora}")
         if 8 <= hora < 18:
             ativos_ids = ativos_favoritos[:]
