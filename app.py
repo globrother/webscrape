@@ -31,7 +31,7 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
+    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
@@ -350,6 +350,20 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "ativo": True
             }
             grava_historico.adicionar_ativo(novo_ativo)
+            
+            # Desabilita o botão imediatamente no APL
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="addAtivoToken",
+                    commands=[
+                        SetValueCommand(
+                            componentId="",  # vazio para o documento inteiro
+                            property="cadastrando",
+                            value=True
+                        )
+                    ]
+                )
+            )
             
             # Após cadastrar, retorne para exibição do primeiro fundo
             fundo = state_fund_mapping[novo_state_id]

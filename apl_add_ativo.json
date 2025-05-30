@@ -14,7 +14,13 @@
         }
     ],
     "mainTemplate": {
-        "parameters": ["payload"],
+        "parameters": [
+            "payload",
+            {
+            "name": "cadastrando",
+            "default": false
+            }
+        ],
         "items": [
             {
                 "type": "Container",
@@ -132,6 +138,7 @@
                         "items": [
                             {
                                 "type": "TouchWrapper",
+                                "disabled": "${cadastrando}",
                                 "onPress": [
                                     {
                                         "type": "SendEvent",
