@@ -351,32 +351,33 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             }
             grava_historico.adicionar_ativo(novo_ativo)
             
-            # Desabilita o botão imediatamente no APL
-            handler_input.response_builder.add_directive(
+            fundo = state_fund_mapping[novo_state_id]
+            logging.info(f"Novo Estado do ID {novo_state_id}\n")
+            _, _, _, apl_document, voz = web_scrape(fundo)
+            logging.info(f"Documento APL: {apl_document}\n")
+
+            handler_input.response_builder.speak(
+                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
+            ).add_directive(
+                # Primeiro desabilita o botão
                 ExecuteCommandsDirective(
                     token="addAtivoToken",
                     commands=[
                         SetValueCommand(
-                            componentId="",  # vazio para o documento inteiro
+                            componentId="",
                             property="cadastrando",
                             value=True
                         )
                     ]
                 )
-            )
-            
-            # Após cadastrar, retorne para exibição do primeiro fundo
-            fundo = state_fund_mapping[novo_state_id]
-            _, _, _, apl_document, voz = web_scrape(fundo)
-            handler_input.response_builder.speak(
-                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
             ).add_directive(
+                # Depois exibe o novo fundo
                 RenderDocumentDirective(
                     token="textDisplayToken1",
                     document=apl_document
                 )
             ).set_should_end_session(False)
-            return handler_input.response_builder.response    
+            return handler_input.response_builder.response   
         
 # HANDLER PARA ADICIONAR NOVO ATIVO
 class AddAtivoIntentHandler(AbstractRequestHandler):
