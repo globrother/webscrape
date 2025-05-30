@@ -343,41 +343,26 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             novo_state_id = max(state_ids) + 1 if state_ids else 1
     
             novo_ativo = {
-                "state_id": novo_state_id,
-                "codigo": sigla,
-                "nome": nome,
-                "apelido": sigla.replace("11", "").upper(),
-                "ativo": True
-            }
-            grava_historico.adicionar_ativo(novo_ativo)
-            
-            fundo = state_fund_mapping[novo_state_id]
-            logging.info(f"Novo Estado do ID {novo_state_id}\n")
-            _, _, _, apl_document, voz = web_scrape(fundo)
-            logging.info(f"Documento APL: {apl_document}\n")
+            "state_id": novo_state_id,
+            "codigo": sigla,
+            "nome": nome,
+            "apelido": sigla.replace("11", "").upper(),
+            "ativo": True
+        }
+        grava_historico.adicionar_ativo(novo_ativo)
 
-            handler_input.response_builder.speak(
-                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
-            ).add_directive(
-                # Primeiro desabilita o botão
-                ExecuteCommandsDirective(
-                    token="addAtivoToken",
-                    commands=[
-                        SetValueCommand(
-                            componentId="",
-                            property="cadastrando",
-                            value=True
-                        )
-                    ]
-                )
-            ).add_directive(
-                # Depois exibe o novo fundo
-                RenderDocumentDirective(
-                    token="textDisplayToken1",
-                    document=apl_document
-                )
-            ).set_should_end_session(False)
-            return handler_input.response_builder.response   
+        # Feedback imediato e avanço de tela
+        fundo = state_fund_mapping[novo_state_id]
+        _, _, _, apl_document, voz = web_scrape(fundo)
+        handler_input.response_builder.speak(
+            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
+        ).add_directive(
+            RenderDocumentDirective(
+                token="textDisplayToken1",
+                document=apl_document
+            )
+        ).set_should_end_session(False)
+        return handler_input.response_builder.response   
         
 # HANDLER PARA ADICIONAR NOVO ATIVO
 class AddAtivoIntentHandler(AbstractRequestHandler):
