@@ -352,6 +352,10 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         }
         grava_historico.adicionar_ativo(novo_ativo)
         
+        # Limpar cache de ativos
+        grava_historico._ativos_cache = None
+        grava_historico._ativos_cache_time = 0
+        
         # Recarregue o mapeamento após adicionar o novo ativo
         state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 
