@@ -276,7 +276,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
         ).add_directive(
             RenderDocumentDirective(
-                token="textDisplayToken1",
+                token="mainScreenToken",
                 document=apl_document
             )
         )
@@ -284,7 +284,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Agende a navegação automática para o próximo fundo
         handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
-                token="textDisplayToken1",
+                token="mainScreenToken",
                 commands=[
                     SendEventCommand(
                         arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
@@ -425,7 +425,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Construa a resposta
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token=f"textDisplayToken_{current_state}",
+                token="mainScreenToken",
                 document=apl_document
             )
         ).speak(f"<break time='1s'/>\n{voz}")
@@ -441,7 +441,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Se houver um próximo estado, agende a navegação automática.
         handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
-                token=f"textDisplayToken_{current_state}",
+                token="mainScreenToken",
                 commands=[
                     SendEventCommand(
                         arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
@@ -474,7 +474,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             speech_text = "Continuando a navegação pelos fundos."
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
-                    token=f"textDisplayToken_{session_attr.get('state', 1)}",
+                    token="mainScreenToken",
                     commands=[
                         SendEventCommand(
                             arguments=["autoNavigate"], delay=0
@@ -543,7 +543,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 _, _, _, apl_document, voz = web_scrape(fundo_full)
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
-                        token="textDisplayToken",
+                        token="mainScreenToken",
                         document=apl_document
                     )
                 ).speak(f"{speech_text}<break time='500ms'/>\n{voz}").set_should_end_session(False)
@@ -702,7 +702,7 @@ class TouchHandler(AbstractRequestHandler):
         # Constrói a resposta
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
-                token=f"textDisplayToken_{current_state}",
+                token="mainScreenToken",
                 document=apl_document
             )
         )
