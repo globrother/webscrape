@@ -304,7 +304,8 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             return arguments and (
                 arguments[0] == "siglaAtivo" or
                 arguments[0] == "nomeAtivo" or
-                arguments[0] == "confirmarCadastro"
+                arguments[0] == "confirmarCadastro" or
+                arguments[0] == "cancelarCadastro" 
             )
         return False
     
