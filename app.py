@@ -18,7 +18,7 @@ mas ao tocar em um botão, a skill é encerrada.
 
 # import locale
 import time
-from datetime
+import datetime
 import pytz
 import os
 import json
