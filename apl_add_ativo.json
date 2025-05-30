@@ -119,36 +119,79 @@
                         ]
                     },
                     {
-                        "type": "Frame",
-                        "height": "100",
-                        "width": "400",
-                        "borderColor": "#3B82F6",
-                        "borderWidth": 2,
-                        "borderRadius": 25,
-                        "spacing": "@spacing3XLarge",
-                        "background": "#3B82F6",
-                        "alignSelf": "center",
+                        "type": "Container",
+                        "direction": "row",
+                        "spacing": 60,
+                        "alignItems": "center",
+                        "justifyContent": "center",
                         "items": [
                             {
-                                "type": "TouchWrapper",
-                                "onPress": [
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#3B82F6",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#3B82F6",
+                                "alignSelf": "center",
+                                "right": "50",
+                                "items": [
                                     {
-                                        "type": "SendEvent",
-                                        "arguments": [
-                                            "confirmarCadastro"
-                                        ]
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "confirmarCadastro"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Cadastrar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center"
+                                        }
                                     }
-                                ],
-                                "item": {
-                                    "type": "Text",
-                                    "fontSize": "50dp",
-                                    "text": "Cadastrar",
-                                    "color": "white",
-                                    "paddingLeft": 85,
-                                    "paddingRight": 20,
-                                    "paddingTop": 15,
-                                    "paddingBottom": 10
-                                }
+                                ]
+                            },
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#F87171",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#F87171",
+                                "alignSelf": "center",
+                                "left": "50",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "cancelarCadastro"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Cancelar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center"
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     }

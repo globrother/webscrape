@@ -324,7 +324,25 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
-    
+
+        if arguments[0] == "cancelarCadastro":
+            session_attr.pop("novo_ativo_sigla", None)
+            session_attr.pop("novo_ativo_nome", None)
+            session_attr["manual_selection"] = True
+            session_attr["state"] = 1  # ou o state que desejar voltar
+        
+            fundo = state_fund_mapping[1]  # Volta para o primeiro fundo, ou outro desejado
+            _, _, _, apl_document, voz = web_scrape(fundo)
+            handler_input.response_builder.speak(
+                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
+            ).add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document
+                )
+            ).set_should_end_session(False)
+            return handler_input.response_builder.response
+        
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
             nome = session_attr.get("novo_ativo_nome")
