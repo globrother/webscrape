@@ -354,6 +354,8 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         # Feedback imediato e avanço de tela
         fundo = state_fund_mapping[novo_state_id]
         _, _, _, apl_document, voz = web_scrape(fundo)
+        import json
+        logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
         handler_input.response_builder.speak(
             f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
         ).add_directive(
