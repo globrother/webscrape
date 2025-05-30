@@ -365,7 +365,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         import json
         logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
         handler_input.response_builder.speak(
-            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}."
+            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='700ms'/>{voz}"
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",  # Use sempre o mesmo token para exibição de fundos
