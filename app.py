@@ -263,6 +263,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exemplo: exibir só favoritos durante o dia
         from datetime import datetime
         hora = datetime.now().hour
+        logging.info(f"Hora para favoritos: {hora}")
         if 8 <= hora < 18:
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
