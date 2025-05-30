@@ -350,6 +350,9 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             "ativo": True
         }
         grava_historico.adicionar_ativo(novo_ativo)
+        
+        # Recarregue o mapeamento após adicionar o novo ativo
+        state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 
         # Feedback imediato e avanço de tela
         fundo = state_fund_mapping[novo_state_id]
