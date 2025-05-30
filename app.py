@@ -364,13 +364,17 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         _, _, _, apl_document, voz = web_scrape(fundo)
         import json
         logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
+        
+        session_attr["manual_selection"] = True
+        session_attr["state"] = novo_state_id
+        
         handler_input.response_builder.speak(
             f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='700ms'/>{voz}"
         ).add_directive(
             RenderDocumentDirective(
-                token="mainScreenToken",  # Use sempre o mesmo token para exibição de fundos
+                token="mainScreenToken",  # token para exibição de fundos
                 document=apl_document
-                # Se seu APL usa datasources, adicione: , datasources={...}
+                # Se APL usa datasources, adicionar: , datasources={...}
             )
         ).set_should_end_session(False)
         return handler_input.response_builder.response  
