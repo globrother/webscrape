@@ -570,10 +570,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
                 )
-            else:
-                handler_input.response_builder.speak(
-                    "<break time='10s'/>Encerrando a skill. Até a próxima!"
-                )
             return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
