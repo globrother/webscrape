@@ -572,6 +572,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(True).response"""
 
         # Se houver um próximo estado, agende a navegação automática.
+        session_attr.pop("manual_selection", None)
         if next_idx is not None:
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
