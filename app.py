@@ -287,7 +287,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             (15, 16),
             (17, 18),
             (19, 20),
-            (22, 00),
+            (23, 1),
             # adicione outros intervalos conforme desejar
         ]
 
