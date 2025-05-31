@@ -123,7 +123,8 @@ def gerar_sinonimos(fundo):
 
 
 def get_dynamic_entities_directive():
-    fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+    fundos = [remover_sufixo_numerico(v).lower()
+              for v in state_fund_mapping.values()]
     entities = [
         {
             "id": fundo,
@@ -198,7 +199,8 @@ def comparador(historico, cota_atual, voz_fundo):
 
 
 def web_scrape(fundo):
-    fundo_fii = fundo[:-2]  # extrai os ultimos 2 caracteres de fii
+    # extrai os caracteres numéricos de fundo
+    fundo_fii = remover_sufixo_numerico(fundo)
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
     # Carregar APL padrão de exibiçaõ dos fundos
     apl_document = _load_apl_document(doc_apl)
@@ -288,7 +290,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Defina os intervalos em que os favoritos devem ser exibidos
         intervalos_favoritos = [
             (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
-            (11, 12),  # das 11h às 12h
             (13, 14),  # exemplo: das 13h às 14h
             (15, 16),
             (17, 18),
@@ -315,8 +316,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
         session_attr["ativos_ids"] = ativos_ids
 
+        logging.info("=== LaunchRequestHandler.handle ===")
+        logging.info(f"Hora: {hora}")
+        logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
+        logging.info(f"ativos_ids definidos: {ativos_ids}")
+
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
+        logging.info(f"state inicial: {session_attr['state']}")
         fundo = state_fund_mapping[ativos_ids[0]]
         _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -334,7 +341,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             )
 
         # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
-        session_attr["state"] = ativos_ids[1] if len(ativos_ids) > 1 else None
+        # session_attr["state"] = ativos_ids[1] if len(ativos_ids) > 1 else None
 
         # Agende navegação automática
         handler_input.response_builder.add_directive(
@@ -342,7 +349,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=15000
+                        arguments=["autoNavigate"], delay=1000
                     )
                 ]
             )
@@ -428,7 +435,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "state_id": novo_state_id,
                 "codigo": sigla,
                 "nome": nome,
-                "apelido": sigla.replace("11", "").upper(),
+                "apelido": remover_sufixo_numerico(sigla).upper(),
                 "ativo": True
             }
         grava_historico.adicionar_ativo(novo_ativo)
@@ -486,6 +493,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
+        logging.info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
         logging.info(
             f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
@@ -515,10 +523,31 @@ class DynamicScreenHandler(AbstractRequestHandler):
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get(
             "state", ativos_ids[0])  # Estado inicial padrão é 1
+
+        logging.info("=== DynamicScreenHandler.handle ===")
+        logging.info(f"ativos_ids: {ativos_ids}")
+        logging.info(f"exibir_favoritos: {exibir_favoritos}")
+        logging.info(f"current_state: {current_state}")
+        logging.info(f"session_attr: {session_attr}")
+
+        # Garante que tipos são iguais (tudo int ou tudo str)
+        ativos_ids = [int(a) for a in ativos_ids]
+        try:
+            current_state = int(current_state)
+        except Exception:
+            current_state = ativos_ids[0]
+
         try:
             idx = ativos_ids.index(current_state)
         except ValueError:
             idx = 0
+
+        logging.info(f"ativos_ids: {ativos_ids}")
+        logging.info(f"current_state: {current_state}")
+        logging.info(f"idx: {idx}")
+        logging.info(f"idx (posição do fundo atual): {idx}")
+        fundo = self.state_fund_mapping[ativos_ids[idx]]
+        logging.info(f"Fundo selecionado: {fundo}")
 
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_fund_mapping[ativos_ids[idx]]
@@ -529,8 +558,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         if next_idx is not None:
             session_attr["state"] = ativos_ids[next_idx]
+            logging.info(
+                f"Avançando para o próximo state: {session_attr['state']}")
         else:
             session_attr["state"] = None
+            logging.info("Último ativo exibido, encerrando ciclo.")
+            logging.info(f"Novo state definido: {session_attr['state']}")
 
         # Atualize o estado para o próximo
         # session_attr["state"] = next_state
@@ -556,14 +589,16 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(True).response"""
 
         # Se houver um próximo estado, agende a navegação automática.
+        session_attr.pop("manual_selection", None)
         if next_idx is not None:
+            logging.info("Agendando próximo autoNavigate.")
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[
                         SendEventCommand(
                             # Aguarda 5 milisegundos antes de navegar
-                            arguments=["autoNavigate"], delay=15000
+                            arguments=["autoNavigate"], delay=1000
                         )
                     ]
                 )
@@ -572,6 +607,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável
+            logging.info("Encerrando skill após o último ativo.")
             if not exibir_favoritos:
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
@@ -623,7 +659,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
             # Lista de fundos válidos baseada no mapeamento dinâmico
-            allowed_funds = [v.replace("11", "").lower()
+            allowed_funds = [remover_sufixo_numerico(v).lower()
                              for v in state_fund_mapping.values()]
 
             # Passo 1: Checa se o fundo foi informado
@@ -641,7 +677,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             fundo_state_id = None
             # Atualiza o estado ao selecionar fundo
             for state_id, v in state_fund_mapping.items():
-                if v.replace("11", "").lower() == fundo_key:
+                if remover_sufixo_numerico(v).lower() == fundo_key:
                     fundo_full = v
                     fundo_state_id = state_id
                     break
@@ -724,7 +760,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 "fundName") else None
 
             # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-            allowed_funds = [v.replace("11", "").lower()
+            allowed_funds = [remover_sufixo_numerico(v).lower()
                              for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
