@@ -516,6 +516,14 @@ class DynamicScreenHandler(AbstractRequestHandler):
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get(
             "state", ativos_ids[0])  # Estado inicial padrão é 1
+
+        # Garante que tipos são iguais (tudo int ou tudo str)
+        ativos_ids = [int(a) for a in ativos_ids]
+        try:
+            current_state = int(current_state)
+        except Exception:
+            current_state = ativos_ids[0]
+
         try:
             idx = ativos_ids.index(current_state)
         except ValueError:
