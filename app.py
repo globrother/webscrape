@@ -290,7 +290,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Defina os intervalos em que os favoritos devem ser exibidos
         intervalos_favoritos = [
             (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
-            (13, 14),  # exemplo: das 13h às 14h
+            (12, 13),  # exemplo: das 13h às 14h
             (15, 16),
             (17, 18),
             (19, 20),
