@@ -546,8 +546,13 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 )
             )
 
-        return handler_input.response_builder.set_should_end_session(False).response
-
+            return handler_input.response_builder.set_should_end_session(False).response
+        else:
+            # Último ativo: encerre a skill de forma amigável
+            handler_input.response_builder.speak(
+                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+            )
+            return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
 # Classe para mostrar um fundo solicitado
