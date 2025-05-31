@@ -132,7 +132,7 @@ def get_dadosfii(fii):
 
         arrow_fii = ""
         aux_fii = ""
-        var_fii = "1,27"  # apagar depois %%%%%%%%%%%%%%%
+        var_fii = "1,27"  # apagar depois %%%%%%%%%%%%%%
         if var_fii[0] == "-":
             arrow_fii = "&#x2B07;"
             aux_fii = "queda"
