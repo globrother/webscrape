@@ -77,7 +77,7 @@ def get_dadosfii(fii):
                     if len(elements) > 4:
                         cota_fii = elements[0].text  # Valor atual da cota
                         # Variação da cota dia anterior
-                        var_fii = "1,27"  # elements[1].text
+                        var_fii = elements[1].text
                         dy_fii = elements[4].text  # Dividend Yield
                         pvp_fii = elements[26].text  # P/VP
                         divpc_fii = str(
@@ -85,6 +85,11 @@ def get_dadosfii(fii):
                             round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',')
                         # logging.info("Veja dentro do for")
                         break
+                # Verificação defensiva
+                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
+                    raise ValueError(
+                        "Não foi possível extrair todos os dados necessários para o ativo.")
+
         elif tipo_ativo == "acao":
             container_divs = soup.find_all('div', class_='container ')
             tags = ['v-align-middle', 'value d-block lh-4 fs-4 fw-700']
@@ -103,7 +108,8 @@ def get_dadosfii(fii):
                     t in tag.get('class', []) for t in tags))
                 if len(elements) > 4:
                     cota_fii = elements[0].text  # Valor atual da cota
-                    var_fii = elements[1].text  # Variação da cota dia anterior
+                    # elements[1].text  # Variação da cota dia anterior
+                    var_fii = "1,27"
                     dy_fii = elements[10].text  # Dividend Yield
                     pvp_fii = elements[13].text  # P/VP
                     divpc_fii = str(
@@ -111,9 +117,10 @@ def get_dadosfii(fii):
                         round((float((elements[76].text).replace(',', '.'))), 2)).replace('.', ',')
                     # logging.info("Veja dentro do for")
                     break
-                # print(xpml11_0)
-                if not all([cota_fii, dy_fii, pvp_fii, divpc_fii]):
-                    raise ValueError("Unable to scrape all required elements.")
+            # Verificação defensiva
+            if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
+                raise ValueError(
+                    "Não foi possível extrair todos os dados necessários para o ativo.")
         else:
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
