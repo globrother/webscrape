@@ -4,6 +4,7 @@ import os
 import http.client
 import json
 import logging
+import requests
 import time
 
 # Usar o logger para registrar mensagens
@@ -139,61 +140,36 @@ def gravar_historico(sufixo, valor):
             connection.close()
 
 def ler_historico(sufixo):
-    logging.info("--> Iniciando Ler Histórico\n")
-    
-    if not testar_conexao():
-        print("\n Erro ao conectar com o servidor Back4App.\n")
-        return
-    
-    nome_classe = obter_nome_classe(sufixo)
-    logger.info(f"\n Iniciando Leitura de: {nome_classe}\n")
-    
-    # Conexão ao servidor Back4App
-    connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
-    connection.connect()
-    logger.info(f"\n Conectando ao servidor para ler: {nome_classe}\n")
+    try:
+        logging.info("--> Iniciando Ler Histórico\n")
+        
+        if not testar_conexao():
+            print("\n Erro ao conectar com o servidor Back4App.\n")
+            return
+        
+        nome_classe = obter_nome_classe(sufixo)
+        logging.info(f"\n Iniciando Leitura de: {nome_classe}\n")
+        
+        # Conexão ao servidor Back4App
+        connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
+        connection.connect()
+        logger.info(f"\n Conectando ao servidor para ler: {nome_classe}\n")
 
-    # Requisição GET para recuperar objetos da classe ordenados por createdAt
-    connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY
-    })
-    resultados = json.loads(connection.getresponse().read())
-    historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
-    connection.close()
-    #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
-    #logger.info(f"valor de hitórico: {historico}")
-    logger.info("--------------------------------------------------------:")
-    return historico
-
-"""def gerar_texto_historico(historico, aux):
-    logger.info("\n Iniciando Gerar Histórico\n")
-    
-    if aux == "alert":
-        # Verificar se o histórico está vazio
-        #if not historico:
-            #logger.info("\n Histórico está vazio\n")
-            #linhas = "•\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO <br> •\u2009 DATA:VAZIO\u2003R$ VAZIO\u2003 •\u2009 DATA:VAZIO\u2003R$ VAZIO"
-            #return linhas
-        # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info(f"\n Linhas antes Len: {linhas}\n")
-        if len(linhas) > 1:
-            if len(linhas) >= 4:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}'
-            elif len(linhas) == 3:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}'
-            else:
-                linhas = f'{linhas[0]}\u2003{linhas[1]}'
-        else:
-            linhas = linhas[0]
-
-        logger.info(f"\n Histórico de alerta gerado: {linhas}\n")
-        return linhas
-    else:
-        linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)"""
+        # Requisição GET para recuperar objetos da classe ordenados por createdAt
+        connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
+            "X-Parse-Application-Id": APPLICATION_ID,
+            "X-Parse-REST-API-Key": REST_API_KEY
+        })
+        resultados = json.loads(connection.getresponse().read())
+        historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
+        connection.close()
+        #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
+        #logger.info(f"valor de hitórico: {historico}")
+        logger.info("--------------------------------------------------------:")
+        return historico
+    except Exception as e:
+        logging.error(f"Erro ao ler histórico: {e}")
+        return []  # Retorna uma lista vazia em caso de erro
  
 def gerar_texto_historico(historico, aux):
     logger.info("--> Iniciando Gerar Histórico\n")
@@ -228,3 +204,48 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         logger.info("\n Histórico de fundo gerado\n")
         return "<br>".join(linhas)
+
+
+# Variáveis globais para cache
+_ativos_cache = None
+_ativos_cache_time = 0
+_CACHE_TTL = 60 * 10  # 10 minutos
+
+def carregar_ativos():
+    global _ativos_cache, _ativos_cache_time
+    agora = time.time()
+    # Se o cache existe e não expirou, retorna do cache
+    if _ativos_cache and (agora - _ativos_cache_time) < _CACHE_TTL:
+        return _ativos_cache
+
+    # Senão, busca do Back4App
+    url = "https://parseapi.back4app.com/classes/map_ativo?limit=1000"
+    print("APPLICATION_ID:", APPLICATION_ID)
+    print("REST_API_KEY:", REST_API_KEY)
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print("DEBUG resposta Back4App:", data)  # ou logger.info(...)
+    ativos = data['results']
+    state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['ativo']}
+    # Atualiza o cache
+    _ativos_cache = (state_fund_mapping, ativos)
+    _ativos_cache_time = agora
+    return _ativos_cache
+
+# Exemplo de uso:
+#state_fund_mapping, lista_ativos = carregar_ativos()
+
+def adicionar_ativo(ativo_dict):
+    url = "https://parseapi.back4app.com/classes/map_ativo"
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY,
+        "Content-Type": "application/json"
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
+    logging.info(f"Arquivo gravado: {ativo_dict}\n")
+    return response.json()
