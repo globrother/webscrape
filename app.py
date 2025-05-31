@@ -279,11 +279,28 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
 
+        # Defina os intervalos em que os favoritos devem ser exibidos
+        intervalos_favoritos = [
+            (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
+            (11, 12),  # das 11h às 12h
+            (13, 14),  # exemplo: das 13h às 14h
+            (15, 16),
+            (17, 18),
+            (19, 20),
+            (22, 00),
+            # adicione outros intervalos conforme desejar
+        ]
+
         # Exemplo: exibir só favoritos durante o dia
         # hora = datetime.now().hour
         hora = int(datetime.now(brt_tz).strftime("%H"))
         logging.info(f"Hora para favoritos: {hora}")
-        if 8 <= hora < 22:
+
+        # Função para verificar se a hora está em algum intervalo
+        def intervalos_exibe(hora, intervalos):
+            return any(inicio <= hora < fim for inicio, fim in intervalos)
+
+        if intervalos_exibe(hora, intervalos_favoritos):
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
         else:
