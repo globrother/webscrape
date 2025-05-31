@@ -287,7 +287,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             (15, 16),
             (17, 18),
             (19, 20),
-            (23, 24),
+            (0, 1),
             # adicione outros intervalos conforme desejar
         ]
 
@@ -570,6 +570,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
                 )
+            # Se for favoritos, não fala nada!
             return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
