@@ -492,8 +492,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
-        logging.info(f"session_attr no início: {session_attr}")
         session_attr = handler_input.attributes_manager.session_attributes
+        logging.info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
         logging.info(
             f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
