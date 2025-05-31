@@ -23,11 +23,14 @@ def get_dadosfii(fii):
     # Determina o tipo de ativo pelo sufixo
     if fii.endswith("11"):
         aux_url = "fundos-imobiliarios"
+        tipo_ativo = "fii"
     elif fii[-1] in ["3", "4", "5", "6", "7", "8"]:
         aux_url = "acoes"
+        tipo_ativo = "acao"
     else:
         # Caso queira tratar outros tipos, adicione aqui
         aux_url = "acoes"  # padrão
+        tipo_ativo = "acao"
 
     try:
         # fii = "xpml11" # apagar depois
@@ -54,16 +57,38 @@ def get_dadosfii(fii):
         logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
-            container_divs = soup.find_all('div', class_='container pb-7')
-            tags = ['v-align-middle', 'value']
-            # logging.info("Veja antes do for")
+            if tipo_ativo == "fii":
+                container_divs = soup.find_all('div', class_='container pb-7')
+                tags = ['v-align-middle', 'value']
+                # logging.info("Veja antes do for")
+                cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
 
-            # cota_fii: Cota atual do fundo
-            # var_fii: Variação da cota do dia anterior
-            # dy_fii: Dividend Yield
-            # pvp_fii: P/VP
-            # divpc_fii: Dividendo por cota
-            # variac_fii: variação alta ou queda
+                for div in container_divs:
+                    # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
+                    """
+                    função de critério que está sendo passada para find_all.
+                    Esta função anônima (lambda) verifica se a tag atual (tag)
+                    possui a classe v-align-middle ou value em seu atributo class.
+                    """
+                    # elements = div.find_all(lambda tag: 'v-align-middle' in tag.get('class', []) or 'value' in tag.get('class', [])) #sem o uso de tags
+                    # com o uso do dicionário tags.
+                    elements = div.find_all(lambda tag: any(
+                        t in tag.get('class', []) for t in tags))
+                    if len(elements) > 4:
+                        cota_fii = elements[0].text  # Valor atual da cota
+                        # Variação da cota dia anterior
+                        var_fii = elements[1].text
+                        dy_fii = elements[4].text  # Dividend Yield
+                        pvp_fii = elements[26].text  # P/VP
+                        divpc_fii = str(
+                            # Dividendo por cota
+                            round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',')
+                        # logging.info("Veja dentro do for")
+                        break
+        elif tipo_ativo == "acao":
+            container_divs = soup.find_all('div', class_='container ')
+            tags = ['v-align-middle', 'value d-block lh-4 fs-4 fw-700']
+            # logging.info("Veja antes do for")
             cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
 
             for div in container_divs:
@@ -73,23 +98,22 @@ def get_dadosfii(fii):
                 Esta função anônima (lambda) verifica se a tag atual (tag)
                 possui a classe v-align-middle ou value em seu atributo class.
                 """
-                # elements = div.find_all(lambda tag: 'v-align-middle' in tag.get('class', []) or 'value' in tag.get('class', [])) #sem o uso de tags
                 # com o uso do dicionário tags.
                 elements = div.find_all(lambda tag: any(
                     t in tag.get('class', []) for t in tags))
                 if len(elements) > 4:
                     cota_fii = elements[0].text  # Valor atual da cota
                     var_fii = elements[1].text  # Variação da cota dia anterior
-                    dy_fii = elements[4].text  # Dividend Yield
-                    pvp_fii = elements[26].text  # P/VP
+                    dy_fii = elements[10].text  # Dividend Yield
+                    pvp_fii = elements[13].text  # P/VP
                     divpc_fii = str(
                         # Dividendo por cota
-                        round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',')
+                        round((float((elements[76].text).replace(',', '.'))), 2)).replace('.', ',')
                     # logging.info("Veja dentro do for")
                     break
-            # print(xpml11_0)
-            if not all([cota_fii, dy_fii, pvp_fii, divpc_fii]):
-                raise ValueError("Unable to scrape all required elements.")
+                # print(xpml11_0)
+                if not all([cota_fii, dy_fii, pvp_fii, divpc_fii]):
+                    raise ValueError("Unable to scrape all required elements.")
         else:
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
