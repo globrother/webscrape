@@ -31,7 +31,7 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
+    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
@@ -65,8 +65,17 @@ app = Flask(__name__)
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_fund_mapping}")
-#time.sleep(5)
-#logging.info(f"\n A lista é: {lista_ativos}")
+logging.info(f"\n A lista é: {lista_ativos}")
+"""state_fund_mapping = {
+    1: "xpml11",
+    2: "mxrf11",
+    3: "xplg11",
+    4: "btlg11",
+    5: "kncr11",
+    6: "knri11",
+    7: "tgar11",
+    8: "rztr11"  # Último estado
+}"""
 
 # Dicionário para letras em extenso (português)
 letras_extenso = {
@@ -186,7 +195,7 @@ def web_scrape(fundo):
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)
-    #logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
+    logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
     
     fii = fundo
     
@@ -212,7 +221,7 @@ def web_scrape(fundo):
 
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[(fundo_index - 1) % len(background_images)]
-    #logger.info(f"O link da imagem de fundo é: {background_image}")
+    logger.info(f"O link da imagem de fundo é: {background_image}")
     
     """# Determina o índice do fundo atual com base no mapeamento de estados
     # Determina a chave correspondente ao fundo atual
@@ -276,7 +285,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
         ).add_directive(
             RenderDocumentDirective(
-                token="mainScreenToken",
+                token="textDisplayToken1",
                 document=apl_document
             )
         )
@@ -284,7 +293,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Agende a navegação automática para o próximo fundo
         handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
-                token="mainScreenToken",
+                token="textDisplayToken1",
                 commands=[
                     SendEventCommand(
                         arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
@@ -294,125 +303,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
         
         return handler_input.response_builder.set_should_end_session(False).response
-# ============================================================================================
-
-# ADICIONANDO NOVO ATIVO AO MAPEAMENTO
-class NovoAtivoUserEventHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            return arguments and (
-                arguments[0] == "siglaAtivo" or
-                arguments[0] == "nomeAtivo" or
-                arguments[0] == "confirmarCadastro" or
-                arguments[0] == "cancelarCadastro" 
-            )
-        return False
-    
-    def handle(self, handler_input):
-        global state_fund_mapping, lista_ativos
-        session_attr = handler_input.attributes_manager.session_attributes
-        arguments = handler_input.request_envelope.request.arguments
-    
-        if arguments[0] == "siglaAtivo":
-            session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
-            speech_text = "Agora, digite o nome completo do ativo."
-            handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
-    
-        if arguments[0] == "nomeAtivo":
-            session_attr["novo_ativo_nome"] = arguments[1].strip()
-            speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
-            handler_input.response_builder.speak(speech_text).ask(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
-
-        if arguments[0] == "cancelarCadastro":
-            session_attr.pop("novo_ativo_sigla", None)
-            session_attr.pop("novo_ativo_nome", None)
-            session_attr["manual_selection"] = True
-            session_attr["state"] = 2  # ou o state que desejar voltar
-        
-            fundo = state_fund_mapping[1]  # Volta para o primeiro fundo, ou outro desejado
-            _, _, _, apl_document, voz = web_scrape(fundo)
-            handler_input.response_builder.speak(
-                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
-            ).add_directive(
-                RenderDocumentDirective(
-                    token="mainScreenToken",
-                    document=apl_document
-                )
-            ).set_should_end_session(False)
-            return handler_input.response_builder.response
-        
-        if arguments[0] == "confirmarCadastro":
-            sigla = session_attr.get("novo_ativo_sigla")
-            nome = session_attr.get("novo_ativo_nome")
-            if not sigla or not nome:
-                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask("Por favor, digite novamente.").set_should_end_session(False)
-                return handler_input.response_builder.response
-    
-            # Validação: sigla já existe?
-            _, lista_ativos = grava_historico.carregar_ativos()
-            siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
-            if sigla in siglas_existentes:
-                handler_input.response_builder.speak(f"O ativo {sigla.upper()} já está cadastrado!").set_should_end_session(False)
-                return handler_input.response_builder.response
-    
-            # Gerar novo state_id
-            state_ids = [f['state_id'] for f in lista_ativos]
-            novo_state_id = max(state_ids) + 1 if state_ids else 1
-    
-            novo_ativo = {
-            "state_id": novo_state_id,
-            "codigo": sigla,
-            "nome": nome,
-            "apelido": sigla.replace("11", "").upper(),
-            "ativo": True
-        }
-        grava_historico.adicionar_ativo(novo_ativo)
-        
-        # Limpar cache de ativos
-        grava_historico._ativos_cache = None
-        grava_historico._ativos_cache_time = 0
-        
-        # Recarregue o mapeamento após adicionar o novo ativo
-        state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
-
-        # Feedback imediato e avanço de tela
-        fundo = state_fund_mapping[novo_state_id]
-        _, _, _, apl_document, voz = web_scrape(fundo)
-        import json
-        logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
-        
-        session_attr["manual_selection"] = True
-        session_attr["state"] = 1
-        
-        handler_input.response_builder.speak(
-            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='700ms'/>{voz}"
-        ).add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",  # token para exibição de fundos
-                document=apl_document
-                # Se APL usa datasources, adicionar: , datasources={...}
-            )
-        ).set_should_end_session(False)
-        return handler_input.response_builder.response  
-# ============================================================================================
-        
-# HANDLER PARA ADICIONAR NOVO ATIVO
-class AddAtivoIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("AddAtivoIntent")(handler_input)
-
-    def handle(self, handler_input):
-        apl_document = _load_apl_document("apl_add_ativo.json")
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="addAtivoToken",
-                document=apl_document
-            )
-        ).speak("Digite a sigla e o nome completo do novo ativo.").ask("Por favor, digite a sigla do novo ativo.").set_should_end_session(False)
-        return handler_input.response_builder.response
 # ============================================================================================
 
 class DynamicScreenHandler(AbstractRequestHandler):
@@ -440,6 +330,40 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Nunca aceite IntentRequest!
         return False
+        
+        """# Verifica se o estado atual está no mapeamento
+        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
+        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
+        return current_state in self.state_fund_mapping"""
+        
+        """ # Verifica se é um evento de navegação automática
+        # Só aceita UserEvent com argumento "autoNavigate"
+        if request_type == "Alexa.Presentation.APL.UserEvent":
+            arguments = getattr(request, "arguments", [])
+            if arguments and arguments[0] == "autoNavigate":
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                return True
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        
+        # Nunca aceite IntentRequest!
+        return False"""
+    
+        """if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "autoNavigate":
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                return True
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            return False
+        
+        # Verifica se o estado atual está no mapeamento    
+        session_attr = handler_input.attributes_manager.session_attributes
+        
+        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
+        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
+        return current_state in self.state_fund_mapping """
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
@@ -460,7 +384,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Construa a resposta
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="mainScreenToken",
+                token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
         ).speak(f"<break time='1s'/>\n{voz}")
@@ -476,7 +400,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Se houver um próximo estado, agende a navegação automática.
         handler_input.response_builder.add_directive(
             ExecuteCommandsDirective(
-                token="mainScreenToken",
+                token=f"textDisplayToken_{current_state}",
                 commands=[
                     SendEventCommand(
                         arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
@@ -509,7 +433,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             speech_text = "Continuando a navegação pelos fundos."
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
-                    token="mainScreenToken",
+                    token=f"textDisplayToken_{session_attr.get('state', 1)}",
                     commands=[
                         SendEventCommand(
                             arguments=["autoNavigate"], delay=0
@@ -578,7 +502,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 _, _, _, apl_document, voz = web_scrape(fundo_full)
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
-                        token="mainScreenToken",
+                        token="textDisplayToken",
                         document=apl_document
                     )
                 ).speak(f"{speech_text}<break time='500ms'/>\n{voz}").set_should_end_session(False)
@@ -737,7 +661,7 @@ class TouchHandler(AbstractRequestHandler):
         # Constrói a resposta
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
-                token="mainScreenToken",
+                token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
         )
@@ -818,16 +742,10 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(
             "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
         
-        """# Em vez de encerrar, vamos definir uma mensagem padrão
+        # Em vez de encerrar, vamos definir uma mensagem padrão
         handler_input.response_builder.speak("<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
         logging.info("\n Encerrando Aplicativo...\n")
         #os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
-        return handler_input.response_builder.response"""
-        
-        handler_input.response_builder.speak(
-        "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
-        ).set_should_end_session(False)
-        logging.info("\n CatchAllRequestHandler: Mantendo a sessão ativa.\n")
         return handler_input.response_builder.response
 # ============================================================================================
 # ============================================================================================
@@ -842,8 +760,6 @@ def webhook():
     # Inicialize os handlers com card_xpml11
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     launch_request_handler = LaunchRequestHandler()
-    add_ativo_intent_handler = AddAtivoIntentHandler()
-    novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
@@ -856,8 +772,6 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(launch_request_handler)
-    sb.add_request_handler(add_ativo_intent_handler)
-    sb.add_request_handler(novo_ativo_usesevent_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
