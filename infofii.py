@@ -20,10 +20,18 @@ logger.info('Função iniciada')
 
 
 def get_dadosfii(fii):
-    # logging.info("ANTES DA REQUISIÇÃO GET_XPML VEJA<<<<<<<<")
+    # Determina o tipo de ativo pelo sufixo
+    if fii.endswith("11"):
+        aux_url = "fundos-imobiliarios"
+    elif fii[-1] in ["3", "4", "5", "6", "7", "8"]:
+        aux_url = "acoes"
+    else:
+        # Caso queira tratar outros tipos, adicione aqui
+        aux_url = "acoes"  # padrão
+
     try:
         # fii = "xpml11" # apagar depois
-        url = "https://statusinvest.com.br/fundos-imobiliarios/" + fii
+        url = "https://statusinvest.com.br/" + aux_url + "/" + fii
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
