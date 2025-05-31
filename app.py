@@ -544,6 +544,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
             session_attr["state"] = ativos_ids[next_idx]
         else:
             session_attr["state"] = None
+            logging.info(f"Novo state definido: {session_attr['state']}")
+
+        logging.info(f"Novo state definido: {session_attr['state']}")
 
         # Atualize o estado para o próximo
         # session_attr["state"] = next_state
