@@ -320,10 +320,10 @@ class LaunchRequestHandler(AbstractRequestHandler):
         logging.info(f"Hora: {hora}")
         logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
         logging.info(f"ativos_ids definidos: {ativos_ids}")
-        logging.info(f"state inicial: {session_attr['state']}")
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
+        logging.info(f"state inicial: {session_attr['state']}")
         fundo = state_fund_mapping[ativos_ids[0]]
         _, _, _, apl_document, voz = web_scrape(fundo)
 
