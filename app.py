@@ -316,6 +316,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
         session_attr["ativos_ids"] = ativos_ids
 
+        logging.info("=== LaunchRequestHandler.handle ===")
+        logging.info(f"Hora: {hora}")
+        logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
+        logging.info(f"ativos_ids definidos: {ativos_ids}")
+        logging.info(f"state inicial: {session_attr['state']}")
+
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
         fundo = state_fund_mapping[ativos_ids[0]]
@@ -517,6 +523,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         current_state = session_attr.get(
             "state", ativos_ids[0])  # Estado inicial padrão é 1
 
+        logging.info("=== DynamicScreenHandler.handle ===")
+        logging.info(f"ativos_ids: {ativos_ids}")
+        logging.info(f"exibir_favoritos: {exibir_favoritos}")
+        logging.info(f"current_state: {current_state}")
+        logging.info(f"session_attr: {session_attr}")
+
         # Garante que tipos são iguais (tudo int ou tudo str)
         ativos_ids = [int(a) for a in ativos_ids]
         try:
@@ -532,6 +544,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         logging.info(f"ativos_ids: {ativos_ids}")
         logging.info(f"current_state: {current_state}")
         logging.info(f"idx: {idx}")
+        logging.info(f"idx (posição do fundo atual): {idx}")
+        fundo = self.state_fund_mapping[ativos_ids[idx]]
+        logging.info(f"Fundo selecionado: {fundo}")
 
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_fund_mapping[ativos_ids[idx]]
@@ -542,11 +557,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         if next_idx is not None:
             session_attr["state"] = ativos_ids[next_idx]
+            logging.info(
+                f"Avançando para o próximo state: {session_attr['state']}")
         else:
             session_attr["state"] = None
+            logging.info("Último ativo exibido, encerrando ciclo.")
             logging.info(f"Novo state definido: {session_attr['state']}")
-
-        logging.info(f"Novo state definido: {session_attr['state']}")
 
         # Atualize o estado para o próximo
         # session_attr["state"] = next_state
@@ -574,6 +590,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Se houver um próximo estado, agende a navegação automática.
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
+            logging.info("Agendando próximo autoNavigate.")
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
@@ -589,6 +606,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável
+            logging.info("Encerrando skill após o último ativo.")
             if not exibir_favoritos:
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
