@@ -343,7 +343,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=10000
+                        arguments=["autoNavigate"], delay=1000
                     )
                 ]
             )
@@ -521,6 +521,10 @@ class DynamicScreenHandler(AbstractRequestHandler):
         except ValueError:
             idx = 0
 
+        logging.info(f"ativos_ids: {ativos_ids}")
+        logging.info(f"current_state: {current_state}")
+        logging.info(f"idx: {idx}")
+
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_fund_mapping[ativos_ids[idx]]
         # Chame a função web_scrape para obter os dados do fundo
@@ -564,7 +568,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     commands=[
                         SendEventCommand(
                             # Aguarda 5 milisegundos antes de navegar
-                            arguments=["autoNavigate"], delay=10000
+                            arguments=["autoNavigate"], delay=1000
                         )
                     ]
                 )
