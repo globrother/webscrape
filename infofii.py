@@ -93,7 +93,7 @@ def get_dadosfii(fii):
         elif tipo_ativo == "acao":
             container_divs = soup.find_all('div', class_='container ')
             tags = ['v-align-middle', 'value d-block lh-4 fs-4 fw-700']
-            # logging.info("Veja antes do for")
+            logging.info(f"Veja Conteiner Divs:{container_divs}")
             cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
 
             for div in container_divs:
@@ -106,10 +106,13 @@ def get_dadosfii(fii):
                 # com o uso do dicionário tags.
                 elements = div.find_all(lambda tag: any(
                     t in tag.get('class', []) for t in tags))
+
+                logging.info(f"Veja Elementos:{elements}")
+
                 if len(elements) > 4:
                     cota_fii = elements[0].text  # Valor atual da cota
-                    # elements[1].text  # Variação da cota dia anterior
-                    var_fii = "1,27"
+                    # Variação da cota dia anterior
+                    var_fii = "1,27"  # elements[1].text
                     dy_fii = elements[10].text  # Dividend Yield
                     pvp_fii = elements[13].text  # P/VP
                     divpc_fii = str(
