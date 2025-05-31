@@ -282,7 +282,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exemplo: exibir só favoritos durante o dia
         # hora = datetime.now().hour
         hora = int(datetime.now(brt_tz).strftime("%H"))
-        logging.info(f"$:=:$ $$$$$ $$$$$ Hora para favoritos: {hora}")
+        logging.info(f"Hora para favoritos: {hora}")
         if 8 <= hora < 22:
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
@@ -291,8 +291,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
             session_attr["exibir_favoritos"] = False
 
         session_attr["ativos_ids"] = ativos_ids
-        session_attr["state"] = ativos_ids[0]
 
+        # Exibe o primeiro ativo
+        session_attr["state"] = ativos_ids[0]
         fundo = state_fund_mapping[ativos_ids[0]]
         _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -308,6 +309,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(
                 f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
             )
+
+        # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
+        session_attr["state"] = ativos_ids[1] if len(ativos_ids) > 1 else None
 
         # Agende navegação automática
         handler_input.response_builder.add_directive(
