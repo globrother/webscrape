@@ -91,9 +91,11 @@ def get_dadosfii(fii):
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
         elif tipo_ativo == "acao":
-            container_divs = soup.find_all('div', class_='container ')
+            container_divs = soup.find_all('div', class_='container')
             tags = ['v-align-middle', 'value d-block lh-4 fs-4 fw-700']
+
             logging.info(f"Veja Conteiner Divs:{container_divs}")
+
             cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
 
             for div in container_divs:
