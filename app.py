@@ -20,6 +20,7 @@ mas ao tocar em um botão, a skill é encerrada.
 import time
 from datetime import datetime
 import pytz
+import re  # Regex substituir ultimos caracteres numéricos
 import os
 import json
 import logging
@@ -106,6 +107,11 @@ letras_extenso = {
 ativos_favoritos = [1, 3, 5]
 
 
+def remover_sufixo_numerico(codigo):
+    # Remove qualquer sequência de dígitos no final do código
+    return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
+
+
 def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
     letras = list(fundo)
@@ -117,7 +123,8 @@ def gerar_sinonimos(fundo):
 
 
 def get_dynamic_entities_directive():
-    fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
+    fundos = [remover_sufixo_numerico(v).lower()
+              for v in state_fund_mapping.values()]
     entities = [
         {
             "id": fundo,
@@ -192,7 +199,8 @@ def comparador(historico, cota_atual, voz_fundo):
 
 
 def web_scrape(fundo):
-    fundo_fii = fundo[:-2]  # extrai os ultimos 2 caracteres de fii
+    # extrai os caracteres numéricos de fundo
+    fundo_fii = remover_sufixo_numerico(fundo)
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
     # Carregar APL padrão de exibiçaõ dos fundos
     apl_document = _load_apl_document(doc_apl)
@@ -287,7 +295,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             (15, 16),
             (17, 18),
             (19, 20),
-            (0, 1),
+            (21, 22)
             # adicione outros intervalos conforme desejar
         ]
 
@@ -422,7 +430,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "state_id": novo_state_id,
                 "codigo": sigla,
                 "nome": nome,
-                "apelido": sigla.replace("11", "").upper(),
+                "apelido": remover_sufixo_numerico(sigla).upper(),
                 "ativo": True
             }
         grava_historico.adicionar_ativo(novo_ativo)
@@ -617,7 +625,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
             # Lista de fundos válidos baseada no mapeamento dinâmico
-            allowed_funds = [v.replace("11", "").lower()
+            allowed_funds = [remover_sufixo_numerico(v).lower()
                              for v in state_fund_mapping.values()]
 
             # Passo 1: Checa se o fundo foi informado
@@ -635,7 +643,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             fundo_state_id = None
             # Atualiza o estado ao selecionar fundo
             for state_id, v in state_fund_mapping.items():
-                if v.replace("11", "").lower() == fundo_key:
+                if remover_sufixo_numerico(v).lower() == fundo_key:
                     fundo_full = v
                     fundo_state_id = state_id
                     break
@@ -718,7 +726,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 "fundName") else None
 
             # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-            allowed_funds = [v.replace("11", "").lower()
+            allowed_funds = [remover_sufixo_numerico(v).lower()
                              for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
