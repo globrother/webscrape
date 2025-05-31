@@ -32,8 +32,6 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand)
-from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
-from ask_sdk_model.slu.entityresolution import StatusCode
 #from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -63,77 +61,14 @@ app = Flask(__name__)
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 # Mapeamento de Estados e Fundos
-state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
-logging.info(f"\n O Mapa é: {state_fund_mapping}")
-logging.info(f"\n A lista é: {lista_ativos}")
-"""state_fund_mapping = {
-    1: "xpml11",
-    2: "mxrf11",
-    3: "xplg11",
-    4: "btlg11",
-    5: "kncr11",
-    6: "knri11",
-    7: "tgar11",
-    8: "rztr11"  # Último estado
-}"""
-
-# Dicionário para letras em extenso (português)
-letras_extenso = {
-    "a": "a",
-    "b": "bê",
-    "c": "cê",
-    "d": "dê",
-    "e": "e",
-    "f": "efe",
-    "g": "gê",
-    "h": "agá",
-    "i": "i",
-    "j": "jota",
-    "k": "cá",
-    "l": "ele",
-    "m": "ême",
-    "n": "ene",
-    "o": "o",
-    "p": "pê",
-    "q": "quê",
-    "r": "érre",
-    "s": "esse",
-    "t": "tê",
-    "u": "u",
-    "v": "vê",
-    "w": "dáblio",
-    "x": "xis",
-    "y": "ípsilon",
-    "z": "ze"
+state_fund_mapping = {
+    "firstScreen": ("xpml11", "secondScreen"),
+    "secondScreen": ("mxrf11", "thirdScreen"),
+    "thirdScreen": ("xplg11", "fourthScreen"),
+    "fourthScreen": ("btlg11", "fifthScreen"),
+    "fifthScreen": ("kncr11", "endedScreen"),
+    "endedScreen": ("knri11", None)  # Último estado
 }
-
-def gerar_sinonimos(fundo):
-    # Exemplo: "mxrf"
-    letras = list(fundo)
-    # Sigla separada por espaço: "m x r f"
-    separado = " ".join(letras)
-    # Letras por extenso: "eme xis erre efe"
-    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
-    return [fundo, separado, extenso]
-
-def get_dynamic_entities_directive():
-    fundos = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
-    entities = [
-        {
-            "id": fundo,
-            "name": {"value": fundo},
-            "synonyms": gerar_sinonimos(fundo)
-        } for fundo in fundos
-    ]
-    return DynamicEntitiesDirective(
-        update_behavior="REPLACE",
-        types=[
-            {
-                "name": "FUNDO_TYPES_xxxx",
-                "values": entities
-            }
-        ]
-    )
 
 def _load_apl_document(file_path):
     try:
@@ -154,8 +89,8 @@ voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = No
 # ============================================================================================
 
 def comparador(historico, cota_atual, voz_fundo):
-    # Verificar se o histórico é válido e contém pelo menos um registro
-    if historico and isinstance(historico, list) and len(historico) >= 1:
+    # Verificar se o histórico contém pelo menos um registro
+    if len(historico) >= 1:
         alert_value = historico[0].get("valor", "").replace("R$ ", "")
         logging.info(f"\n Valor do Alerta: {alert_value} \n")
         logging.info(f"\n Valor Atual da Cota: {cota_atual} \n")
@@ -209,21 +144,7 @@ def web_scrape(fundo):
         "https://lh5.googleusercontent.com/d/1-CUhhgJDaGaTMJL6Ss0hdFENPb07F1FU"
     ]
     
-    # Determina o índice do fundo atual com base no ID do estado
-    fundo_index = next((key for key, value in state_fund_mapping.items() if value == fundo), None)
-
-    if fundo_index is not None:
-        logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
-    else:
-        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
-        fundo_index = 1  # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
-        logging.info(f"Usando índice padrão: {fundo_index}")
-
-    # Seleciona a imagem de fundo correspondente ao índice
-    background_image = background_images[(fundo_index - 1) % len(background_images)]
-    logger.info(f"O link da imagem de fundo é: {background_image}")
-    
-    """# Determina o índice do fundo atual com base no mapeamento de estados
+    # Determina o índice do fundo atual com base no mapeamento de estados
     # Determina a chave correspondente ao fundo atual
     fundo_key = next((key for key, value in state_fund_mapping.items() if value[0] == fundo), None)
 
@@ -237,7 +158,7 @@ def web_scrape(fundo):
     
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[fundo_index % len(background_images)]
-    logger.info(f"o link é: {background_image}")"""
+    logger.info(f"o link é: {background_image}")
     
     cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii) # ,_ significa que a variável variac_xpml11 não será utilizada
     
@@ -269,20 +190,17 @@ class LaunchRequestHandler(AbstractRequestHandler):
         #_, _, _, apl_document_xpml, voz_xpml11 = web_scrape_xpml()
         
         session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["state"] = 1 # Estado inicial é o ID 1
-
+        session_attr["state"] = "firstScreen"
         
         # Chama o fundo inicial
-        fundo = state_fund_mapping[1]  # Obtém o nome do fundo pelo ID
+        fundo = "xpml11"
         _, _, _, apl_document, voz = web_scrape(fundo)
         
         # Atualiza o estado para o próximo
-        session_attr["state"] = 2  # Próximo estado é o ID 2
-
+        session_attr["state"] = "secondScreen"  # Atualiza para o próximo estado
 
         # Constrói a resposta inicial
-        handler_input.response_builder.speak(
-            f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
+        handler_input.response_builder.speak(f"<break time='1s'/>Aqui estão as atualizações dos fundos:<break time='1s'/>\n{voz}"
         ).add_directive(
             RenderDocumentDirective(
                 token="textDisplayToken1",
@@ -310,46 +228,15 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_fund_mapping = state_fund_mapping
 
     def can_handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
         request_type = handler_input.request_envelope.request.object_type
         logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
         
-        # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
-        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
-            return False
+        # Verifica se NÃO é um evento de toque
+        #if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            #logging.info("DynamicScreenHandler ignorado para eventos de toque.")
+            #return False
         
-        # Verifica se é um evento de navegação automática
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
-            if arguments and arguments[0] == "autoNavigate":
-                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
-                return True
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
-        
-        # Nunca aceite IntentRequest!
-        return False
-        
-        """# Verifica se o estado atual está no mapeamento
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
-        logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping"""
-        
-        """ # Verifica se é um evento de navegação automática
-        # Só aceita UserEvent com argumento "autoNavigate"
-        if request_type == "Alexa.Presentation.APL.UserEvent":
-            arguments = getattr(request, "arguments", [])
-            if arguments and arguments[0] == "autoNavigate":
-                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
-                return True
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
-        
-        # Nunca aceite IntentRequest!
-        return False"""
-    
-        """if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
             if arguments and arguments[0] == "autoNavigate":
@@ -360,23 +247,19 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         # Verifica se o estado atual está no mapeamento    
         session_attr = handler_input.attributes_manager.session_attributes
-        
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
+        current_state = session_attr.get("state", "firstScreen")
         logging.info(f"DynamicScreenHandler: Verificando estado atual: {current_state}")
-        return current_state in self.state_fund_mapping """
+        return current_state in self.state_fund_mapping
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", 1) # Estado inicial padrão é 1
+        current_state = session_attr.get("state", "firstScreen")
 
-        # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[current_state]
+        # Obtenha o fundo e o próximo estado do mapeamento
+        fundo, next_state = self.state_fund_mapping[current_state]
 
         # Chame a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
-        
-        # Calcula o próximo estado
-        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
 
         # Atualize o estado para o próximo
         session_attr["state"] = next_state
@@ -387,226 +270,31 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token=f"textDisplayToken_{current_state}",
                 document=apl_document
             )
-        ).speak(f"<break time='1s'/>\n{voz}")
+        ).speak(f"<break time='500ms'/>\n{voz}")
         
         # Verifica se é o último estado
-        if next_state is None:
+        if current_state == "endedScreen":
             logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
             handler_input.response_builder.speak(
-                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+                f"<break time='500ms'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
             )
             return handler_input.response_builder.set_should_end_session(True).response
         
         # Se houver um próximo estado, agende a navegação automática.
-        handler_input.response_builder.add_directive(
-            ExecuteCommandsDirective(
-                token=f"textDisplayToken_{current_state}",
-                commands=[
-                    SendEventCommand(
-                        arguments=["autoNavigate"], delay=5  # Aguarda 5 milisegundos antes de navegar
-                    )
-                ]
-            )
-        )
-
-        return handler_input.response_builder.set_should_end_session(False).response
-
-# ============================================================================================
-
-# Classe para mostrar um fundo solicitado
-class SelectFundIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("SelectFundIntent")(handler_input) or \
-            is_intent_name("AMAZON.NextIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        intent_name = handler_input.request_envelope.request.intent.name
-        logging.info(f"Intent recebido: {intent_name}")
-
-        # Enviando Dynamic Entities para preencher automaticamente os slots types
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-        
-        # Se for o intent padrão de continuar/próximo
-        if intent_name == "AMAZON.NextIntent":
-            session_attr.pop("manual_selection", None)
-            speech_text = "Continuando a navegação pelos fundos."
+        if next_state:
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
-                    token=f"textDisplayToken_{session_attr.get('state', 1)}",
+                    token=f"textDisplayToken_{current_state}",
                     commands=[
                         SendEventCommand(
-                            arguments=["autoNavigate"], delay=0
+                            arguments=["autoNavigate"], delay=5  # Aguarda 5 segundos antes de navegar
                         )
                     ]
                 )
-            ).speak(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
-        
-        try:
-            # Coleta os slots
-            slots = handler_input.request_envelope.request.intent.slots
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            logging.info("Entrou na Seleção Manual")
-            logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+            )
 
-            # Lista de fundos válidos baseada no mapeamento dinâmico
-            allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
-        
-            # Passo 1: Checa se o fundo foi informado
-            if not fund_name:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo que deseja visualizar."
-                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                return handler_input.response_builder.response
-            
-            # Passo 2: Checa se o fundo é válido
-            # Procura o fundo no mapeamento, independente de quantos existam
-            fundo_key = fund_name.lower()
-            fundo_full = None
-            fundo_state_id = None
-            # Atualiza o estado ao selecionar fundo
-            for state_id, v in state_fund_mapping.items():
-                if v.replace("11", "").lower() == fundo_key:
-                    fundo_full = v
-                    fundo_state_id = state_id
-                    break
+        return handler_input.response_builder.set_should_end_session(False).response
 
-            # Verifica se estamos no meio de uma interação de criação de alerta de preço
-            if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
-                fund_name = slots.get("fundName").value if slots.get("fundName") else None
-                alert_value = session_attr["AlertValue"]
-                if fund_name and fund_name.lower() in allowed_funds:
-                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
-                    session_attr["alert_in_progress"] = False
-                else:
-                    fundos_disponiveis = ", ".join(allowed_funds)
-                    speech_text = f"Redirecionando... Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                    handler_input.response_builder.speak(speech_text).ask(speech_text)
-                    session_attr["alert_in_progress"] = True
-                    return handler_input.response_builder.response
-                handler_input.response_builder.speak(speech_text)
-                return handler_input.response_builder.response
-            
-            # Lógica normal para SelectFundIntent
-            if fund_name and fund_name.lower() in allowed_funds and fundo_full:
-                speech_text = f"Você selecionou o fundo {fund_name}."
-                # Atualiza o estado para o fundo selecionado e pausa navegação automática
-                session_attr["state"] = fundo_state_id
-                session_attr["manual_selection"] = True
-                logging.info(f"Seleção manual feita para {fund_name}, manual_selection=True")
-            
-                # Recupera as informações do fundo e monta o documento APL
-                _, _, _, apl_document, voz = web_scrape(fundo_full)
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="textDisplayToken",
-                        document=apl_document
-                    )
-                ).speak(f"{speech_text}<break time='500ms'/>\n{voz}").set_should_end_session(False)
-                return handler_input.response_builder.response
-            
-            else:
-                fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo que deseja visualizar."
-                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                return handler_input.response_builder.response
-        
-        except Exception as e:
-            logging.error(f"Erro ao processar SelectFundIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao tentar mostrar o fundo. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
-# ============================================================================================
-
-# Classe para criar um alerta de preço.
-class CreatePriceAlertIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-
-        try:
-            # Coleta os slots
-            slots = handler_input.request_envelope.request.intent.slots
-            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
-            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-
-            #allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-            allowed_funds = [v.replace("11", "").lower() for v in state_fund_mapping.values()]
-
-            # Passo 1: Pergunta o valor do alerta se ainda não foi informado
-            if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    logging.info(f"Valor recebido para valor do alerta: {alert_value}")
-                    logging.info(f"Valor recebido para centavos: {alert_value_cents}")
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
-                    session_attr["alert_in_progress"] = True
-                else:
-                    session_attr["AlertValue"] = None
-                    speech_text = "Qual é o valor do alerta em reais e centavos?"
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-                    session_attr["alert_in_progress"] = True
-            # Passo 2: Pergunta o nome do fundo
-            elif not fund_name:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
-                return handler_input.response_builder.response
-                
-            # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name and fund_name.lower() in allowed_funds:
-                alert_value = session_attr["AlertValue"]
-                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                logging.info(f"Todos os slots recebidos: {slots}")
-                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                reprompt_text = None
-
-                logger.info('\n Começar a gravar\n')
-                sufixo = f"alert_value_{fund_name.lower()}"
-                valor = f"R$ {alert_value}"
-                aux = "alert"
-                grava_historico.gravar_historico(sufixo, valor)
-                historico = grava_historico.ler_historico(sufixo)
-                hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-
-                logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-
-                session_attr["AlertValue"] = None  # Reset para uso futuro
-                session_attr["alert_in_progress"] = False
-            else:
-                fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                logging.info(f"Valor recebido para fund_name: {fund_name}")
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
-                return handler_input.response_builder.response
-
-            handler_input.response_builder.speak(speech_text)
-            if reprompt_text:
-                handler_input.response_builder.ask(reprompt_text)
-
-            return handler_input.response_builder.response
-
-        except Exception as e:
-            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
@@ -632,31 +320,28 @@ class TouchHandler(AbstractRequestHandler):
         logging.info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
-        current_state = session_attr.get("state", 1)
+        current_state = session_attr.get("state", "firstScreen")
 
         # Verifica se o estado atual está no mapeamento
         if current_state not in self.state_fund_mapping:
             # Se o estado não for encontrado, reinicia para o primeiro estado
-            current_state = 1
+            current_state = "firstScreen"
 
-        # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[current_state]
+        # Obtém o fundo e o próximo estado do mapeamento
+        fundo, next_state = self.state_fund_mapping[current_state]
 
         # Verifica se é o último estado
-        if current_state == 1:
+        if current_state == "firstScreen":
             voz_prefix = "Recomeçando!"
             # next_state = "firstScreen"  # Reinicia para o primeiro estado
         else:
             voz_prefix = "Próximo!"
+        
+        # Atualiza o estado para o próximo
+        session_attr["state"] = next_state
 
         # Chama a função web_scrape para obter os dados do fundo
         _, _, _, apl_document, voz = web_scrape(fundo)
-        
-        # Calcula o próximo estado
-        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
-
-        # Atualiza o estado para o próximo
-        session_attr["state"] = next_state
 
         # Constrói a resposta
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
@@ -671,7 +356,72 @@ class TouchHandler(AbstractRequestHandler):
 
         return handler_input.response_builder.set_should_end_session(False).response
 #============================================================================================
-            
+
+# Classe para criar um alerta de preço. 
+class CreatePriceAlertIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        try:
+            # Verifica se o valor do alerta já foi solicitado
+            if "AlertValue" not in session_attr:
+                session_attr["AlertValue"] = None
+                speech_text = "Qual é o valor do alerta em reais e centavos?"
+                reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+            elif session_attr["AlertValue"] is None:
+                alert_value = handler_input.request_envelope.request.intent.slots["alertValue"].value
+                alert_value_cents = handler_input.request_envelope.request.intent.slots["alertValueCents"].value
+                if alert_value and alert_value_cents:
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    logging.info(f"\n Alerta Criado para: {session_attr['AlertValue']}\n")
+                else:
+                    speech_text = "Desculpe, não consegui entender o valor do alerta. Por favor, diga novamente."
+                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+            else:
+                fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+                allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+                if fund_name and fund_name.lower() in allowed_funds:
+                    alert_value = session_attr["AlertValue"]
+                    session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+                    speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+                    reprompt_text = None
+                    
+                    logger.info('\n Começar a gravar\n')
+                    sufixo = f"alert_value_{fund_name.lower()}"
+                    valor = f"R$ {alert_value}"
+                    aux = "alert"
+                    grava_historico.gravar_historico(sufixo, valor)
+                    historico = grava_historico.ler_historico(sufixo)
+                    hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+                    
+                    logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
+                    logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+                    
+                    # Armazena hist_alert_xpml na sessão
+                    #session_attr["hist_alert_xpml"] = hist_alert_xpml
+                    
+                    session_attr["AlertValue"] = None  # Reset AlertValue for future use
+                    logging.info(f"\n Alerta Criado para: {alert_value} no fundo {fund_name}\n")
+                else:
+                    speech_text = "Desculpe, o nome do fundo não é válido. Por favor, diga novamente."
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+
+            handler_input.response_builder.speak(speech_text)
+            if reprompt_text:
+                handler_input.response_builder.ask(reprompt_text)
+
+            return handler_input.response_builder.response
+
+        except Exception as e:
+            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
+            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response
 # ============================================================================================
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
@@ -684,6 +434,76 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.set_should_end_session(False)
         return handler_input.response_builder.response
     
+# ============================================================================================
+
+class SelectFundIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("SelectFundIntent")(handler_input)
+
+    def handle(self, handler_input):
+        #fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+        session_attr = handler_input.attributes_manager.session_attributes
+        fundo = handler_input.request_envelope.request.intent.slots["fundo"].value
+
+        # Verifica se estamos no meio de uma interação de criação de alerta de preço
+        if "AlertValue" in session_attr and session_attr["AlertValue"] is not None:
+            fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+            alert_value = session_attr["AlertValue"]
+            session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+            speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+            session_attr["AlertValue"] = None  # Reset AlertValue for future use
+        else:
+            # Lógica normal para SelectFundIntent
+            fund_name = handler_input.request_envelope.request.intent.slots["fundName"].value
+            speech_text = f"Você selecionou o fundo {fund_name}."
+
+        # Define o documento APL e a resposta de voz com base no fundo selecionado
+        if fundo in ["XPML11", "XPML", "Xispê eme éle"]:
+            time.sleep(1)
+            _, _, _, apl_document, voz = web_scrape("xpml11")
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+            document = apl_document
+        elif fundo in ["MXRF11", "MXRF", "Eme xis erre efi"]:
+            _, _, _, apl_document, voz = web_scrape("mxrf11")
+            document = apl_document
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+        elif fundo in ["XPLG11", "XPLG", "Xispê éle gê"]:
+            _, _, _, apl_document, voz = web_scrape("xplg11")
+            document = apl_document
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+        elif fundo in ["BTLG11", "BTLG", "Bêtê éle gê"]:
+            _, _, _, apl_document, voz = web_scrape("btlg11")
+            document = apl_document
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+        elif fundo in ["KNCR11","KNCR", "CA ene cê erre"]:
+            _, _, _, apl_document, voz = web_scrape("kncr11")
+            document = apl_document
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+        elif fundo in ["KNRI11", "KNRI", "Ca ene erri i"]:
+            _, _, _, apl_document, voz = web_scrape("knri11")
+            document = apl_document
+            response_text = f"Mostrando informações sobre o fundo {fundo}."
+            voice_prompt = voz
+        else:
+            response_text = "Desculpe, não consegui encontrar o fundo solicitado."
+
+        # Adiciona a resposta de fala e o documento APL, se aplicável
+        if document:
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="textDisplayToken",
+                    document=document
+                )
+            ).speak(f"Passou por aqui! {response_text}<break time='500ms'/>\n{voice_prompt}").set_should_end_session(False)
+        else:
+            handler_input.response_builder.speak(response_text).set_should_end_session(False)
+
+        return handler_input.response_builder.response
 # ============================================================================================
 
 # ============================================================================================
@@ -758,11 +578,11 @@ def webhook():
     sb = SkillBuilder()
 
     # Inicialize os handlers com card_xpml11
-    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     launch_request_handler = LaunchRequestHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
+    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
@@ -770,11 +590,11 @@ def webhook():
     # go_back_handler = GoBackHandler()
 
     # Adicione os handlers ao SkillBuilder
-    sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
+    sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(fall_back_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
