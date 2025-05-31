@@ -290,7 +290,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Defina os intervalos em que os favoritos devem ser exibidos
         intervalos_favoritos = [
             (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
-            (11, 12),  # das 11h às 12h
             (13, 14),  # exemplo: das 13h às 14h
             (15, 16),
             (17, 18),
@@ -344,7 +343,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=15000
+                        arguments=["autoNavigate"], delay=10000
                     )
                 ]
             )
@@ -565,7 +564,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     commands=[
                         SendEventCommand(
                             # Aguarda 5 milisegundos antes de navegar
-                            arguments=["autoNavigate"], delay=15000
+                            arguments=["autoNavigate"], delay=10000
                         )
                     ]
                 )
