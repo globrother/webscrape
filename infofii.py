@@ -77,7 +77,7 @@ def get_dadosfii(fii):
                     if len(elements) > 4:
                         cota_fii = elements[0].text  # Valor atual da cota
                         # Variação da cota dia anterior
-                        var_fii = elements[1].text
+                        var_fii = "1,27"  # elements[1].text
                         dy_fii = elements[4].text  # Dividend Yield
                         pvp_fii = elements[26].text  # P/VP
                         divpc_fii = str(
