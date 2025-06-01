@@ -120,30 +120,35 @@ def get_dadosfii(fii):
                     'div', {'title': 'Valor atual do ativo'})
                 cota_fii = valor_atual_tag.find(
                     'strong', class_='value').text.strip() if valor_atual_tag else None
+                logger.info(f"VALOR COTA:{cota_fii}")
 
                 # Variação do dia
                 variacao_tag = container.find(
                     'span', {'title': 'Variação do valor do ativo com base no dia anterior'})
                 var_fii = variacao_tag.find(
                     'b').text.strip() if variacao_tag else None
+                logger.info(f"VALOR VARIAÇÃO:{var_fii}")
 
                 # Dividend Yield
                 dy_tag = container.find(
                     'div', {'title': 'Dividend Yield com base nos últimos 12 meses'})
                 dy_fii = dy_tag.find(
                     'strong', class_='value').text.strip() if dy_tag else None
+                logger.info(f"VALOR DY:{dy_fii}")
 
                 # P/VP
                 pvp_tag = container.find(
                     'div', {'title': 'P/VP (Preço/Valor Patrimonial)'})
                 pvp_fii = pvp_tag.find(
                     'strong', class_='value').text.strip() if pvp_tag else None
+                logger.info(f"VALOR PVP:{pvp_fii}")
 
                 # Último rendimento (Proventos últimos 12 meses)
                 divpc_tag = container.find(
                     'div', {'title': 'Soma total de proventos distribuídos nos últimos 12 meses'})
                 divpc_fii = divpc_tag.find(
                     'span', class_='sub-value').text.strip() if divpc_tag else None
+                logger.info(f"VALOR DIV POR COTA:{divpc_fii}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
