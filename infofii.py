@@ -154,7 +154,7 @@ def get_dadosfii(fii):
                 # Logo do Ativo (URL extraído automaticamente do site status invest)
                 script_image = soup.find_all(
                     'script', type='application/ld+json')
-                logger.info(f"Script Image: {script_image}")
+                # logger.info(f"Script Image: {script_image}")
 
                 if len(script_image) > 2:
                     data = json.loads(script_image[2].string)
