@@ -89,17 +89,14 @@ def get_dadosfii(fii):
                         divpc_fii = str(
                             # Dividendo por cota
                             round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',')
-                        # logging.info("Veja dentro do for")
                         break
 
                 # Logo do Ativo (URL extraído automaticamente do site status invest)
                 script_image_fii = soup.find_all(
                     'script', type='application/ld+json')
-                # logger.info(f"Script Image: {script_image}")
 
                 if len(script_image_fii) > 2:
                     data = json.loads(script_image_fii[2].string)
-                    logger.info(f"Dados extraídos do script: {data}")
                     # Acesse o campo da logo
                     logo_url = data.get('image', {}).get('url')
                     logger.info(f"LOGO DO ATIVO: {logo_url}")
@@ -116,11 +113,9 @@ def get_dadosfii(fii):
                 container = containers[5]
                 if not container:
                     logger.info(
-                        "Container principal NÃO encontrado para ação.")
-                    logger.info(
                         f"Quantidade de containers encontrados: {len(container)}")
                     raise ValueError(
-                        "Container principal não encontrado para ação.")
+                        "Container principal NÃO encontrado para ação.")
                 else:
                     logger.info(
                         f"HTML do container encontrado")
@@ -137,21 +132,18 @@ def get_dadosfii(fii):
                     'span', {'title': 'Variação do valor do ativo com base no dia anterior'})
                 var_fii = variacao_tag.find(
                     'b').text.strip() if variacao_tag else None
-                logger.info(f"VALOR VARIAÇÃO:{var_fii}")
 
                 # Dividend Yield
                 dy_tag = container.find(
                     'div', {'title': 'Dividend Yield com base nos últimos 12 meses'})
                 dy_fii = dy_tag.find(
                     'strong', class_='value').text.strip() if dy_tag else None
-                logger.info(f"VALOR DY:{dy_fii}")
 
                 # P/VP
-                pvp_tag = container.find(
-                    'div', {'title': 'Facilita a análise e comparação da relação do preço de negociação de um ativo com seu VPA.'})
+                pvp_tag = container.find('div', {
+                                         'title': 'Facilita a análise e comparação da relação do preço de negociação de um ativo com seu VPA.'})
                 pvp_fii = pvp_tag.find(
                     'strong', class_='value d-block lh-4 fs-4 fw-700').text.strip() if pvp_tag else None
-                logger.info(f"VALOR PVP:{pvp_fii}")
 
                 # Último rendimento (Proventos últimos 12 meses
                 container_divpc = soup.find(
@@ -170,7 +162,6 @@ def get_dadosfii(fii):
 
                 if len(script_image) > 2:
                     data = json.loads(script_image[2].string)
-                    logger.info(f"Dados extraídos do script: {data}")
                     # Acessa o campo da logo
                     logo_url = data.get('image', {}).get('url')
                     logger.info(f"LOGO DO ATIVO: {logo_url}")

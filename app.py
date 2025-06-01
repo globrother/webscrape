@@ -241,22 +241,6 @@ def web_scrape(fundo):
         fundo_index - 1) % len(background_images)]
     # logger.info(f"O link da imagem de fundo é: {background_image}")
 
-    """# Determina o índice do fundo atual com base no mapeamento de estados
-    # Determina a chave correspondente ao fundo atual
-    fundo_key = next((key for key, value in state_fund_mapping.items() if value[0] == fundo), None)
-
-    if fundo_key is not None:
-        fundo_index = list(state_fund_mapping.keys()).index(fundo_key)
-        logging.info(f"Índice do fundo '{fundo}' (chave '{fundo_key}'): {fundo_index}")
-    else:
-        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
-        fundo_index = 0  # Define um índice padrão ou tome outra ação apropriada
-        logging.info(f"Usando índice padrão: {fundo_index}")
-    
-    # Seleciona a imagem de fundo correspondente ao índice
-    background_image = background_images[fundo_index % len(background_images)]
-    logger.info(f"o link é: {background_image}")"""
-
     # ,_ significa que a variável variac_xpml11 não será utilizada
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(
         fii)
