@@ -156,7 +156,7 @@ def get_dadosfii(fii):
                     'script', type='application/ld+json')
                 logger.info(f"Script Image: {script_image}")
 
-                if script_image > 2:
+                if len(script_image) > 2:
                     data = json.loads(script_image[2].string)
                     logger.info(f"Dados extraídos do script: {data}")
                     # Acesse o campo da logo
