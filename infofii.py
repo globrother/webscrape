@@ -153,11 +153,13 @@ def get_dadosfii(fii):
 
                 # Logo do Ativo (URL extraído automaticamente do site status invest)
                 script_image = soup.find('script', type='application/ld+json')
+                logger.info(f"Script Image: {script_image}")
                 if script_image:
                     data = json.loads(script_image.string)
+                    logger.info(f"Dados extraídos do script: {data}")
                     # Acesse o campo da logo
                     logo_url = data.get('image', {}).get('url')
-                    logger.info(f"VALOR DIV POR COTA:{logo_url}")
+                    logger.info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
