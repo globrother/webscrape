@@ -140,7 +140,9 @@ def get_dadosfii(fii):
                 logger.info(f"VALOR PVP:{pvp_fii}")
 
                 # Último rendimento (Proventos últimos 12 meses)
-                divpc_tag = container.find(
+                conteiner_divpc = soup.find(
+                    'div', class_='container pt-7 pb-7')
+                divpc_tag = conteiner_divpc.find(
                     'div', {'title': 'Soma total dos proventos provisionados'})
                 divpc_fii = divpc_tag.find(
                     'span', class_='value').text.strip() if divpc_tag else None
