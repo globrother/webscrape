@@ -269,6 +269,7 @@ def web_scrape(fundo):
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['Source'] = logo_url_atv
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
+    logger.info(f"\n LOGO APL Document: {logo_url_atv} \n")
 
     cota_atual = cota_fii
     voz_fundo = voz
