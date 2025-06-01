@@ -141,9 +141,9 @@ def get_dadosfii(fii):
 
                 # Último rendimento (Proventos últimos 12 meses)
                 divpc_tag = container.find(
-                    'div', {'title': 'Soma total de proventos distribuídos nos últimos 12 meses'})
+                    'div', {'title': 'Soma total dos proventos provisionados'})
                 divpc_fii = divpc_tag.find(
-                    'span', class_='sub-value').text.strip() if divpc_tag else None
+                    'span', class_='value').text.strip() if divpc_tag else None
                 logger.info(f"VALOR DIV POR COTA:{divpc_fii}")
 
                 # Verificação defensiva
