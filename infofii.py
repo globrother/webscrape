@@ -99,7 +99,8 @@ def get_dadosfii(fii):
 
             elif tipo_ativo == "acao":
                 logging.info(f"\nRASPANDO ATIVO:> {tipo_ativo}\n")
-                container = soup.find('div', class_='container ')
+                containers = soup.find_all('div', class_='container')
+                container = containers[3]
                 if not container:
                     logger.info(
                         "Container principal NÃO encontrado para ação.")

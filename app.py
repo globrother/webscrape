@@ -349,7 +349,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=5000
+                        arguments=["autoNavigate"], delay=1000
                     )
                 ]
             )
