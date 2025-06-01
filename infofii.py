@@ -32,6 +32,8 @@ def get_dadosfii(fii):
         aux_url = "acoes"  # padrão
         tipo_ativo = "acao"
 
+    logger.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+
     try:
         # fii = "xpml11" # apagar depois
         url = "https://statusinvest.com.br/" + aux_url + "/" + fii
@@ -89,6 +91,8 @@ def get_dadosfii(fii):
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
+
+        logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
         elif tipo_ativo == "acao":
             container = soup.find('div', class_='container ')
