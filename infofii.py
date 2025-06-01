@@ -138,6 +138,8 @@ def get_dadosfii(fii):
                 pvp_fii = pvp_tag.find(
                     'strong', class_='value d-block lh-4 fs-4 fw-700').text.strip() if pvp_tag else None
                 logger.info(f"VALOR PVP:{pvp_fii}")
+                pvp_fii = str(
+                    round((float((pvp_fii).replace(',', '.'))), 2)).replace('.', ',')
 
                 # Último rendimento (Proventos últimos 12 meses
                 container_divpc = soup.find(
