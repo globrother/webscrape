@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 import grava_historico
 import app
+import json
 import os
 # import locale
 # Configurar a localidade para o formato de número correto
@@ -138,8 +139,6 @@ def get_dadosfii(fii):
                 pvp_fii = pvp_tag.find(
                     'strong', class_='value d-block lh-4 fs-4 fw-700').text.strip() if pvp_tag else None
                 logger.info(f"VALOR PVP:{pvp_fii}")
-                pvp_fii = str(
-                    round((float((pvp_fii).replace(',', '.'))), 2)).replace('.', ',')
 
                 # Último rendimento (Proventos últimos 12 meses
                 container_divpc = soup.find(
@@ -149,6 +148,16 @@ def get_dadosfii(fii):
                 divpc_fii = divpc_tag.find(
                     'strong', class_='value').text.strip() if divpc_tag else None
                 logger.info(f"VALOR DIV POR COTA:{divpc_fii}")
+                divpc_fii = str(
+                    round((float((divpc_fii).replace(',', '.'))), 2)).replace('.', ',')
+
+                # Logo do Ativo (URL extraído automaticamente do site status invest)
+                script_image = soup.find('script', type='application/ld+json')
+                if script_image:
+                    data = json.loads(script_image.string)
+                    # Acesse o campo da logo
+                    logo_url = data.get('image', {}).get('url')
+                    logger.info(f"VALOR DIV POR COTA:{logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):

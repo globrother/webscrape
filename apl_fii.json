@@ -72,7 +72,7 @@
                                             },
                                             {
                                                 "type": "Container",
-                                                "paddingLeft": "40dp",
+                                                "paddingLeft": "25dp",
                                                 "grow": 1,
                                                 "items": [
                                                     {
