@@ -98,7 +98,6 @@ def get_dadosfii(fii):
                 logging.info(f"\nTIPO DE ATIVO 2:> {tipo_ativo}\n")
 
             elif tipo_ativo == "acao":
-                logging.info(f"\nRASPANDO ATIVO:> {tipo_ativo}\n")
                 containers = soup.find_all('div', class_='container')
                 container = containers[5]
                 if not container:
@@ -106,14 +105,11 @@ def get_dadosfii(fii):
                         "Container principal NÃO encontrado para ação.")
                     logger.info(
                         f"Quantidade de containers encontrados: {len(container)}")
-                    for i, cont in enumerate(container):
-                        logger.info(
-                            f"Container {i} (primeiros 500 chars):\n{str(cont)[:500]}\n")
                     raise ValueError(
                         "Container principal não encontrado para ação.")
                 else:
                     logger.info(
-                        f"HTML do container encontrado:\n{str(container)[:500]}\n")
+                        f"HTML do container encontrado")
 
                 # Valor atual
                 valor_atual_tag = container.find(
@@ -138,9 +134,9 @@ def get_dadosfii(fii):
 
                 # P/VP
                 pvp_tag = container.find(
-                    'div', {'title': 'P/VP (Preço/Valor Patrimonial)'})
+                    'div', {'title': 'Facilita a análise e comparação da relação do preço de negociação de um ativo com seu VPA.'})
                 pvp_fii = pvp_tag.find(
-                    'strong', class_='value').text.strip() if pvp_tag else None
+                    'strong', class_='value d-block lh-4 fs-4 fw-700').text.strip() if pvp_tag else None
                 logger.info(f"VALOR PVP:{pvp_fii}")
 
                 # Último rendimento (Proventos últimos 12 meses)
