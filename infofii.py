@@ -25,13 +25,16 @@ def get_dadosfii(fii):
     if fii.endswith("11"):
         aux_url = "fundos-imobiliarios"
         tipo_ativo = "fii"
+        tipo_ativo_str = "do Fundo"
     elif fii[-1] in ["3", "4", "5", "6", "7", "8"]:
         aux_url = "acoes"
         tipo_ativo = "acao"
+        tipo_ativo_str = "da Ação"
     else:
         # Caso queira tratar outros tipos, adicione aqui
         aux_url = "acoes"  # padrão
         tipo_ativo = "acao"
+        tipo_ativo_str = "da Ação"
 
     logger.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
@@ -190,7 +193,7 @@ def get_dadosfii(fii):
 
         # logging.info(f"Veja o valor de Variac_xpml:> {variac_xpml11}")
         card_fii = (
-            f"Atualizações do Fundo {fii.upper()}:<br><br>"
+            f"Atualizações {tipo_ativo_str} {fii.upper()}:<br><br>"
             f"• Houve {aux_fii} de {var_fii} na cota<br>"
             f"• Valor atual da cota: R$ {cota_fii}<br>"
             f"• Dividend Yield: {dy_fii}%<br>"
