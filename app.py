@@ -350,7 +350,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=1000
+                        arguments=["autoNavigate"], delay=10000
                     )
                 ]
             )
@@ -599,7 +599,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     commands=[
                         SendEventCommand(
                             # Aguarda 5 milisegundos antes de navegar
-                            arguments=["autoNavigate"], delay=5000
+                            arguments=["autoNavigate"], delay=10000
                         )
                     ]
                 )
