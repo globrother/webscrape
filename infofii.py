@@ -113,7 +113,7 @@ def get_dadosfii(fii):
                         "Container principal não encontrado para ação.")
                 else:
                     logger.info(
-                        f"HTML do container encontrado:\n{str(cont)[:500]}\n")
+                        f"HTML do container encontrado:\n{str(container)[:500]}\n")
 
                 # Valor atual
                 valor_atual_tag = container.find(
