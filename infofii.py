@@ -108,12 +108,12 @@ def get_dadosfii(fii):
                         f"Quantidade de containers encontrados: {len(container)}")
                     for i, cont in enumerate(container):
                         logger.info(
-                            f"Container {i} (primeiros 500 chars):\n{container.prettify()}\n")
+                            f"Container {i} (primeiros 500 chars):\n{str(cont)[:500]}\n")
                     raise ValueError(
                         "Container principal não encontrado para ação.")
                 else:
                     logger.info(
-                        f"HTML do container encontrado:\n{container.prettify()}\n")
+                        f"HTML do container encontrado:\n{str(cont)[:500]}\n")
 
                 # Valor atual
                 valor_atual_tag = container.find(
