@@ -100,7 +100,7 @@ def get_dadosfii(fii):
             elif tipo_ativo == "acao":
                 logging.info(f"\nRASPANDO ATIVO:> {tipo_ativo}\n")
                 containers = soup.find_all('div', class_='container')
-                container = containers[3]
+                container = containers[4]
                 if not container:
                     logger.info(
                         "Container principal NÃO encontrado para ação.")
@@ -108,12 +108,12 @@ def get_dadosfii(fii):
                         f"Quantidade de containers encontrados: {len(container)}")
                     for i, cont in enumerate(container):
                         logger.info(
-                            f"Container {i} (primeiros 500 chars):\n{str(cont)[:500]}\n")
+                            f"Container {i} (primeiros 500 chars):\n{container.prettify()}\n")
                     raise ValueError(
                         "Container principal não encontrado para ação.")
                 else:
                     logger.info(
-                        f"HTML do container encontrado:\n{str(container)[:500]}\n")
+                        f"HTML do container encontrado:\n{container.prettify()}\n")
 
                 # Valor atual
                 valor_atual_tag = container.find(
