@@ -104,7 +104,7 @@ letras_extenso = {
     "z": "ze"
 }
 
-ativos_favoritos = [1, 2, 7]
+ativos_favoritos = [10, 11, 1]
 
 
 def remover_sufixo_numerico(codigo):
