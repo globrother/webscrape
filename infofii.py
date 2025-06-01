@@ -59,6 +59,9 @@ def get_dadosfii(fii):
         logger.info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
+
+            logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+
             if tipo_ativo == "fii":
                 container_divs = soup.find_all('div', class_='container pb-7')
                 tags = ['v-align-middle', 'value']
@@ -92,7 +95,7 @@ def get_dadosfii(fii):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
-        logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+            logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
         elif tipo_ativo == "acao":
             container = soup.find('div', class_='container ')
