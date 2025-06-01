@@ -91,37 +91,41 @@ def get_dadosfii(fii):
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
         elif tipo_ativo == "acao":
-            container_divs = soup.find_all('div', class_='container')
-            tags = ['v-align-middle', 'value d-block lh-4 fs-4 fw-700']
+            container = soup.find('div', class_='container ')
+            if not container:
+                raise ValueError(
+                    "Container principal não encontrado para ação.")
 
-            logging.info(f"Veja Conteiner Divs:{container_divs}")
+            # Valor atual
+            valor_atual_tag = container.find(
+                'div', {'title': 'Valor atual do ativo'})
+            cota_fii = valor_atual_tag.find(
+                'strong', class_='value').text.strip() if valor_atual_tag else None
 
-            cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
+            # Variação do dia
+            variacao_tag = container.find(
+                'span', {'title': 'Variação do valor do ativo com base no dia anterior'})
+            var_fii = variacao_tag.find(
+                'b').text.strip() if variacao_tag else None
 
-            for div in container_divs:
-                # Encontra todos os elementos que têm as classes 'v-align-middle' ou 'value'
-                """
-                função de critério que está sendo passada para find_all.
-                Esta função anônima (lambda) verifica se a tag atual (tag)
-                possui a classe v-align-middle ou value em seu atributo class.
-                """
-                # com o uso do dicionário tags.
-                elements = div.find_all(lambda tag: any(
-                    t in tag.get('class', []) for t in tags))
+            # Dividend Yield
+            dy_tag = container.find(
+                'div', {'title': 'Dividend Yield com base nos últimos 12 meses'})
+            dy_fii = dy_tag.find(
+                'strong', class_='value').text.strip() if dy_tag else None
 
-                logging.info(f"Veja Elementos:{elements}")
+            # P/VP
+            pvp_tag = container.find(
+                'div', {'title': 'P/VP (Preço/Valor Patrimonial)'})
+            pvp_fii = pvp_tag.find(
+                'strong', class_='value').text.strip() if pvp_tag else None
 
-                if len(elements) > 4:
-                    cota_fii = elements[0].text  # Valor atual da cota
-                    # Variação da cota dia anterior
-                    var_fii = "1,27"  # elements[1].text
-                    dy_fii = elements[10].text  # Dividend Yield
-                    pvp_fii = elements[13].text  # P/VP
-                    divpc_fii = str(
-                        # Dividendo por cota
-                        round((float((elements[76].text).replace(',', '.'))), 2)).replace('.', ',')
-                    # logging.info("Veja dentro do for")
-                    break
+            # Último rendimento (Proventos últimos 12 meses)
+            divpc_tag = container.find(
+                'div', {'title': 'Soma total de proventos distribuídos nos últimos 12 meses'})
+            divpc_fii = divpc_tag.find(
+                'span', class_='sub-value').text.strip() if divpc_tag else None
+
             # Verificação defensiva
             if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
                 raise ValueError(
@@ -132,7 +136,7 @@ def get_dadosfii(fii):
 
         arrow_fii = ""
         aux_fii = ""
-        var_fii = "1,27"  # apagar depois %%%%%%%%%%%%%%%
+        # var_fii = "1,27"  # apagar depois %%%%%%%%%%%%%%%
         if var_fii[0] == "-":
             arrow_fii = "&#x2B07;"
             aux_fii = "queda"
