@@ -29,22 +29,93 @@
                         "width": "100vw",
                         "items": [
                             {
-                                "type": "AlexaHeader",
-                                "headerTitle": "Atualizações Fundos Imobiliários - FIIs",
-                                "headerSubtitle": "Houve queda de 0,5% no valor do fundo XPML11",
-                                "headerDivider": true,
-                                "headerAttributionImage": "https://statusinvest.com.br/img/company/cover/331.jpg",
-                                "headerAttributionText": "by Cleber Gobira",
-                                "headerBackgroundColor": "rgba(0, 0, 0, 0.5)",
-                                "headerAttributionOpacity": 0.7,
-                                "headerBackButton": false,
-                                "headerBackButtonCommand": {
-                                    "type": "SendEvent",
-                                    "arguments": [
-                                        "goBack"
-                                    ]
-                                },
-                                "paddingTop": "@spacingSmall"
+                                "type": "Container",
+                                "height": "180dp",
+                                "width": "100vw",
+                                "items": [
+                                    {
+                                        "type": "Frame",
+                                        "width": "100vw",
+                                        "height": "160dp",
+                                        "background": {
+                                            "type": "linear",
+                                            "colorRange": [
+                                                "rgba(0,0,0,0.3)",
+                                                "rgba(0,0,0,0.1)"
+                                            ],
+                                            "inputRange": [
+                                                0,
+                                                1
+                                            ],
+                                            "angle": 0
+                                        },
+                                        "position": "absolute"
+                                    },
+                                    {
+                                        "type": "Container",
+                                        "direction": "row",
+                                        "alignItems": "center",
+                                        "width": "100vw",
+                                        "height": "160dp",
+                                        "paddingTop": "20dp",
+                                        "paddingLeft": "40dp",
+                                        "paddingRight": "20dp",
+                                        "paddingBottom": "20dp",
+                                        "items": [
+                                            {
+                                                "type": "Image",
+                                                "source": "https://statusinvest.com.br/img/company/cover/331.jpg",
+                                                "width": "120dp",
+                                                "height": "110dp",
+                                                "scale": "best-fill",
+                                                "borderRadius": "20dp"
+                                            },
+                                            {
+                                                "type": "Container",
+                                                "paddingLeft": "40dp",
+                                                "grow": 1,
+                                                "items": [
+                                                    {
+                                                        "type": "Text",
+                                                        "text": "ATUALIZAÇÕES FINANCEIRAS - FUNDOS E AÇÕES",
+                                                        "fontSize": "36dp",
+                                                        "fontWeight": "bold",
+                                                        "color": "white"
+                                                    },
+                                                    {
+                                                        "type": "Text",
+                                                        "text": "Houve queda de 0,5% no valor do fundo XPML11",
+                                                        "fontSize": "30dp",
+                                                        "color": "#cccccc"
+                                                    },
+                                                    {
+                                                        "type": "Text",
+                                                        "text": "by Cleber Gobira",
+                                                        "fontSize": "18dp",
+                                                        "color": "#aaaaaa"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": "Image",
+                                                "source": "https://lh5.googleusercontent.com/d/1-_HOuqzwJ9zqwUCnpuZHy9e90vUfKlHY",
+                                                "width": "60dp",
+                                                "height": "60dp",
+                                                "scale": "best-fill",
+                                                "borderRadius": "0",
+                                                "alignSelf": "start"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Frame",
+                                        "height": "2dp",
+                                        "width": "100vw",
+                                        "background": "#879eb4",
+                                        "position": "absolute",
+                                        "bottom": 20
+                                    }
+                                ]
                             },
                             {
                                 "scrollDirection": "vertical",
@@ -59,8 +130,8 @@
                                 "type": "GridSequence",
                                 "childHeight": "100%",
                                 "height": "100vh",
-                                "width": "100vw",                                
-                                "paddingTop": "20dp",
+                                "width": "100vw",
+                                "paddingTop": "5dp",
                                 "paddingLeft": "40dp",
                                 "paddingRight": "40dp",
                                 "paddingBottom": "20dp",
@@ -91,18 +162,18 @@
                                                         "textAlign": "left",
                                                         "height": "455dp",
                                                         "paddingRight": "20dp",
-                                                        "style": "textStyleDisplay4",                                                    
+                                                        "style": "textStyleDisplay4",
                                                         "id": "financeCard"
                                                     },
                                                     {
                                                         "type": "Frame",
                                                         "height": "2dp",
                                                         "width": "100%",
-                                                        "background": "#879eb4"                                                        
+                                                        "background": "#879eb4"
                                                     },
                                                     {
                                                         "type": "Container",
-                                                        "height": "160dp",                                                        
+                                                        "height": "160dp",
                                                         "paddingTop": "0dp",
                                                         "paddingLeft": "0dp",
                                                         "paddingRight": "0dp",
@@ -111,7 +182,7 @@
                                                             {
                                                                 "text": "ALERTA:",
                                                                 "fontSize": "36dp",
-                                                                "type": "Text",                                                                
+                                                                "type": "Text",
                                                                 "paddingTop": "0dp",
                                                                 "paddingBottom": "12dp"
                                                             },
@@ -119,7 +190,7 @@
                                                                 "text": "•\u2009 HOJE:\u2003--\u2009R$ 96,40\u2009--\u2003 •\u2009 01/02/2025: \u2003R$ 98,75<br>•\u2009 25/01/2025:\u2003R$ 98,78 \u2003 •\u2009 25/01/2025:\u2003R$ 98,88",
                                                                 "fontSize": "30dp",
                                                                 "type": "Text",
-                                                                "height": "320dp",                                                                                                                               
+                                                                "height": "320dp",
                                                                 "paddingBottom": "12dp",
                                                                 "id": "financeAlert"
                                                             }
@@ -143,14 +214,14 @@
                                             },
                                             {
                                                 "type": "ScrollView",
-                                                "height": "550dp",                                                
+                                                "height": "550dp",
                                                 "item": [
                                                     {
                                                         "type": "Text",
                                                         "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73",
                                                         "fontSize": "24dp",
                                                         "textAlign": "right",
-                                                        "style": "textStyleDisplay4",                                                        
+                                                        "style": "textStyleDisplay4",
                                                         "id": "financeHistorico"
                                                     }
                                                 ]
