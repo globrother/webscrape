@@ -91,12 +91,25 @@ def get_dadosfii(fii):
                             round((float((elements[39].text).replace(',', '.'))), 2)).replace('.', ',')
                         # logging.info("Veja dentro do for")
                         break
+
+                # Logo do Ativo (URL extraído automaticamente do site status invest)
+                script_image_fii = soup.find_all(
+                    'script', type='application/ld+json')
+                # logger.info(f"Script Image: {script_image}")
+
+                if len(script_image_fii) > 2:
+                    data = json.loads(script_image_fii[2].string)
+                    logger.info(f"Dados extraídos do script: {data}")
+                    # Acesse o campo da logo
+                    logo_url = data.get('image', {}).get('url')
+                    logger.info(f"LOGO DO ATIVO: {logo_url}")
+
                 # Verificação defensiva
-                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
+                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
-                logging.info(f"\nTIPO DE ATIVO 2:> {tipo_ativo}\n")
+                logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
             elif tipo_ativo == "acao":
                 containers = soup.find_all('div', class_='container')
@@ -154,17 +167,16 @@ def get_dadosfii(fii):
                 # Logo do Ativo (URL extraído automaticamente do site status invest)
                 script_image = soup.find_all(
                     'script', type='application/ld+json')
-                # logger.info(f"Script Image: {script_image}")
 
                 if len(script_image) > 2:
                     data = json.loads(script_image[2].string)
                     logger.info(f"Dados extraídos do script: {data}")
-                    # Acesse o campo da logo
-                    logo_url_atv = data.get('image', {}).get('url')
-                    logger.info(f"LOGO DO ATIVO: {logo_url_atv}")
+                    # Acessa o campo da logo
+                    logo_url = data.get('image', {}).get('url')
+                    logger.info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
-                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url_atv]):
+                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
         else:
@@ -212,7 +224,7 @@ def get_dadosfii(fii):
         # print(f"Texto para Histórico: {hist_text_xpml}")
 
         # logging.info(f"\nVeja os valores:> {hist_text_xpml}\n")
-        return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv
+        return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url
 
     except Exception as e:
         logging.info(f"\n Ocorreu um erro em {fii}: {e}\n")

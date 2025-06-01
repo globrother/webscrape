@@ -267,11 +267,8 @@ def web_scrape(fundo):
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
-    logger.info(apl_document['mainTemplate']['items'][0]
-                ['items'][1]['items'][0]['items'][1]['items'][0])
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
-    logger.info(f"\n LOGO APL Document: {logo_url_atv} \n")
 
     cota_atual = cota_fii
     voz_fundo = voz
