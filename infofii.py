@@ -95,53 +95,54 @@ def get_dadosfii(fii):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
-            logging.info(f"\nTIPO DE ATIVO 2:> {tipo_ativo}\n")
+                logging.info(f"\nTIPO DE ATIVO 2:> {tipo_ativo}\n")
 
-        elif tipo_ativo == "acao":
-            logging.info(f"\nRASPANDO ATIVO 3:> {tipo_ativo}\n")
-            container = soup.find('div', class_='container ')
-            if not container:
-                logger.info("Container principal NÃO encontrado para ação.")
-                raise ValueError(
-                    "Container principal não encontrado para ação.")
-            else:
-                logger.info(
-                    f"HTML do container encontrado:\n{str(container)[:500]}\n")
+            elif tipo_ativo == "acao":
+                logging.info(f"\nRASPANDO ATIVO 3:> {tipo_ativo}\n")
+                container = soup.find('div', class_='container ')
+                if not container:
+                    logger.info(
+                        "Container principal NÃO encontrado para ação.")
+                    raise ValueError(
+                        "Container principal não encontrado para ação.")
+                else:
+                    logger.info(
+                        f"HTML do container encontrado:\n{str(container)[:500]}\n")
 
-            # Valor atual
-            valor_atual_tag = container.find(
-                'div', {'title': 'Valor atual do ativo'})
-            cota_fii = valor_atual_tag.find(
-                'strong', class_='value').text.strip() if valor_atual_tag else None
+                # Valor atual
+                valor_atual_tag = container.find(
+                    'div', {'title': 'Valor atual do ativo'})
+                cota_fii = valor_atual_tag.find(
+                    'strong', class_='value').text.strip() if valor_atual_tag else None
 
-            # Variação do dia
-            variacao_tag = container.find(
-                'span', {'title': 'Variação do valor do ativo com base no dia anterior'})
-            var_fii = variacao_tag.find(
-                'b').text.strip() if variacao_tag else None
+                # Variação do dia
+                variacao_tag = container.find(
+                    'span', {'title': 'Variação do valor do ativo com base no dia anterior'})
+                var_fii = variacao_tag.find(
+                    'b').text.strip() if variacao_tag else None
 
-            # Dividend Yield
-            dy_tag = container.find(
-                'div', {'title': 'Dividend Yield com base nos últimos 12 meses'})
-            dy_fii = dy_tag.find(
-                'strong', class_='value').text.strip() if dy_tag else None
+                # Dividend Yield
+                dy_tag = container.find(
+                    'div', {'title': 'Dividend Yield com base nos últimos 12 meses'})
+                dy_fii = dy_tag.find(
+                    'strong', class_='value').text.strip() if dy_tag else None
 
-            # P/VP
-            pvp_tag = container.find(
-                'div', {'title': 'P/VP (Preço/Valor Patrimonial)'})
-            pvp_fii = pvp_tag.find(
-                'strong', class_='value').text.strip() if pvp_tag else None
+                # P/VP
+                pvp_tag = container.find(
+                    'div', {'title': 'P/VP (Preço/Valor Patrimonial)'})
+                pvp_fii = pvp_tag.find(
+                    'strong', class_='value').text.strip() if pvp_tag else None
 
-            # Último rendimento (Proventos últimos 12 meses)
-            divpc_tag = container.find(
-                'div', {'title': 'Soma total de proventos distribuídos nos últimos 12 meses'})
-            divpc_fii = divpc_tag.find(
-                'span', class_='sub-value').text.strip() if divpc_tag else None
+                # Último rendimento (Proventos últimos 12 meses)
+                divpc_tag = container.find(
+                    'div', {'title': 'Soma total de proventos distribuídos nos últimos 12 meses'})
+                divpc_fii = divpc_tag.find(
+                    'span', class_='sub-value').text.strip() if divpc_tag else None
 
-            # Verificação defensiva
-            if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
-                raise ValueError(
-                    "Não foi possível extrair todos os dados necessários para o ativo.")
+                # Verificação defensiva
+                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
+                    raise ValueError(
+                        "Não foi possível extrair todos os dados necessários para o ativo.")
         else:
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
