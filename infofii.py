@@ -160,11 +160,11 @@ def get_dadosfii(fii):
                     data = json.loads(script_image[2].string)
                     logger.info(f"Dados extraídos do script: {data}")
                     # Acesse o campo da logo
-                    logo_url = data.get('image', {}).get('url')
-                    logger.info(f"LOGO DO ATIVO: {logo_url}")
+                    logo_url_atv = data.get('image', {}).get('url')
+                    logger.info(f"LOGO DO ATIVO: {logo_url_atv}")
 
                 # Verificação defensiva
-                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii]):
+                if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url_atv]):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
         else:
@@ -212,7 +212,7 @@ def get_dadosfii(fii):
         # print(f"Texto para Histórico: {hist_text_xpml}")
 
         # logging.info(f"\nVeja os valores:> {hist_text_xpml}\n")
-        return cota_fii, card_fii, variac_fii, hist_text_fii
+        return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv
 
     except Exception as e:
         logging.info(f"\n Ocorreu um erro em {fii}: {e}\n")

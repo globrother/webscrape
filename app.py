@@ -258,7 +258,8 @@ def web_scrape(fundo):
     logger.info(f"o link é: {background_image}")"""
 
     # ,_ significa que a variável variac_xpml11 não será utilizada
-    cota_fii, card_fii, variac_fii, hist_text_fii = get_dadosfii(fii)
+    cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(
+        fii)
 
     # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
@@ -266,6 +267,7 @@ def web_scrape(fundo):
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][1]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['Source'] = logo_url_atv
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
 
     cota_atual = cota_fii
