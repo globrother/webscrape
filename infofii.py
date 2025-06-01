@@ -152,11 +152,12 @@ def get_dadosfii(fii):
                     round((float((divpc_fii).replace(',', '.'))), 2)).replace('.', ',')
 
                 # Logo do Ativo (URL extraído automaticamente do site status invest)
-                script_image = soup.find('script', type='application/ld+json')
-                script_image = script_image[2]
+                script_image = soup.find_all(
+                    'script', type='application/ld+json')
                 logger.info(f"Script Image: {script_image}")
-                if script_image:
-                    data = json.loads(script_image.string)
+
+                if script_image > 2:
+                    data = json.loads(script_image[2].string)
                     logger.info(f"Dados extraídos do script: {data}")
                     # Acesse o campo da logo
                     logo_url = data.get('image', {}).get('url')
