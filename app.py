@@ -200,8 +200,8 @@ def comparador(historico, cota_atual, voz_fundo):
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
 # 🔹 Obtendo Url do Gráfico
-url_grafico = obter_grafico.requisitando_chart("BBAS3")
-logging.info(f"URL do Gráfico: {url_grafico}")
+#url_grafico = obter_grafico.requisitando_chart("BBAS3")
+#logging.info(f"URL do Gráfico: {url_grafico}")
 
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
