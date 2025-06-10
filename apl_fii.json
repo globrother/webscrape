@@ -223,6 +223,17 @@
                                                         "textAlign": "right",
                                                         "style": "textStyleDisplay4",
                                                         "id": "financeHistorico"
+                                                    },
+                                                    {
+                                                        "type":"Container",
+                                                        "item":[
+                                                            {
+                                                            "type":"Image",
+                                                            "source":"https://204.216.158.137:5000/static/grafico-bbas3-15dias.png",
+                                                            "width": "380",
+                                                            "height": "300"
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
