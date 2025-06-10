@@ -8,7 +8,7 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 mas ao tocar em um botão, a skill é encerrada.
 """
 # ::== AJUDA ==::
-# 
+# PARA CADA FII QUE DESEJA MONITORAR:
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json (pasta raiz)
 # IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS EM app.py
 # DUPLICAR UM ARQUIVO DE FUNDO: nome-do-fii.py (pasta raiz)
@@ -47,9 +47,9 @@ from ask_sdk_model.slu.entityresolution import StatusCode
 from infofii import get_dadosfii
 # from xpml11 import get_xpml
 import grava_historico
-import obter_grafico
 # ============================================================================================
 
+# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
 # LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
@@ -71,10 +71,7 @@ app = Flask(__name__)
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_fund_mapping}")
-
-# 🔹 Exemplo de chamada
-#resultado = obter_grafico.requisitando_chart("BBAS3")
-#logging.info(f"URL do Gráfico:{resultado}")
+# time.sleep(5)
 # logging.info(f"\n A lista é: {lista_ativos}")
 
 # Dicionário para letras em extenso (português)
@@ -214,7 +211,7 @@ def web_scrape(fundo):
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)
     # logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
 
-    fii = fundo # Sigla completa do ativo. Ex: mxrf11 ou bbas3
+    fii = fundo
 
     # Lista de links de imagens de planos de fundo
     background_images = [
