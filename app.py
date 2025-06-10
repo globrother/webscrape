@@ -106,7 +106,7 @@ letras_extenso = {
     "z": "ze"
 }
 
-ativos_favoritos = [10, 11, 1]
+ativos_favoritos = [1, 2, 3]
 
 
 def remover_sufixo_numerico(codigo):
@@ -200,7 +200,7 @@ def comparador(historico, cota_atual, voz_fundo):
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
 # 🔹 Obtendo Url do Gráfico
-url_grafico = obter_grafico.requisitando_chart("BBAS3")
+url_grafico = obter_grafico.requisitando_chart("XPML11")
 logging.info(f"URL do Gráfico: {url_grafico}")
 
 def web_scrape(fundo):
