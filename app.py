@@ -72,6 +72,7 @@ app = Flask(__name__)
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_fund_mapping}")
+
 # 🔹 Exemplo de chamada
 resultado = obter_grafico.requisitando_chart("BBAS3")
 logging.info(f"URL do Gráfico:{resultado}")
