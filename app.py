@@ -8,7 +8,7 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 mas ao tocar em um botão, a skill é encerrada.
 """
 # ::== AJUDA ==::
-# PARA CADA FII QUE DESEJA MONITORAR:
+# 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json (pasta raiz)
 # IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS EM app.py
 # DUPLICAR UM ARQUIVO DE FUNDO: nome-do-fii.py (pasta raiz)
