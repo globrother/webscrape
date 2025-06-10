@@ -223,17 +223,17 @@
                                                         "textAlign": "right",
                                                         "style": "textStyleDisplay4",
                                                         "id": "financeHistorico"
-                                                    },
+                                                    }                                                    
+                                                ]
+                                            },
+                                            {
+                                                "type":"Container",
+                                                "item":[
                                                     {
-                                                        "type":"Container",
-                                                        "item":[
-                                                            {
-                                                            "type":"Image",
-                                                            "source":"https://statusinvest.com.br/img/company/cover/335.jpg?v=218",
-                                                            "width": "380",
-                                                            "height": "300"
-                                                            }
-                                                        ]
+                                                    "type":"Image",
+                                                    "source":"https://statusinvest.com.br/img/company/cover/335.jpg?v=218",
+                                                    "width": "380",
+                                                    "height": "300"
                                                     }
                                                 ]
                                             }
