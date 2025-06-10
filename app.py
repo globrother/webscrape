@@ -47,7 +47,7 @@ from ask_sdk_model.slu.entityresolution import StatusCode
 from infofii import get_dadosfii
 # from xpml11 import get_xpml
 import grava_historico
-#import obter_grafico
+import obter_grafico
 # ============================================================================================
 
 # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
