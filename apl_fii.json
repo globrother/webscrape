@@ -214,7 +214,7 @@
                                             },
                                             {
                                                 "type": "ScrollView",
-                                                "height": "550dp",
+                                                "height": "220dp",
                                                 "item": [
                                                     {
                                                         "type": "Text",
