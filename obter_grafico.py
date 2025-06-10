@@ -4,6 +4,9 @@ import os
 API_URL = "http://204.216.158.137:8000/screenshot"
 CHART_API_KEY = os.getenv("CHART_API_KEY")
 
+if CHART_API_KEY is None:
+    raise ValueError("Erro: CHART_API_KEY não está definida como variável de ambiente!")
+
 def requisitando_chart(ticker):
     headers = {
         "Content-Type": "application/json",
