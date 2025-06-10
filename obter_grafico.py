@@ -19,5 +19,5 @@ def requisitando_chart(ticker):
         return {"error": f"Erro {response.status_code}: {response.text}"}
 
 # 🔹 Exemplo de chamada
-resultado = requisitando_chart("BBAS3")
-print(resultado)
+#resultado = requisitando_chart("BBAS3")
+#print(resultado)
