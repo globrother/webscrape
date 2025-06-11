@@ -1,7 +1,7 @@
 import requests
 import os
 
-API_URL = "https://204.216.158.137:5000/chart"
+API_URL = "https://graficoapi.duckdns.org:5000/chart"
 
 CHART_API_KEY = os.getenv("CHART_API_KEY")
 
