@@ -200,8 +200,9 @@ def comparador(historico, cota_atual, voz_fundo):
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
 # 🔹 Obtendo Url do Gráfico
-#url_grafico = obter_grafico.requisitando_chart("BBAS3")
-#logging.info(f"URL do Gráfico: {url_grafico}")
+#url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
+url_grafico = obter_grafico.requisitando_chart("BBAS3")
+logging.info(f"URL do Gráfico: {url_grafico}")
 
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
@@ -250,7 +251,6 @@ def web_scrape(fundo):
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(
         fii)
 
-    url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png"
     # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
