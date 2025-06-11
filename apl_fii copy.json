@@ -121,19 +121,19 @@
                                 "scrollDirection": "vertical",
                                 "childWidths": [
                                     "820dp",
-                                    "400dp"
+                                    "370dp"
                                 ],
                                 "childWidth": [
                                     "820dp",
-                                    "400dp"
+                                    "370dp"
                                 ],
                                 "type": "GridSequence",
                                 "childHeight": "100%",
                                 "height": "100vh",
                                 "width": "100vw",
                                 "paddingTop": "5dp",
-                                "paddingLeft": "30dp",
-                                "paddingRight": "20dp",
+                                "paddingLeft": "40dp",
+                                "paddingRight": "40dp",
                                 "paddingBottom": "20dp",
                                 "items": [
                                     {
@@ -187,7 +187,7 @@
                                                                 "paddingBottom": "12dp"
                                                             },
                                                             {
-                                                                "text": "•  HOJE: -- R$ 96,40 --  •  01/02/2025:  R$ 98,75<br>•  25/01/2025: R$ 98,78   •  25/01/2025: R$ 98,88",
+                                                                "text": "•\u2009 HOJE:\u2003--\u2009R$ 96,40\u2009--\u2003 •\u2009 01/02/2025: \u2003R$ 98,75<br>•\u2009 25/01/2025:\u2003R$ 98,78 \u2003 •\u2009 25/01/2025:\u2003R$ 98,88",
                                                                 "fontSize": "30dp",
                                                                 "type": "Text",
                                                                 "height": "320dp",
@@ -202,43 +202,42 @@
                                     },
                                     {
                                         "type": "Container",
-                                        "width": "100vw",
+                                        "width": "100%",
                                         "items": [
-                                            {
-                                                "type": "Container",
-                                                "paddingTop": "0",
-                                                "item": [
-                                                    {
-                                                        "type": "Image",
-                                                        "source": "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15",
-                                                        "width": "400",
-                                                        "height": "300",
-                                                        "scale": "best-fill",
-                                                        "alignSelf": "start",
-                                                        "borderRadius": "15dp"
-                                                    }
-                                                ]
-                                            },
                                             {
                                                 "type": "Text",
                                                 "text": "Histórico",
                                                 "fontSize": "28dp",
                                                 "fontWeight": "bold",
                                                 "textAlign": "center",
-                                                "paddingBottom": "10dp",
-                                                "paddingTop": "10"
+                                                "paddingBottom": "10dp"
                                             },
                                             {
                                                 "type": "ScrollView",
-                                                "height": "235dp",
+                                                "height": "220dp",
                                                 "item": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73",
+                                                        "text": "05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 96,45<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73<br>05/01/2024:\u2003 R$\u2009 98,73",
                                                         "fontSize": "24dp",
                                                         "textAlign": "right",
                                                         "style": "textStyleDisplay4",
                                                         "id": "financeHistorico"
+                                                    }                                                    
+                                                ]
+                                            },
+                                            {
+                                                "type":"Container",
+                                                "paddingTop": "30",
+                                                "item":[
+                                                    {
+                                                    "type":"Image",
+                                                    "source":"https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=7",
+                                                    "width": "370",
+                                                    "height": "270",
+                                                    "scale": "best-fill",
+                                                    "alignSelf": "start",
+                                                    "borderRadius": "10dp"
                                                     }
                                                 ]
                                             }
