@@ -231,9 +231,11 @@
                                                 "item":[
                                                     {
                                                     "type":"Image",
-                                                    "source":"https://lh5.googleusercontent.com/d/1YojIT8VRm-yMk72QFpdI5SJRlpQxSV5I",
+                                                    "source":"https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png",
                                                     "width": "380",
-                                                    "height": "300"
+                                                    "height": "300",
+                                                    "scale": "best-fill",
+                                                    "alignSelf": "start"
                                                     }
                                                 ]
                                             }
