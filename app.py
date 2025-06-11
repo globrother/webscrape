@@ -199,11 +199,6 @@ def comparador(historico, cota_atual, voz_fundo):
 # Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
 # Ao todo são 18 alterações incluindo a função scrape e get.
 
-# 🔹 Obtendo Url do Gráfico
-#url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
-url_grafico = obter_grafico.requisitando_chart("BBAS3")
-logging.info(f"URL do Gráfico: {url_grafico}")
-
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
     fundo_fii = remover_sufixo_numerico(fundo)
@@ -218,7 +213,7 @@ def web_scrape(fundo):
     # logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
 
     fii = fundo
-    logging.info(f"valor de fii: {fii}")
+    #logging.info(f"valor de fii: {fii}")
     
     # 🔹 Obtendo Url do Gráfico
     #url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
@@ -254,8 +249,7 @@ def web_scrape(fundo):
     # logger.info(f"O link da imagem de fundo é: {background_image}")
 
     # ,_ significa que a variável variac_xpml11 não será utilizada
-    cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(
-        fii)
+    cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
 
     # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
