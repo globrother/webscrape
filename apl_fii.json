@@ -228,14 +228,16 @@
                                             },
                                             {
                                                 "type":"Container",
+                                                "paddingTop": "30",
                                                 "item":[
                                                     {
                                                     "type":"Image",
-                                                    "source":"https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png",
-                                                    "width": "380",
-                                                    "height": "300",
+                                                    "source":"https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=7",
+                                                    "width": "370",
+                                                    "height": "270",
                                                     "scale": "best-fill",
-                                                    "alignSelf": "start"
+                                                    "alignSelf": "start",
+                                                    "borderRadius": "10dp"
                                                     }
                                                 ]
                                             }
