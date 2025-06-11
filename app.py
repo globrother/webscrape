@@ -250,6 +250,7 @@ def web_scrape(fundo):
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(
         fii)
 
+    url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png"
     # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
@@ -257,7 +258,7 @@ def web_scrape(fundo):
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][0]['item'][0]['source'] = url_grafico
+    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][0]['item'][0]['source'] = url_grafico
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
 
     cota_atual = cota_fii
