@@ -218,6 +218,12 @@ def web_scrape(fundo):
     # logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
 
     fii = fundo
+    logging.info(f"valor de fii: {fii}")
+    
+    # 🔹 Obtendo Url do Gráfico
+    #url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
+    url_grafico = obter_grafico.requisitando_chart(fii)
+    logging.info(f"URL do Gráfico: {url_grafico}")
 
     # Lista de links de imagens de planos de fundo
     background_images = [
