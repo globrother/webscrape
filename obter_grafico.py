@@ -18,7 +18,7 @@ def requisitando_chart(ticker):
     response = requests.post(API_URL, json=data, headers=headers)
 
     if response.status_code == 200:
-        return response.json()  # Retorna a resposta da API
+        return response.json.get("url", "")  # Retorna a url pronta - resposta da API 
     else:
         return {"error": f"Erro {response.status_code}: {response.text}"}
 
