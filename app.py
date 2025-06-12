@@ -218,6 +218,8 @@ def web_scrape(fundo):
     # 🔹 Obtendo Url do Gráfico
     #url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
     url_grafico = obter_grafico.requisitando_chart(fii)
+    timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
+    url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
     logging.info(f"URL do Gráfico: {url_grafico}")
 
     # Lista de links de imagens de planos de fundo
