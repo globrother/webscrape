@@ -339,7 +339,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 document=apl_document,
                 datasources={
                     "dados_update": {
-                        dados_info  # 🔹 Agora o APL pode acessar esse valor
+                        {dados_info}  # 🔹 Agora o APL pode acessar esse valor
                     }
                 }
             )
