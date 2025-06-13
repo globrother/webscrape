@@ -215,7 +215,7 @@ def get_dadosfii(fii):
         historico = grava_historico.ler_historico(sufixo)
         #hist_text_fii = grava_historico.gerar_texto_historico(historico, aux)
         hist_text_fii = {
-            "payload": {
+            "dados_update": {
                 "hist_text_fii": grava_historico.gerar_texto_historico(historico, aux)
             }
         }

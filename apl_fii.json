@@ -11,7 +11,7 @@
     ],
     "mainTemplate": {
         "parameters": [
-            "payload"
+            "dados_update"
         ],
         "items": [
             {
@@ -234,7 +234,7 @@
                                                 "item": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "${payload.hist_text_fii}",
+                                                        "text": "${dados_update.hist_text_fii}",
                                                         "fontSize": "20dp",
                                                         "textAlign": "center",
                                                         "style": "textStyleDisplay4",
