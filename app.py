@@ -259,10 +259,10 @@ def web_scrape(fundo):
     #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     #apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
     #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][2]['item'][0]['text'] = hist_text_fii
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
-    apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][0]['item'][0]['source'] = url_grafico
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
+    #apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][0]['item'][0]['source'] = url_grafico
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
 
     cota_atual = cota_fii
@@ -274,7 +274,11 @@ def web_scrape(fundo):
     dados_info = {
         "card_ativo": card_fii,
         "variac_ativo": variac_fii,
-        "hist_text_ativo": hist_text_fii
+        "hist_text_ativo": hist_text_fii,
+        "hist_alert": hist_alert,
+        "background_image": background_image,
+        "logo_url_atv": logo_url_atv,
+        "url_grafico": url_grafico
     }
 
     return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
@@ -411,13 +415,18 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_fund_mapping[1]
-            _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
             ).add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",
-                    document=apl_document
+                    document=apl_document,
+                    datasources={
+                        "dados_update": {
+                            **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                        }
+                    }
                 )
             ).set_should_end_session(False)
             return handler_input.response_builder.response
@@ -460,7 +469,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
 
         # Feedback imediato e avanço de tela
         fundo = state_fund_mapping[novo_state_id]
-        _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         import json
         logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
@@ -472,7 +481,12 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",  # token para exibição de fundos
-                document=apl_document
+                document=apl_document,
+                datasources={
+                    "dados_update": {
+                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                    }
+                }
                 # Se APL usa datasources, adicionar: , datasources={...}
             )
         ).set_should_end_session(False)
@@ -563,7 +577,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_fund_mapping[ativos_ids[idx]]
         # Chame a função web_scrape para obter os dados do fundo
-        _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Calcula o próximo estado
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
@@ -583,7 +597,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
-                document=apl_document
+                document=apl_document,
+                datasources={
+                    "dados_update": {
+                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                    }
+                }
             )
         )
 
@@ -893,7 +912,7 @@ class TouchHandler(AbstractRequestHandler):
             voz_prefix = "Próximo!"
 
         # Chama a função web_scrape para obter os dados do fundo
-        _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Calcula o próximo estado
         next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
@@ -905,7 +924,12 @@ class TouchHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
-                document=apl_document
+                document=apl_document,
+                datasources={
+                    "dados_update": {
+                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                    }
+                }
             )
         )
 

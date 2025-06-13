@@ -20,7 +20,7 @@
                 "items": [
                     {
                         "type": "AlexaBackground",
-                        "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+                        "backgroundImageSource": "${dados_update.background_image}",
                         "backgroundScale": "best-fill"
                     },
                     {
@@ -64,7 +64,7 @@
                                         "items": [
                                             {
                                                 "type": "Image",
-                                                "source": "https://statusinvest.com.br/img/company/cover/335.jpg?v=218",
+                                                "source": "${dados_update.logo_url_atv}",
                                                 "width": "120dp",
                                                 "height": "110dp",
                                                 "scale": "best-fill",
@@ -187,7 +187,7 @@
                                                                 "paddingBottom": "12dp"
                                                             },
                                                             {
-                                                                "text": "• 01/02/25: R$ 000,00   • 01/02/25: R$ 000,00<br>• 25/01/25: R$ 000,00   • 25/01/25: R$ 000,00",
+                                                                "text": "${dados_update.hist_alert}",
                                                                 "fontSize": "30dp",
                                                                 "type": "Text",
                                                                 "height": "320dp",
@@ -210,7 +210,7 @@
                                                 "item": [
                                                     {
                                                         "type": "Image",
-                                                        "source": "https://graficoapi.duckdns.org:5000/static/grafico-BBAS3.SA-15dias.png",
+                                                        "source": "${dados_update.url_grafico}",
                                                         "width": "515",
                                                         "height": "386.25",
                                                         "scale": "best-fill",
