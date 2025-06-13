@@ -269,6 +269,7 @@ def web_scrape(fundo):
     voz_fundo = voz
     voz = comparador(historico, cota_atual, voz_fundo)
 
+    logging.info(f"hist_text_FII é: {hist_text_fii}")
     hist_text_fii = (
         "05/01: 00:00 R$ 100,00<br>"
         "06/01: 00:00 R$ 120,00<br>"
