@@ -332,7 +332,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 document=apl_document,
                 datasources={
-                    "payload": {
+                    "dados_update": {
                         "hist_text_fii": hist_text_fii  # 🔹 Agora o APL pode acessar esse valor
                     }
                 }
