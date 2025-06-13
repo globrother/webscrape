@@ -270,13 +270,6 @@ def web_scrape(fundo):
     voz = comparador(historico, cota_atual, voz_fundo)
 
     logging.info(f"hist_text_FII é: {hist_text_fii}")
-    hist_text_fii = (
-        "05/01: 00:00 R$ 100,00<br>"
-        "06/01: 00:00 R$ 120,00<br>"
-        "07/01: 00:00 R$ 90,50<br>"
-        "08/01: 00:00 R$ 105,30<br>"
-        "09/01: 00:00 R$ 98,00"
-    )
 
     return card_fii, variac_fii, hist_text_fii, apl_document, voz
 
