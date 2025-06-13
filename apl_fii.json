@@ -84,7 +84,7 @@
                                                     },
                                                     {
                                                         "type": "Text",
-                                                        "text": "Houve queda de 0,5% no valor do fundo XPML11",
+                                                        "text": "${dados_update.variac_ativo}",
                                                         "fontSize": "30dp",
                                                         "color": "#cccccc"
                                                     },
@@ -157,7 +157,7 @@
                                                 "items": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "Atualizações do Fundo XPML11<br><br>* Houve queda de -0,00% na cota<br>* Valor atual da cota: R$ 803,68<br>* Valor atual da cota: R$ 803,68<br>* Valor atual da cota: R$ 93,67",
+                                                        "text": "${dados_update.card_ativo}",
                                                         "fontSize": "46dp",
                                                         "textAlign": "left",
                                                         "height": "430dp",
@@ -234,7 +234,7 @@
                                                 "item": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "${dados_update.hist_text_fii}",
+                                                        "text": "${dados_update.hist_text_ativo}",
                                                         "fontSize": "20dp",
                                                         "textAlign": "center",
                                                         "style": "textStyleDisplay4",

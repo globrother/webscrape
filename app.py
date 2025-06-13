@@ -256,8 +256,8 @@ def web_scrape(fundo):
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
 
     # Alterar valores das chaves do apl_document
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
     #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][2]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
@@ -271,7 +271,13 @@ def web_scrape(fundo):
 
     logging.info(f"hist_text_FII é: {hist_text_fii}")
 
-    return card_fii, variac_fii, hist_text_fii, apl_document, voz
+    dados_info = {
+        "card_ativo": card_fii,
+        "variac_ativo": variac_fii,
+        "hist_text_ativo": hist_text_fii
+    }
+
+    return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
 
 # ============================================================================================
 
@@ -325,7 +331,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr["state"] = ativos_ids[0]
         logging.info(f"state inicial: {session_attr['state']}")
         fundo = state_fund_mapping[ativos_ids[0]]
-        _, _, hist_text_fii, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
@@ -333,7 +339,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 document=apl_document,
                 datasources={
                     "dados_update": {
-                        "hist_text_fii": hist_text_fii  # 🔹 Agora o APL pode acessar esse valor
+                        dados_info  # 🔹 Agora o APL pode acessar esse valor
                     }
                 }
             )
