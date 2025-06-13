@@ -258,7 +258,7 @@ def web_scrape(fundo):
     # Alterar valores das chaves do apl_document
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
-    apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][2]['item'][0]['text'] = hist_text_fii
+    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][2]['item'][0]['text'] = hist_text_fii
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
     apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
     apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
@@ -323,12 +323,17 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr["state"] = ativos_ids[0]
         logging.info(f"state inicial: {session_attr['state']}")
         fundo = state_fund_mapping[ativos_ids[0]]
-        _, _, _, apl_document, voz = web_scrape(fundo)
+        _, _, hist_text_fii, apl_document, voz = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
-                document=apl_document
+                document=apl_document,
+                datasources={
+                    "payload": {
+                        "hist_text_fii": hist_text_fii  # 🔹 Agora o APL pode acessar esse valor
+                    }
+                }
             )
         )
 
