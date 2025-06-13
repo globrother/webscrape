@@ -30,7 +30,7 @@
                         "items": [
                             {
                                 "type": "Container",
-                                "height": "180dp",
+                                "height": "160dp",
                                 "width": "100vw",
                                 "items": [
                                     {
@@ -113,27 +113,27 @@
                                         "width": "100vw",
                                         "background": "#879eb4",
                                         "position": "absolute",
-                                        "bottom": 20
+                                        "bottom": 0
                                     }
                                 ]
                             },
                             {
                                 "scrollDirection": "vertical",
                                 "childWidths": [
-                                    "820dp",
-                                    "400dp"
+                                    "720dp",
+                                    "515dp"
                                 ],
                                 "childWidth": [
-                                    "820dp",
-                                    "400dp"
+                                    "720dp",
+                                    "515dp"
                                 ],
                                 "type": "GridSequence",
                                 "childHeight": "100%",
                                 "height": "100vh",
                                 "width": "100vw",
                                 "paddingTop": "5dp",
-                                "paddingLeft": "30dp",
-                                "paddingRight": "20dp",
+                                "paddingLeft": "15dp",
+                                "paddingRight": "15dp",
                                 "paddingBottom": "20dp",
                                 "items": [
                                     {
@@ -149,18 +149,18 @@
                                         "items": [
                                             {
                                                 "type": "Container",
-                                                "width": "815dp",
-                                                "paddingTop": "0dp",
+                                                "width": "720dp",
+                                                "paddingTop": "8dp",
                                                 "paddingLeft": "0dp",
                                                 "paddingRight": "0dp",
                                                 "paddingBottom": "0dp",
                                                 "items": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "Atualizações do Fundo XPML11<br><br>* Houve alta de 0,33% na cota<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67<br>* Valor atual da cota: R$ 93,67",
-                                                        "fontSize": "52dp",
+                                                        "text": "Atualizações do Fundo XPML11<br><br>* Houve queda de -0,00% na cota<br>* Valor atual da cota: R$ 803,68<br>* Valor atual da cota: R$ 803,68<br>* Valor atual da cota: R$ 93,67",
+                                                        "fontSize": "46dp",
                                                         "textAlign": "left",
-                                                        "height": "455dp",
+                                                        "height": "430dp",
                                                         "paddingRight": "20dp",
                                                         "style": "textStyleDisplay4",
                                                         "id": "financeCard"
@@ -173,7 +173,7 @@
                                                     },
                                                     {
                                                         "type": "Container",
-                                                        "height": "160dp",
+                                                        "height": "150dp",
                                                         "paddingTop": "0dp",
                                                         "paddingLeft": "0dp",
                                                         "paddingRight": "0dp",
@@ -183,11 +183,11 @@
                                                                 "text": "ALERTA:",
                                                                 "fontSize": "36dp",
                                                                 "type": "Text",
-                                                                "paddingTop": "0dp",
+                                                                "paddingTop": "15dp",
                                                                 "paddingBottom": "12dp"
                                                             },
                                                             {
-                                                                "text": "•  HOJE: -- R$ 96,40 --  •  01/02/2025:  R$ 98,75<br>•  25/01/2025: R$ 98,78   •  25/01/2025: R$ 98,88",
+                                                                "text": "• 01/02/25: R$ 000,00   • 01/02/25: R$ 000,00<br>• 25/01/25: R$ 000,00   • 25/01/25: R$ 000,00",
                                                                 "fontSize": "30dp",
                                                                 "type": "Text",
                                                                 "height": "320dp",
@@ -206,13 +206,13 @@
                                         "items": [
                                             {
                                                 "type": "Container",
-                                                "paddingTop": "0",
+                                                "paddingTop": "8",
                                                 "item": [
                                                     {
                                                         "type": "Image",
-                                                        "source": "https://lh5.googleusercontent.com/d/1-_HOuqzwJ9zqwUCnpuZHy9e90vUfKlHY",
-                                                        "width": "400",
-                                                        "height": "300",
+                                                        "source": "https://graficoapi.duckdns.org:5000/static/grafico-BBAS3.SA-15dias.png",
+                                                        "width": "515",
+                                                        "height": "386.25",
                                                         "scale": "best-fill",
                                                         "alignSelf": "start",
                                                         "borderRadius": "15dp"
@@ -225,17 +225,17 @@
                                                 "fontSize": "28dp",
                                                 "fontWeight": "bold",
                                                 "textAlign": "center",
-                                                "paddingBottom": "10dp",
-                                                "paddingTop": "10"
+                                                "paddingBottom": "2dp",
+                                                "paddingTop": "8"
                                             },
                                             {
                                                 "type": "ScrollView",
-                                                "height": "235dp",
+                                                "height": "180",
                                                 "item": [
                                                     {
                                                         "type": "Text",
-                                                        "text": "05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  96,45<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73<br>05/01/2024:  R$  98,73",
-                                                        "fontSize": "24dp",
+                                                        "text": "05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01:  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01:  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01:  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01:  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01: 00:00  R$  000,00<br>05/01:  R$  000,00<br>05/01:  R$  000,00<br>05/01:  R$  000,00",
+                                                        "fontSize": "20dp",
                                                         "textAlign": "center",
                                                         "style": "textStyleDisplay4",
                                                         "id": "financeHistorico"
