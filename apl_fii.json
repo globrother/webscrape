@@ -111,7 +111,18 @@
                                         "type": "Frame",
                                         "height": "2dp",
                                         "width": "100vw",
-                                        "background": "#879eb4",
+                                        "background": {
+                                            "type": "linear",
+                                            "angle": 90,
+                                            "colorRange": [
+                                                "rgba(135,215,180,0.01)",
+                                                "rgb(0,185,85)",
+                                                "rgb(0,125,185)",
+                                                "rgba(205,0,255,0.8)",
+                                                "rgba(255,150,0,0.8)",
+                                                "rgba(135,215,180,0.01)"
+                                            ]
+                                        },
                                         "position": "absolute",
                                         "bottom": 0
                                     }
@@ -167,9 +178,17 @@
                                                     },
                                                     {
                                                         "type": "Frame",
-                                                        "height": "2dp",
                                                         "width": "100%",
-                                                        "background": "#879eb4"
+                                                        "height": "2dp",
+                                                        "background": {
+                                                            "type": "linear",
+                                                            "angle": 90,
+                                                            "colorRange": [
+                                                                "rgba(175,205,215,1)",
+                                                                "white",
+                                                                "rgba(175,205,215,0.08)"
+                                                            ]
+                                                        }
                                                     },
                                                     {
                                                         "type": "Container",
@@ -188,7 +207,7 @@
                                                             },
                                                             {
                                                                 "text": "${dados_update.hist_alert}",
-                                                                "fontSize": "30dp",
+                                                                "fontSize": "29dp",
                                                                 "type": "Text",
                                                                 "height": "320dp",
                                                                 "paddingBottom": "12dp",
@@ -230,15 +249,65 @@
                                             },
                                             {
                                                 "type": "ScrollView",
-                                                "height": "180",
+                                                "height": "160",
                                                 "item": [
                                                     {
-                                                        "type": "Text",
-                                                        "text": "${dados_update.hist_text_ativo}",
-                                                        "fontSize": "20dp",
-                                                        "textAlign": "center",
-                                                        "style": "textStyleDisplay4",
-                                                        "id": "financeHistorico"
+                                                        "type": "Container",
+                                                        "direction": "row",
+                                                        "alignItems": "center",
+                                                        "items": [
+                                                            {
+                                                                "type": "Sequence",
+                                                                "width": "48.5%",
+                                                                "height": "160dp",
+                                                                "data": "${dados_update.hist_text_ativo_col1}",
+                                                                "items": [
+                                                                    {
+                                                                    "type": "Text",
+                                                                    "text": "${data}",
+                                                                    "fontSize": "20dp",
+                                                                    "textAlign": "center",
+                                                                    "style": "textStyleDisplay4"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "Sequence",
+                                                                "width": "3%",
+                                                                "height": "100%",
+                                                                "spacing": 10,
+                                                                "items": [
+                                                                    {
+                                                                        "type": "Frame",
+                                                                        "width": "2dp",
+                                                                        "height": "100%",
+                                                                        "background": {
+                                                                            "type": "linear",
+                                                                            "colorRange": [
+                                                                                "rgba(175,205,215,0.01)",
+                                                                                "white",
+                                                                                "rgba(175,205,215,0.01)"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "Sequence",
+                                                                "width": "48.5%",
+                                                                "height": "160dp",
+                                                                "data": "${dados_update.hist_text_ativo_col2}",
+                                                                "items": [
+                                                                    {
+                                                                    "type": "Text",
+                                                                    "text": "${data}",
+                                                                    "fontSize": "20dp",
+                                                                    "textAlign": "center",
+                                                                    "style": "textStyleDisplay4"
+                                                                    }                                                                    
+                                                                ]
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
