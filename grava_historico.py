@@ -202,6 +202,7 @@ def gerar_texto_historico(historico, aux):
         return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
         logger.info("\n Histórico de fundo gerado\n")
         #return "<br>".join(linhas)
         return linhas
