@@ -133,7 +133,7 @@
                                 "width": "100vw",
                                 "paddingTop": "5dp",
                                 "paddingLeft": "15dp",
-                                "paddingRight": "15dp",
+                                "paddingRight": "10dp",
                                 "paddingBottom": "20dp",
                                 "items": [
                                     {
