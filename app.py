@@ -269,10 +269,11 @@ def web_scrape(fundo):
     voz_fundo = voz
     voz = comparador(historico, cota_atual, voz_fundo)
 
-    logging.info(f"hist_text_FII é: {hist_text_fii}")
+    #logging.info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
     hist_text_ativo_col1 = historico[:meio]  # Primeira metade da lista
     hist_text_ativo_col2 = historico[meio:]   # Segunda metade da lista
+    logging.info(f"hist_text_FII é: {hist_text_ativo_col2}")
 
     dados_info = {
         "card_ativo": card_fii,
