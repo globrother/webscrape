@@ -121,11 +121,11 @@
                                 "scrollDirection": "vertical",
                                 "childWidths": [
                                     "720dp",
-                                    "515dp"
+                                    "530dp"
                                 ],
                                 "childWidth": [
                                     "720dp",
-                                    "515dp"
+                                    "530dp"
                                 ],
                                 "type": "GridSequence",
                                 "childHeight": "100%",
@@ -211,8 +211,8 @@
                                                     {
                                                         "type": "Image",
                                                         "source": "${dados_update.url_grafico}",
-                                                        "width": "515",
-                                                        "height": "386.25",
+                                                        "width": "530",
+                                                        "height": "397.5",
                                                         "scale": "best-fill",
                                                         "alignSelf": "start",
                                                         "borderRadius": "15dp"
