@@ -271,9 +271,10 @@ def web_scrape(fundo):
 
     #logging.info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
-    hist_text_ativo_col1 = historico[:meio]  # Primeira metade da lista
-    hist_text_ativo_col2 = historico[meio:]   # Segunda metade da lista
-    logging.info(f"hist_text_FII é: {hist_text_ativo_col2}")
+    logging.info(f"A Metade é: {meio}")
+    hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
+    hist_text_ativo_col2 = hist_text_fii[meio:]   # Segunda metade da lista
+    logging.info(f"COl2 é: {hist_text_ativo_col2}")
 
     dados_info = {
         "card_ativo": card_fii,
