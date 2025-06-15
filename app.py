@@ -380,9 +380,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
-# ADICIONANDO NOVO ATIVO AO MAPEAMENTO
-
-
+# ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class NovoAtivoUserEventHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
@@ -477,14 +475,13 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         # Feedback imediato e avanço de tela
         fundo = state_fund_mapping[novo_state_id]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-        import json
         logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
-        session_attr["manual_selection"] = True
-        session_attr["state"] = 1
+        session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
+        session_attr["state"] = 1 # Estado da Sessão para primeira página
 
         handler_input.response_builder.speak(
-            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='700ms'/>{voz}"
+            f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='1s'/>{voz}"
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",  # token para exibição de fundos
@@ -500,9 +497,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-# HANDLER PARA ADICIONAR NOVO ATIVO
-
-
+# HANDLER PARA ADICIONAR NOVO ATIVO (carregando página de entrata de dados)
 class AddAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("AddAtivoIntent")(handler_input)
@@ -537,14 +532,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Verifica se é um evento de navegação automática
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
-            logging.info(
-                f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
+            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
             if arguments and arguments[0] == "autoNavigate":
-                logging.info(
-                    "DynamicScreenHandler acionado para evento autoNavigate.")
+                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
                 return True
-            logging.info(
-                "DynamicScreenHandler ignorado para eventos de toque.")
+            
+            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
             return False
         return False  # Nunca aceite IntentRequest!
 
@@ -558,7 +551,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
         logging.info("=== DynamicScreenHandler.handle ===")
         logging.info(f"ativos_ids: {ativos_ids}")
-        logging.info(f"exibir_favoritos: {exibir_favoritos}")
+        #logging.info(f"exibir_favoritos: {exibir_favoritos}")
         logging.info(f"current_state: {current_state}")
         logging.info(f"session_attr: {session_attr}")
 
@@ -590,15 +583,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         if next_idx is not None:
             session_attr["state"] = ativos_ids[next_idx]
-            logging.info(
-                f"Avançando para o próximo state: {session_attr['state']}")
+            logging.info(f"Avançando para o próximo state: {session_attr['state']}")
         else:
             session_attr["state"] = None
             logging.info("Último ativo exibido, encerrando ciclo.")
             logging.info(f"Novo state definido: {session_attr['state']}")
-
-        # Atualize o estado para o próximo
-        # session_attr["state"] = next_state
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
@@ -607,7 +596,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 document=apl_document,
                 datasources={
                     "dados_update": {
-                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                     }
                 }
             )
@@ -634,7 +623,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     token="mainScreenToken",
                     commands=[
                         SendEventCommand(
-                            # Aguarda 5 milisegundos antes de navegar
+                            # Aguarda 10 milisegundos antes de navegar
                             arguments=["autoNavigate"], delay=10000
                         )
                     ]
@@ -775,8 +764,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # Classe para criar um alerta de preço.
-
-
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -808,13 +795,10 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                         get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    logging.info(
-                        f"Valor recebido para valor do alerta: {alert_value}")
-                    logging.info(
-                        f"Valor recebido para centavos: {alert_value_cents}")
+                    logging.info(f"Valor recebido para valor do alerta: {alert_value}")
+                    logging.info(f"Valor recebido para centavos: {alert_value_cents}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(
-                        f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
+                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
                 else:
                     session_attr["AlertValue"] = None
@@ -828,6 +812,21 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(
                     speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
+            
+            elif not fund_name:
+                session_attr["alert_in_progress"] = True
+                apl_document = _load_apl_document("apl_add_alerta.json")
+                # Exibir APL de entrada manual
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="inputScreenToken",
+                        document=apl_document  # O APL de entrada manual criado acima
+                    )
+                )
+
+                speech_text = "Não consegui entender o fundo. Digite manualmente na tela."
+                handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
 
             # Passo 3: Cria o alerta se tudo estiver preenchido
@@ -875,7 +874,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
 # ============================================================================================
-
 
 class TouchHandler(AbstractRequestHandler):
     def __init__(self, state_fund_mapping):

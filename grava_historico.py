@@ -208,7 +208,7 @@ def gerar_texto_historico(historico, aux):
         #return "<br>".join(linhas)
         return linhas
 
-
+#::--> CARREGAR LISTA DE ATIVOS - USA CACHE EM ATÉ 10 MINUTOS <--::
 # Variáveis globais para cache
 _ativos_cache = None
 _ativos_cache_time = 0
@@ -231,7 +231,7 @@ def carregar_ativos():
     }
     response = requests.get(url, headers=headers)
     data = response.json()
-    print("DEBUG resposta Back4App:", data)  # ou logger.info(...)
+    logger.info("DEBUG resposta Back4App:", data)  # ou logger.info(...)
     ativos = data['results']
     state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['ativo']}
     # Atualiza o cache
@@ -242,6 +242,7 @@ def carregar_ativos():
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
 
+#::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
 def adicionar_ativo(ativo_dict):
     url = "https://parseapi.back4app.com/classes/map_ativo"
     headers = {
