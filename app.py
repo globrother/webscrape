@@ -274,7 +274,7 @@ def web_scrape(fundo):
     logging.info(f"A Metade é: {meio}")
     hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
     hist_text_ativo_col2 = hist_text_fii[meio:]   # Segunda metade da lista
-    logging.info(f"COl2 é: {hist_text_ativo_col2}")
+    #logging.info(f"COl2 é: {hist_text_ativo_col2}")
 
     dados_info = {
         "card_ativo": card_fii,
@@ -815,6 +815,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             
             elif not fund_name:
                 session_attr["alert_in_progress"] = True
+                logging.info("Apl alerta AQUI")
                 apl_document = _load_apl_document("apl_add_alerta.json")
                 # Exibir APL de entrada manual
                 handler_input.response_builder.add_directive(
