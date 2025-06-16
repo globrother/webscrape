@@ -804,21 +804,14 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
                     session_attr["alert_in_progress"] = True
+                    
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
+                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                handler_input.response_builder.speak(
+                    speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
-                logging.info("Apl alerta AQUI")
-                apl_document = _load_apl_document("apl_add_alerta.json")
-                # Exibir APL de entrada manual
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl_document  # O APL de entrada manual criado acima
-                    )
-                )
-
-                speech_text = "Não consegui entender o fundo. Digite manualmente na tela."
-                handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
 
 
