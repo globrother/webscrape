@@ -512,6 +512,155 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
+# Classe para criar um alerta de preço.
+class CreatePriceAlertIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        handler_input.response_builder.add_directive(
+            get_dynamic_entities_directive())
+
+        try:
+            # Coleta os slots
+            slots = handler_input.request_envelope.request.intent.slots
+            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
+            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
+            fund_name = slots.get("fundName").value if slots.get("fundName") else None
+
+            """# Nova verificação para garantir que "para" não afete a interpretação do fundo
+            if fund_name:
+                fund_name = fund_name.strip().lower()
+                if fund_name.startswith("para"):
+                    logging.info(f"FundName pode estar mal interpretado: {fund_name}")
+                    speech_text = "Desculpe, não entendi o nome do fundo corretamente. Por favor, diga apenas o nome do fundo."
+                    reprompt_text = "Por favor, diga somente o nome do fundo para o alerta."
+                    handler_input.response_builder.speak(speech_text).ask(reprompt_text)
+                    return handler_input.response_builder.response
+            """
+            # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
+            allowed_funds = [remover_sufixo_numerico(v).lower()
+                             for v in state_fund_mapping.values()]
+
+            # Passo 1: Pergunta o valor do alerta se ainda não foi informado
+            if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
+                logging.info("Criando Novo Alerta")
+                if alert_value and alert_value_cents:
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    handler_input.response_builder.add_directive(
+                        get_dynamic_entities_directive())
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    logging.info(f"Valor recebido para fund_name: {fund_name}")
+                    logging.info(f"Valor recebido para valor do alerta: {alert_value}")
+                    logging.info(f"Valor recebido para centavos: {alert_value_cents}")
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
+                    session_attr["alert_in_progress"] = True
+                else:
+                    session_attr["AlertValue"] = None
+                    speech_text = "Qual é o valor do alerta em reais e centavos?"
+                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+                    session_attr["alert_in_progress"] = True
+
+            # Passo 2: Pergunta o nome do fundo
+            elif not fund_name:
+                logging.info("FundName não foi capturado corretamente. Abrindo tela de entrada manual.")
+
+                session_attr["alert_in_progress"] = True  # Mantém alerta ativo
+
+                # Carregar APL de entrada manual
+                apl_document = _load_apl_document("apl_add_alerta.json")
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="inputScreenToken",
+                        document=apl_document
+                    )
+                )
+
+                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
+                handler_input.response_builder.speak(speech_text)
+                return handler_input.response_builder.response
+
+            # Passo 3: Cria o alerta se tudo estiver preenchido
+            elif fund_name and fund_name.strip().lower() in allowed_funds:
+                return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
+
+            elif fund_name and fund_name.lower() not in allowed_funds:
+                logging.info(f"\n APL ALERTA: Fundo não reconhecido ({fund_name})")
+                session_attr["alert_in_progress"] = True
+
+                # Carregar APL para entrada manual do fundo
+                apl_document = _load_apl_document("apl_add_alerta.json")
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="inputScreenToken",
+                        document=apl_document
+                    )
+                )
+
+                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
+                handler_input.response_builder.speak(speech_text)
+                return handler_input.response_builder.response
+
+            
+            else:
+                fundos_disponiveis = ", ".join(allowed_funds)
+                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
+                logging.info(f"Valor recebido para fund_name: {fund_name}")
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                handler_input.response_builder.speak(
+                    speech_text).ask(reprompt_text)
+                session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
+
+            handler_input.response_builder.speak(speech_text)
+            if reprompt_text:
+                handler_input.response_builder.ask(reprompt_text)
+
+            return handler_input.response_builder.response
+
+        except Exception as e:
+            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
+            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response
+    
+    def processar_cadastro(self, handler_input):
+        """ Método reutilizável para salvar o alerta de preço """
+        session_attr = handler_input.attributes_manager.session_attributes
+        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
+        # Recupera valores do slot ou entrada manual (APL)
+        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
+        fund_name = session_attr.get("fundName") or (slots.get("fundName").value if slots.get("fundName") else None)
+
+        if not fund_name or not alert_value:
+            speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response
+
+        session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+        logging.info(f"Todos os slots recebidos: {slots}")
+        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+
+        logger.info('\n Começar a gravar\n')
+        sufixo = f"alert_value_{fund_name.lower()}"
+        valor = f"R$ {alert_value}"
+        aux = "alert"
+        grava_historico.gravar_historico(sufixo, valor)
+        historico = grava_historico.ler_historico(sufixo)
+        hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+
+        logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
+        logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+
+        session_attr["AlertValue"] = None  # Reset para uso futuro
+        session_attr["alert_in_progress"] = False
+
+        handler_input.response_builder.speak(speech_text)
+        return handler_input.response_builder.response
+# ============================================================================================
+
 # HANDLER PARA TRATAR ENTRADA DE DADOS DO ALERTA DEPREÇOS
 class AlertaInputHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -840,154 +989,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 """
-# Classe para criar um alerta de preço.
-class CreatePriceAlertIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        handler_input.response_builder.add_directive(
-            get_dynamic_entities_directive())
-
-        try:
-            # Coleta os slots
-            slots = handler_input.request_envelope.request.intent.slots
-            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
-            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-
-            """# Nova verificação para garantir que "para" não afete a interpretação do fundo
-            if fund_name:
-                fund_name = fund_name.strip().lower()
-                if fund_name.startswith("para"):
-                    logging.info(f"FundName pode estar mal interpretado: {fund_name}")
-                    speech_text = "Desculpe, não entendi o nome do fundo corretamente. Por favor, diga apenas o nome do fundo."
-                    reprompt_text = "Por favor, diga somente o nome do fundo para o alerta."
-                    handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                    return handler_input.response_builder.response
-            """
-            # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-            allowed_funds = [remover_sufixo_numerico(v).lower()
-                             for v in state_fund_mapping.values()]
-
-            # Passo 1: Pergunta o valor do alerta se ainda não foi informado
-            if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
-                logging.info("Criando Novo Alerta")
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    handler_input.response_builder.add_directive(
-                        get_dynamic_entities_directive())
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    logging.info(f"Valor recebido para valor do alerta: {alert_value}")
-                    logging.info(f"Valor recebido para centavos: {alert_value_cents}")
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
-                    session_attr["alert_in_progress"] = True
-                else:
-                    session_attr["AlertValue"] = None
-                    speech_text = "Qual é o valor do alerta em reais e centavos?"
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-                    session_attr["alert_in_progress"] = True
-
-            # Passo 2: Pergunta o nome do fundo
-            elif not fund_name:
-                logging.info("FundName não foi capturado corretamente. Abrindo tela de entrada manual.")
-
-                session_attr["alert_in_progress"] = True  # Mantém alerta ativo
-
-                # 🔹 Carregar APL de entrada manual
-                apl_document = _load_apl_document("apl_add_alerta.json")
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl_document
-                    )
-                )
-
-                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
-                handler_input.response_builder.speak(speech_text)
-                return handler_input.response_builder.response
-
-            # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name and fund_name.strip().lower() in allowed_funds:
-                return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
-
-            elif fund_name and fund_name.lower() not in allowed_funds:
-                logging.info(f"\n APL ALERTA: Fundo não reconhecido ({fund_name})")
-                session_attr["alert_in_progress"] = True
-
-                # Carregar APL para entrada manual do fundo
-                apl_document = _load_apl_document("apl_add_alerta.json")
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl_document
-                    )
-                )
-
-                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
-                handler_input.response_builder.speak(speech_text)
-                return handler_input.response_builder.response
-
-            
-            else:
-                fundos_disponiveis = ", ".join(allowed_funds)
-                speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
-                logging.info(f"Valor recebido para fund_name: {fund_name}")
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(
-                    speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
-                return handler_input.response_builder.response
-
-            handler_input.response_builder.speak(speech_text)
-            if reprompt_text:
-                handler_input.response_builder.ask(reprompt_text)
-
-            return handler_input.response_builder.response
-
-        except Exception as e:
-            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
-    
-    def processar_cadastro(self, handler_input):
-        """ Método reutilizável para salvar o alerta de preço """
-        session_attr = handler_input.attributes_manager.session_attributes
-        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-        # Recupera valores do slot ou entrada manual (APL)
-        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
-        fund_name = session_attr.get("fundName") or (slots.get("fundName").value if slots.get("fundName") else None)
-
-        if not fund_name or not alert_value:
-            speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
-
-        session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-        logging.info(f"Todos os slots recebidos: {slots}")
-        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-
-        logger.info('\n Começar a gravar\n')
-        sufixo = f"alert_value_{fund_name.lower()}"
-        valor = f"R$ {alert_value}"
-        aux = "alert"
-        grava_historico.gravar_historico(sufixo, valor)
-        historico = grava_historico.ler_historico(sufixo)
-        hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
-
-        logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-        logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-
-        session_attr["AlertValue"] = None  # Reset para uso futuro
-        session_attr["alert_in_progress"] = False
-
-        handler_input.response_builder.speak(speech_text)
-        return handler_input.response_builder.response
-# ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
     def __init__(self, state_fund_mapping):
