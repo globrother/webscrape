@@ -851,12 +851,19 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         try:
             # Coleta os slots
             slots = handler_input.request_envelope.request.intent.slots
-            alert_value = slots.get("alertValue").value if slots.get(
-                "alertValue") else None
-            alert_value_cents = slots.get("alertValueCents").value if slots.get(
-                "alertValueCents") else None
-            fund_name = slots.get("fundName").value if slots.get(
-                "fundName") else None
+            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
+            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
+            fund_name = slots.get("fundName").value if slots.get("fundName") else None
+
+            # Nova verificação para garantir que "para" não afete a interpretação do fundo
+            if fund_name:
+                fund_name = fund_name.strip().lower()
+                if fund_name.startswith("para"):
+                    logging.info(f"FundName pode estar mal interpretado: {fund_name}")
+                    speech_text = "Desculpe, não entendi o nome do fundo corretamente. Por favor, diga apenas o nome do fundo."
+                    reprompt_text = "Por favor, diga somente o nome do fundo para o alerta."
+                    handler_input.response_builder.speak(speech_text).ask(reprompt_text)
+                    return handler_input.response_builder.response
 
             # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
             allowed_funds = [remover_sufixo_numerico(v).lower()
@@ -992,8 +999,6 @@ class TouchHandler(AbstractRequestHandler):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
-            if arguments and arguments[0] == "touch":
-                logging.info("TouchHandler acionado para evento de toque.")
             
             # Filtrar apenas eventos de toque
             return arguments and arguments[0] == "touch"
