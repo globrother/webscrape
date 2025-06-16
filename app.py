@@ -519,8 +519,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        handler_input.response_builder.add_directive(
-            get_dynamic_entities_directive())
+        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        session_attr["contexto_atual"] = "alerta_preco"  # Definido contexto do Handler
 
         try:
             # Coleta os slots
@@ -540,8 +540,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     return handler_input.response_builder.response
             """
             # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
-            allowed_funds = [remover_sufixo_numerico(v).lower()
-                             for v in state_fund_mapping.values()]
+            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
@@ -1088,6 +1087,42 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        return is_intent_name("AMAZON.FallbackIntent")(handler_input)
+
+    def handle(self, handler_input):
+        logging.info("FallbackIntent acionado. Redirecionando conforme o contexto.")
+
+        session_attr = handler_input.attributes_manager.session_attributes
+        contexto_atual = session_attr.get("contexto_atual", "desconhecido")
+
+        if contexto_atual == "alerta_preco":
+            apl_document = _load_apl_document("apl_add_alerta.json")
+            speech_text = "Desculpe não entendi o nome do fundo. Por favor,  digite manualmente na tela."
+        
+        elif contexto_atual == "cadastro_ativo":
+            apl_document = _load_apl_document("apl_add_ativo.json")
+            speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
+
+        elif contexto_atual == "auto_navegacao":
+            speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
+            apl_document = None  # 🔹 Não precisa abrir um APL específico
+
+        else:
+            speech_text = "Não consegui entender sua solicitação. Você pode tentar novamente ou encerrar a Skill."
+
+        response_builder = handler_input.response_builder.speak(speech_text).set_should_end_session(False)
+
+        if apl_document:
+            response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="inputScreenToken",
+                    document=apl_document
+                )
+            )
+
+        return response_builder.response
+
+    """def can_handle(self, handler_input):
         return is_request_type("IntentRequest")(handler_input) and \
             handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent"
 
@@ -1101,7 +1136,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
         # Não altere o estado e não forneça resposta audível
         handler_input.response_builder.set_should_end_session(False)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.response"""
 # ============================================================================================
 
 
