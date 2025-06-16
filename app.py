@@ -804,7 +804,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
                     session_attr["alert_in_progress"] = True
-                    
+
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
                 speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
@@ -833,13 +833,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     historico, aux)
 
                 logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                logging.info(
-                    f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+                logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
 
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
 
-            elif not fund_name and fund_name.strip().lower() in allowed_funds:
+            elif not fund_name or fund_name.strip().lower() in allowed_funds:
                 session_attr["alert_in_progress"] = True
                 apl_document = _load_apl_document("apl_add_alerta.json")
                 # Exibir APL de entrada manual
