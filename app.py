@@ -857,7 +857,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
 
-            # Nova verificação para garantir que "para" não afete a interpretação do fundo
+            """# Nova verificação para garantir que "para" não afete a interpretação do fundo
             if fund_name:
                 fund_name = fund_name.strip().lower()
                 if fund_name.startswith("para"):
@@ -866,7 +866,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     reprompt_text = "Por favor, diga somente o nome do fundo para o alerta."
                     handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                     return handler_input.response_builder.response
-
+            """
             # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
             allowed_funds = [remover_sufixo_numerico(v).lower()
                              for v in state_fund_mapping.values()]
@@ -893,10 +893,21 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
+                logging.info("FundName não foi capturado corretamente. Abrindo tela de entrada manual.")
+
+                session_attr["alert_in_progress"] = True  # Mantém alerta ativo
+
+                # 🔹 Carregar APL de entrada manual
+                apl_document = _load_apl_document("apl_add_alerta.json")
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="inputScreenToken",
+                        document=apl_document
+                    )
+                )
+
+                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
+                handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
 
             # Passo 3: Cria o alerta se tudo estiver preenchido
