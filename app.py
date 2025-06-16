@@ -554,7 +554,7 @@ class AlertaInputHandler(AbstractRequestHandler):
             fundo = state_fund_mapping[1]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
-                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
+                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
             )
             """.add_directive(
                 RenderDocumentDirective(
@@ -586,7 +586,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
             
             else:
-                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # 🔹 Reutiliza a lógica de gravação
+                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
 
 
 class DynamicScreenHandler(AbstractRequestHandler):
@@ -864,6 +864,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
+                logging.info("Criando Novo Alerta")
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     handler_input.response_builder.add_directive(
@@ -891,7 +892,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # Passo 3: Cria o alerta se tudo estiver preenchido
             elif fund_name and fund_name.strip().lower() in allowed_funds:
-                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Chama a lógica de gravação
+                return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
 
             elif fund_name and fund_name.lower() not in allowed_funds:
                 logging.info(f"\n APL ALERTA: Fundo não reconhecido ({fund_name})")
@@ -926,17 +927,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.ask(reprompt_text)
 
             return handler_input.response_builder.response
-        
-        
-            """
-            elif not fund_name:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(
-                    speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
-                return handler_input.response_builder.response
-            """
 
         except Exception as e:
             logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
