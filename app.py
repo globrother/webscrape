@@ -992,8 +992,11 @@ class TouchHandler(AbstractRequestHandler):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
+            if arguments and arguments[0] == "touch":
+                logging.info("TouchHandler acionado para evento de toque.")
+                return True
             
-            # 🔹 Filtrar apenas eventos de toque
+            # Filtrar apenas eventos de toque
             return arguments and arguments[0] == "touch"
         
         return False
