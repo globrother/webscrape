@@ -851,6 +851,22 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
+
+            elif not fund_name:
+                session_attr["alert_in_progress"] = True
+                apl_document = _load_apl_document("apl_add_alerta.json")
+                # Exibir APL de entrada manual
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="inputScreenToken",
+                        document=apl_document  # O APL de entrada manual criado acima
+                    )
+                )
+
+                speech_text = "Não consegui entender o fundo. Digite manualmente na tela."
+                handler_input.response_builder.speak(speech_text)
+                return handler_input.response_builder.response
+            
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
                 speech_text = f"Desculpe, o fundo '{fund_name}' não é válido. Os fundos disponíveis são: {fundos_disponiveis}. Por favor, diga novamente."
