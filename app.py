@@ -512,6 +512,82 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
+# HANDLER PARA TRATAR ENTRADA DE DADOS DO ALERTA DEPREÇOS
+class AlertaInputHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            arguments = handler_input.request_envelope.request.arguments
+            return arguments and (
+                arguments[0] == "siglaAlerta" or
+                arguments[0] == "alertaAtivo" or
+                arguments[0] == "confirmarAlerta" or
+                arguments[0] == "cancelarAlerta"
+            )
+        return False
+    
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        arguments = handler_input.request_envelope.request.arguments
+
+        if arguments[0] == "siglaAlerta":
+            session_attr["sigla_alerta"] = arguments[1].strip().lower()
+            speech_text = "Agora, digite o valor ."
+            handler_input.response_builder.speak(speech_text).ask(
+                speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
+
+        if arguments[0] == "valorAlerta":
+            session_attr["valor_alerta"] = arguments[1].strip()
+            speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
+            handler_input.response_builder.speak(speech_text).ask(
+                speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
+
+        if arguments[0] == "cancelarCadastro":
+            session_attr.pop("sigla_alerta", None)
+            session_attr.pop("valor_alerta", None)
+            session_attr["alert_in_progress"] = False
+            session_attr["manual_selection"] = True
+            session_attr["state"] = 2  # ou o state que desejar voltar
+
+            # Volta para o primeiro fundo, ou outro desejado
+            fundo = state_fund_mapping[1]
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            handler_input.response_builder.speak(
+                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
+            )
+            """.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": {
+                            **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                        }
+                    }
+                )
+            ).set_should_end_session(False)"""
+            return handler_input.response_builder.response
+
+        if arguments[0] == "confirmarCadastro":
+            sigla = session_attr.get("sigla_alerta")
+            valor = session_attr.get("valor_alerta")
+            if not sigla or not valor:
+                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
+                    "Por favor, digite novamente.").set_should_end_session(False)
+                return handler_input.response_builder.response
+
+            # Validação: sigla já existe?
+            _, lista_ativos = grava_historico.carregar_ativos()
+            siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
+            if sigla not in siglas_existentes:
+                handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} não está cadastrado! Tente Novamente").set_should_end_session(False)
+                return handler_input.response_builder.response
+            
+            else:
+                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # 🔹 Reutiliza a lógica de gravação
+
 
 class DynamicScreenHandler(AbstractRequestHandler):
     def __init__(self, state_fund_mapping):
@@ -813,29 +889,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
 
-
             # Passo 3: Cria o alerta se tudo estiver preenchido
             elif fund_name and fund_name.strip().lower() in allowed_funds:
-                alert_value = session_attr["AlertValue"]
-                session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-                logging.info(f"Todos os slots recebidos: {slots}")
-                speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-                reprompt_text = None
-
-                logger.info('\n Começar a gravar\n')
-                sufixo = f"alert_value_{fund_name.lower()}"
-                valor = f"R$ {alert_value}"
-                aux = "alert"
-                grava_historico.gravar_historico(sufixo, valor)
-                historico = grava_historico.ler_historico(sufixo)
-                hist_alert_xpml = grava_historico.gerar_texto_historico(
-                    historico, aux)
-
-                logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-                logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
-
-                session_attr["AlertValue"] = None  # Reset para uso futuro
-                session_attr["alert_in_progress"] = False
+                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Chama a lógica de gravação
 
             elif fund_name and fund_name.lower() not in allowed_funds:
                 logging.info(f"\n APL ALERTA: Fundo não reconhecido ({fund_name})")
@@ -850,7 +906,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     )
                 )
 
-                speech_text = "Não consegui entender o fundo. Digite manualmente na tela."
+                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
                 handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
 
@@ -887,6 +943,40 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
+    
+    def processar_cadastro(self, handler_input):
+        """ Método reutilizável para salvar o alerta de preço """
+        session_attr = handler_input.attributes_manager.session_attributes
+        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
+        # Recupera valores do slot ou entrada manual (APL)
+        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
+        fund_name = session_attr.get("fundName") or (slots.get("fundName").value if slots.get("fundName") else None)
+
+        if not fund_name or not alert_value:
+            speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
+            handler_input.response_builder.speak(speech_text)
+            return handler_input.response_builder.response
+
+        session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+        logging.info(f"Todos os slots recebidos: {slots}")
+        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+
+        logger.info('\n Começar a gravar\n')
+        sufixo = f"alert_value_{fund_name.lower()}"
+        valor = f"R$ {alert_value}"
+        aux = "alert"
+        grava_historico.gravar_historico(sufixo, valor)
+        historico = grava_historico.ler_historico(sufixo)
+        hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+
+        logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
+        logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+
+        session_attr["AlertValue"] = None  # Reset para uso futuro
+        session_attr["alert_in_progress"] = False
+
+        handler_input.response_builder.speak(speech_text)
+        return handler_input.response_builder.response
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):

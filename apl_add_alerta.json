@@ -73,7 +73,7 @@
                                     {
                                         "type": "SendEvent",
                                         "arguments": [
-                                            "siglaAtivo",
+                                            "siglaAlerta",
                                             "${event.source.value}"
                                         ]
                                     }
@@ -110,7 +110,7 @@
                                     {
                                         "type": "SendEvent",
                                         "arguments": [
-                                            "alertaAtivo",
+                                            "valorAlerta",
                                             "${event.source.value}"
                                         ]
                                     }
@@ -142,7 +142,7 @@
                                             {
                                                 "type": "SendEvent",
                                                 "arguments": [
-                                                    "confirmarCadastro"
+                                                    "confirmarAlerta"
                                                 ]
                                             }
                                         ],
@@ -176,7 +176,7 @@
                                             {
                                                 "type": "SendEvent",
                                                 "arguments": [
-                                                    "cancelarCadastro"
+                                                    "cancelarAlerta"
                                                 ]
                                             }
                                         ],
