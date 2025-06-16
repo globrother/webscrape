@@ -1104,7 +1104,17 @@ class FallbackIntentHandler(AbstractRequestHandler):
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         logging.info("CatchAllRequestHandler: Verificando solicitação.")
-        return True
+
+        # Permitir APENAS FallbackIntent e ignorar outros IntentRequests
+        if is_request_type("IntentRequest")(handler_input) and \
+                handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
+            logging.info("CatchAllRequestHandler acionado para FallbackIntent.")
+            return True
+        
+        return False  # 🔹 Isso impede que ele capture tudo!
+
+        """logging.info("CatchAllRequestHandler: Verificando solicitação.")
+        return True"""
 
     def handle(self, handler_input):
         # Log para depuração
@@ -1137,11 +1147,11 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         # os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
         return handler_input.response_builder.response
 
-        handler_input.response_builder.speak(
+        """handler_input.response_builder.speak(
             "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
         ).set_should_end_session(False)
         logging.info("\n CatchAllRequestHandler: Mantendo a sessão ativa.\n")
-        return handler_input.response_builder.response
+        return handler_input.response_builder.response"""
 # ============================================================================================
 # ============================================================================================
 
