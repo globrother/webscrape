@@ -597,24 +597,27 @@ class DynamicScreenHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         logging.info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
-        logging.info(
-            f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
+        logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
 
-        # Pausa navegação automática se houve seleção manual ou criação de alerta de preço
-        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
+        # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
+        if is_request_type("IntentRequest")(handler_input):
+            logging.info("DynamicScreenHandler: Rejeitando IntentRequest!")
             return False
 
-        # Verifica se é um evento de navegação automática
+        # Bloqueia navegação se alerta de preço estiver ativo
+        if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
+            logging.info("DynamicScreenHandler: Alertas ativos. Pausando navegação automática.")
+            return False
+
+        # 🔹 Permite apenas eventos de auto-navegação
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
-            logging.info(f"DynamicScreenHandler: Argumentos recebidos: {arguments}")
             if arguments and arguments[0] == "autoNavigate":
                 logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
                 return True
-            
-            logging.info("DynamicScreenHandler ignorado para eventos de toque.")
-            return False
-        return False  # Nunca aceite IntentRequest!
+
+        logging.info("DynamicScreenHandler ignorado para eventos de toque ou intent errado.")
+        return False
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
