@@ -564,12 +564,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["alert_in_progress"] = True
 
             # Passo 2: Pergunta o nome do fundo
-            elif not fund_name:
-                logging.info("FundName não foi capturado corretamente. Abrindo tela de entrada manual.")
+            elif not fund_name or fund_name.lower() not in allowed_funds:
+                logging.info("FundName não foi capturado corretamente. Exibindo tela de entrada manual.")
 
                 session_attr["alert_in_progress"] = True  # Mantém alerta ativo
 
-                # Carregar APL de entrada manual
+                # Carregar APL para entrada manual
                 apl_document = _load_apl_document("apl_add_alerta.json")
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
