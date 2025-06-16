@@ -809,8 +809,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             elif not fund_name:
                 speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
                 reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(
-                    speech_text).ask(reprompt_text)
+                handler_input.response_builder.speak(speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
 
@@ -838,21 +837,23 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
 
-            elif not fund_name or fund_name.lower() in allowed_funds:
-                logging.info(f"\n APL ALERTa: {fund_name}")
+            elif fund_name and fund_name.lower() not in allowed_funds:
+                logging.info(f"\n APL ALERTA: Fundo não reconhecido ({fund_name})")
                 session_attr["alert_in_progress"] = True
+
+                # Carregar APL para entrada manual do fundo
                 apl_document = _load_apl_document("apl_add_alerta.json")
-                # Exibir APL de entrada manual
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="inputScreenToken",
-                        document=apl_document  # O APL de entrada manual criado acima
+                        document=apl_document
                     )
                 )
 
                 speech_text = "Não consegui entender o fundo. Digite manualmente na tela."
                 handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
+
             
             else:
                 fundos_disponiveis = ", ".join(allowed_funds)
