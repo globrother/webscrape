@@ -691,7 +691,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
 
-        if arguments[0] == "cancelarCadastro":
+        if arguments[0] == "cancelarAlerta":
             session_attr.pop("sigla_alerta", None)
             session_attr.pop("valor_alerta", None)
             session_attr["alert_in_progress"] = False
@@ -717,7 +717,7 @@ class AlertaInputHandler(AbstractRequestHandler):
             ).set_should_end_session(False)"""
             return handler_input.response_builder.response
 
-        if arguments[0] == "confirmarCadastro":
+        if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
             valor = session_attr.get("valor_alerta")
             if not sigla or not valor:
@@ -1083,7 +1083,6 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # ============================================================================================
-
 
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
