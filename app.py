@@ -806,14 +806,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["alert_in_progress"] = True
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name:
-                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
-                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                handler_input.response_builder.speak(
-                    speech_text).ask(reprompt_text)
-                session_attr["alert_in_progress"] = True
-                return handler_input.response_builder.response
-            
-            elif not fund_name:
                 session_attr["alert_in_progress"] = True
                 logging.info("Apl alerta AQUI")
                 apl_document = _load_apl_document("apl_add_alerta.json")
@@ -829,8 +821,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(speech_text)
                 return handler_input.response_builder.response
 
+
             # Passo 3: Cria o alerta se tudo estiver preenchido
-            elif fund_name and fund_name.lower() in allowed_funds:
+            elif fund_name and fund_name.strip().lower() in allowed_funds:
                 alert_value = session_attr["AlertValue"]
                 session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
                 logging.info(f"Todos os slots recebidos: {slots}")
@@ -853,7 +846,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
 
-            elif not fund_name and fund_name.lower() in allowed_funds:
+            elif not fund_name and fund_name.strip().lower() in allowed_funds:
                 session_attr["alert_in_progress"] = True
                 apl_document = _load_apl_document("apl_add_alerta.json")
                 # Exibir APL de entrada manual
@@ -883,6 +876,17 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.ask(reprompt_text)
 
             return handler_input.response_builder.response
+        
+        
+            """
+            elif not fund_name:
+                speech_text = "Desculpe, não entendi o nome do fundo. Por favor, diga novamente."
+                reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                handler_input.response_builder.speak(
+                    speech_text).ask(reprompt_text)
+                session_attr["alert_in_progress"] = True
+                return handler_input.response_builder.response
+            """
 
         except Exception as e:
             logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
