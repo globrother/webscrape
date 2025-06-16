@@ -667,7 +667,7 @@ class AlertaInputHandler(AbstractRequestHandler):
             arguments = handler_input.request_envelope.request.arguments
             return arguments and (
                 arguments[0] == "siglaAlerta" or
-                arguments[0] == "alertaAtivo" or
+                arguments[0] == "valorAlerta" or
                 arguments[0] == "confirmarAlerta" or
                 arguments[0] == "cancelarAlerta"
             )
@@ -697,12 +697,12 @@ class AlertaInputHandler(AbstractRequestHandler):
             session_attr.pop("sigla_alerta", None)
             session_attr.pop("valor_alerta", None)
             session_attr["alert_in_progress"] = False
-            session_attr["manual_selection"] = True
-            session_attr["state"] = 2  # ou o state que desejar voltar
+            #session_attr["manual_selection"] = True
+            #session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_fund_mapping[1]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            #fundo = state_fund_mapping[1]
+            #dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
             )
