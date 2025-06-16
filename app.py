@@ -718,12 +718,23 @@ class AlertaInputHandler(AbstractRequestHandler):
                 )
             ).set_should_end_session(False)"""
             return handler_input.response_builder.response
+        
+        if not sigla or not valor:
+            logging.info("Erro: Sigla ou Valor do alerta estão vazios. Pedindo nova entrada.")
+
+            speech_text = "Erro ao cadastrar alerta. Certifique-se de preencher os campos corretamente."
+            reprompt_text = "Digite novamente os valores corretamente."
+            
+            handler_input.response_builder.speak(speech_text).ask(reprompt_text).set_should_end_session(False)
+            return handler_input.response_builder.response
+
 
         if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
             valor = session_attr.get("valor_alerta")
             logging.info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
             if not sigla or not valor:
+                logging.info("Erro ao cadastrar Ativo")
                 handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
@@ -737,7 +748,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
             
             else:
-                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
+                return self.processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
 
 
 class DynamicScreenHandler(AbstractRequestHandler):
