@@ -685,7 +685,9 @@ class AlertaInputHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 
         if arguments[0] == "valorAlerta":
-            session_attr["valor_alerta"] = arguments[1].strip()
+            session_attr["valor_alerta"] = arguments[1]
+            valor = session_attr.get("valor_alerta")
+            logging.info(f"O valor de Sigla e Valor são: {valor}")
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
