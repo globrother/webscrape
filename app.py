@@ -838,7 +838,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 session_attr["AlertValue"] = None  # Reset para uso futuro
                 session_attr["alert_in_progress"] = False
 
-            elif not fund_name or fund_name.strip().lower() in allowed_funds:
+            elif not fund_name or fund_name.lower() in allowed_funds:
+                logging.info(f"\n APL ALERTa: {fund_name}")
                 session_attr["alert_in_progress"] = True
                 apl_document = _load_apl_document("apl_add_alerta.json")
                 # Exibir APL de entrada manual
