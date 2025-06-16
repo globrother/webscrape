@@ -720,6 +720,7 @@ class AlertaInputHandler(AbstractRequestHandler):
         if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
             valor = session_attr.get("valor_alerta")
+            logging.info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
             if not sigla or not valor:
                 handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
