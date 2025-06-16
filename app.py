@@ -721,8 +721,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # Classe para mostrar um fundo solicitado
-
-
+"""
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_intent_name("SelectFundIntent")(handler_input) or \
@@ -840,7 +839,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
 # ============================================================================================
-
+"""
 # Classe para criar um alerta de preço.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
