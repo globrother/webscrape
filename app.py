@@ -630,8 +630,17 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
         # Recupera valores do slot ou entrada manual (APL)
-        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
         fund_name = session_attr.get("fundName") or (slots.get("fundName").value if slots.get("fundName") else None)
+        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
+
+        # Primeiro, recuperar os valores da sessão
+        fund_name = session_attr.get("sigla_alerta")
+        alert_value = session_attr.get("valor_alerta")
+
+        # Se vier vazio, tentar pegar do slot (caso tenha sido falado por voz)
+        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
+        fund_name = fund_name or (slots.get("fundName").value if slots.get("fundName") else None)
+        alert_value = alert_value or (slots.get("alertValue").value if slots.get("alertValue") else None)
 
         if not fund_name or not alert_value:
             speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
@@ -697,16 +706,15 @@ class AlertaInputHandler(AbstractRequestHandler):
             session_attr.pop("sigla_alerta", None)
             session_attr.pop("valor_alerta", None)
             session_attr["alert_in_progress"] = False
-            #session_attr["manual_selection"] = True
-            #session_attr["state"] = 2  # ou o state que desejar voltar
+            session_attr["manual_selection"] = True
+            session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            #fundo = state_fund_mapping[1]
-            #dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            fundo = state_fund_mapping[1]
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
-            )
-            """.add_directive(
+            ).add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",
                     document=apl_document,
@@ -716,7 +724,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                         }
                     }
                 )
-            ).set_should_end_session(False)"""
+            ).set_should_end_session(False)
             return handler_input.response_builder.response
 
 
