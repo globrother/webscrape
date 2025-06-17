@@ -529,17 +529,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
 
-            """# Nova verificação para garantir que "para" não afete a interpretação do fundo
-            if fund_name:
-                fund_name = fund_name.strip().lower()
-                if fund_name.startswith("para"):
-                    logging.info(f"FundName pode estar mal interpretado: {fund_name}")
-                    speech_text = "Desculpe, não entendi o nome do fundo corretamente. Por favor, diga apenas o nome do fundo."
-                    reprompt_text = "Por favor, diga somente o nome do fundo para o alerta."
-                    handler_input.response_builder.speak(speech_text).ask(reprompt_text)
-                    return handler_input.response_builder.response
-            """
-            # allowed_funds = ["xpml", "mxrf", "xplg", "btlg", "kncr", "knri"]
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
@@ -628,43 +617,43 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def processar_cadastro(self, handler_input):
         """ Método reutilizável para salvar o alerta de preço """
         session_attr = handler_input.attributes_manager.session_attributes
-        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-        # Recupera valores do slot ou entrada manual (APL)
-        fund_name = session_attr.get("fundName") or (slots.get("fundName").value if slots.get("fundName") else None)
-        alert_value = session_attr.get("AlertValue") or (slots.get("alertValue").value if slots.get("alertValue") else None)
 
-        # Primeiro, recuperar os valores da sessão
+        # Recupera valores da sessão (se vier do APL)
         fund_name = session_attr.get("sigla_alerta")
         alert_value = session_attr.get("valor_alerta")
 
-        # Se vier vazio, tentar pegar do slot (caso tenha sido falado por voz)
-        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-        fund_name = fund_name or (slots.get("fundName").value if slots.get("fundName") else None)
-        alert_value = alert_value or (slots.get("alertValue").value if slots.get("alertValue") else None)
+        # Se os valores ainda estiverem vazios, pega dos slots (caso tenha sido falado por voz)
+        if not fund_name or not alert_value:
+            slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
+            fund_name = fund_name or slots.get("fundName", {}).get("value")
+            alert_value = alert_value or slots.get("alertValue", {}).get("value")
 
+        # Valida se os valores necessários foram capturados
         if not fund_name or not alert_value:
             speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
+            logging.info(f"Erro: fundName={fund_name}, alertValue={alert_value}")
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
-
+        
+        # Salva o alerta na sessão
         session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-        logging.info(f"Todos os slots recebidos: {slots}")
-        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
+        logging.info(f"Alerta criado: Fundo={fund_name}, Valor={alert_value}")
 
-        logger.info('\n Começar a gravar\n')
+        # Grava no histórico
         sufixo = f"alert_value_{fund_name.lower()}"
         valor = f"R$ {alert_value}"
-        aux = "alert"
         grava_historico.gravar_historico(sufixo, valor)
         historico = grava_historico.ler_historico(sufixo)
-        hist_alert_xpml = grava_historico.gerar_texto_historico(historico, aux)
+        hist_alert_xpml = grava_historico.gerar_texto_historico(historico, "alert")
 
-        logging.info(f"\n O Valor Gravado em {fund_name} é: {valor}\n")
-        logging.info(f"\n Histórico de alertas para {fund_name} é: {hist_alert_xpml}\n")
+        logging.info(f"\n Alerta criado: Fundo={fund_name}, Valor={valor}, Histórico={hist_alert_xpml}\n")
 
+        # Reseta a sessão
         session_attr["AlertValue"] = None  # Reset para uso futuro
         session_attr["alert_in_progress"] = False
 
+        # Responde ao usuário
+        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
         handler_input.response_builder.speak(speech_text)
         return handler_input.response_builder.response
 # ============================================================================================
@@ -739,11 +728,12 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            _, lista_ativos = grava_historico.carregar_ativos()
-            siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
-            if sigla not in siglas_existentes:
+            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
+            #_, lista_ativos = grava_historico.carregar_ativos()
+            #siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
+            if sigla and sigla.lower() not in allowed_funds:
                 handler_input.response_builder.speak(
-                    f"O ativo {sigla.upper()} não está cadastrado! Tente Novamente").set_should_end_session(False)
+                    f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
                 return handler_input.response_builder.response
             
             else:
