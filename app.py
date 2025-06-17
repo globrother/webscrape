@@ -718,15 +718,6 @@ class AlertaInputHandler(AbstractRequestHandler):
                 )
             ).set_should_end_session(False)"""
             return handler_input.response_builder.response
-        
-        if not sigla or not valor:
-            logging.info("Erro: Sigla ou Valor do alerta estão vazios. Pedindo nova entrada.")
-
-            speech_text = "Erro ao cadastrar alerta. Certifique-se de preencher os campos corretamente."
-            reprompt_text = "Digite novamente os valores corretamente."
-            
-            handler_input.response_builder.speak(speech_text).ask(reprompt_text).set_should_end_session(False)
-            return handler_input.response_builder.response
 
 
         if arguments[0] == "confirmarAlerta":
@@ -748,7 +739,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
             
             else:
-                return self.processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
+                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
 
 
 class DynamicScreenHandler(AbstractRequestHandler):
@@ -1223,11 +1214,11 @@ def webhook():
     sb = SkillBuilder()
 
     # Inicialize os handlers com card_xpml11
-    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     launch_request_handler = LaunchRequestHandler()
+    create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
+    alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
     novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
-    alerta_input_handler = AlertaInputHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
     touch_handler = TouchHandler(state_fund_mapping)
     #select_fund_intent_handler = SelectFundIntentHandler()
@@ -1238,11 +1229,11 @@ def webhook():
     # go_back_handler = GoBackHandler()
 
     # Adicione os handlers ao SkillBuilder
-    sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(launch_request_handler)
+    sb.add_request_handler(create_price_alert_intent_handler)
+    sb.add_request_handler(alerta_input_handler)
     sb.add_request_handler(add_ativo_intent_handler)
     sb.add_request_handler(novo_ativo_usesevent_handler)
-    sb.add_request_handler(alerta_input_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     #sb.add_request_handler(select_fund_intent_handler)
