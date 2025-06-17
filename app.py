@@ -669,6 +669,16 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     }
                 }
             )
+        ).add_directive(  # AGENDANDO AUTO-NAVEGAÇÃO!
+            ExecuteCommandsDirective(
+                token="mainScreenToken",
+                commands=[
+                    SendEventCommand(
+                        arguments=["autoNavigate"],
+                        delay=5000  # Aguarda 5 segundos antes de continuar a navegação automática
+                    )
+                ]
+            )
         ).set_should_end_session(False)
         return handler_input.response_builder.response
 # ============================================================================================
