@@ -651,10 +651,25 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Reseta a sessão
         session_attr["AlertValue"] = None  # Reset para uso futuro
         session_attr["alert_in_progress"] = False
+        session_attr["manual_selection"] = False
+        session_attr["state"] = 2  # ou o state que desejar voltar
 
-        # Responde ao usuário
-        speech_text = f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}."
-        handler_input.response_builder.speak(speech_text)
+        # Volta para o primeiro fundo, ou outro desejado
+        fundo = state_fund_mapping[1]
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        handler_input.response_builder.speak(
+            f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}. Voltando para a tela inicial. <break time='700ms'/>"
+        ).add_directive(
+            RenderDocumentDirective(
+                token="mainScreenToken",
+                document=apl_document,
+                datasources={
+                    "dados_update": {
+                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
+                    }
+                }
+            )
+        ).set_should_end_session(False)
         return handler_input.response_builder.response
 # ============================================================================================
 
