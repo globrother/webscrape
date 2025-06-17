@@ -739,6 +739,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
             
             else:
+                logging.info("Direcionando para Processar Cadastro...")
                 return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
 
 
