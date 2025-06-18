@@ -741,7 +741,6 @@ class AlertaInputHandler(AbstractRequestHandler):
             ).set_should_end_session(False)
             return handler_input.response_builder.response
 
-
         if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
             valor = session_attr.get("valor_alerta")
@@ -754,8 +753,6 @@ class AlertaInputHandler(AbstractRequestHandler):
 
             # Validação: sigla já existe?
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-            #_, lista_ativos = grava_historico.carregar_ativos()
-            #siglas_existentes = [f['codigo'].lower() for f in lista_ativos]
             if sigla and sigla.lower() not in allowed_funds:
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
@@ -786,7 +783,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             logging.info("DynamicScreenHandler: Alertas ativos. Pausando navegação automática.")
             return False
 
-        # 🔹 Permite apenas eventos de auto-navegação
+        # Permite apenas eventos de auto-navegação
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             if arguments and arguments[0] == "autoNavigate":
@@ -861,14 +858,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if not exibir_favoritos:
             handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
 
-        """# Verifica se é o último estado
-        if next_state is None:
-            logging.info("DynamicScreenHandler: Último fundo exibido. Encerrando a skill após 10 segundos.")
-            handler_input.response_builder.speak(
-                f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
-            )
-            return handler_input.response_builder.set_should_end_session(True).response"""
-
         # Se houver um próximo estado, agende a navegação automática.
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
@@ -878,7 +867,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     token="mainScreenToken",
                     commands=[
                         SendEventCommand(
-                            # Aguarda 10 milisegundos antes de navegar
+                            # Aguarda 10 segundos antes de navegar
                             arguments=["autoNavigate"], delay=10000
                         )
                     ]
