@@ -1317,6 +1317,10 @@ class FallbackIntentHandler(AbstractRequestHandler):
         if contexto_atual == "alerta_preco":
             apl_document = _load_apl_document("apl_add_alerta.json")
             speech_text = "Desculpe não entendi o nome do fundo. Por favor,  digite manualmente na tela."
+
+        elif contexto_atual == "selecao_ativo":
+            apl_document = _load_apl_document("apl_select_ativo.json")
+            speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
         
         elif contexto_atual == "cadastro_ativo":
             apl_document = _load_apl_document("apl_add_ativo.json")
