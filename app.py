@@ -1294,16 +1294,34 @@ class TouchHandler(AbstractRequestHandler):
 
 # ============================================================================================
 
-
 class SessionEndedRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         return is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
-        logging.info("SessionEndedRequestHandler acionado.")
-        # Não faça nada e mantenha a sessão ativa
+        request = handler_input.request_envelope.request
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        logging.info("📌 SessionEndedRequestHandler acionado.")
+
+        # Coleta motivo e detalhes do encerramento
+        reason = getattr(request, "reason", "Motivo não informado")
+        error = getattr(request, "error", None)
+
+        logging.warning(f"⚠️ Motivo do encerramento da sessão: {reason}")
+        if error:
+            logging.error(f"💥 Detalhes do erro: Type={error.type}, Message={error.message}")
+
+        logging.info(f"📦 Atributos de sessão no encerramento: {session_attr}")
+
+        # Você pode usar isso para métricas ou análises futuras
+        if reason == "ERROR" and error:
+            logging.debug("🔧 Erro interno detectado. Pode ter sido uma exceção silenciosa em outro handler.")
+
+        # Mantém a sessão como 'não finalizada', caso algo esteja escutando
         handler_input.response_builder.set_should_end_session(False)
         return handler_input.response_builder.response
+
 
 # ============================================================================================
 
@@ -1315,6 +1333,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         logging.info("FallbackIntent acionado. Redirecionando conforme o contexto.")
+        logging.info(f"Motivo do fim da sessão: {handler_input.request_envelope.request.reason}")
 
         apl_document = None
         session_attr = handler_input.attributes_manager.session_attributes
