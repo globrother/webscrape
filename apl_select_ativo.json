@@ -68,7 +68,7 @@
                                 "hintColor": "#547c8e",
                                 "hintWeight": "100",
                                 "fontSize": "35dp",
-                                "submitKeyType": "next",
+                                "submitKeyType": "done",
                                 "onSubmit": [
                                     {
                                         "type": "SendEvent",
