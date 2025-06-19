@@ -924,11 +924,46 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
             #
             if fund_name and fund_name.strip().lower() in allowed_funds:
-                return self.mostrar_ativo(handler_input)  # Chama a lógica de gravação
+
+                fund_name = fund_name.strip().lower()
+
+                fundo_full = None
+                fundo_state_id = None
+                for state_id, nome in state_fund_mapping.items():
+                    if remover_sufixo_numerico(nome).lower() == fund_name:
+                        fundo_full = nome
+                        fundo_state_id = state_id
+                        break
+
+                if not fundo_full:
+                    handler_input.response_builder.speak(
+                        f"Não consegui localizar o ativo {fund_name.upper()}."
+                    ).set_should_end_session(False)
+                    return handler_input.response_builder.response
+
+                session_attr["state"] = fundo_state_id
+                session_attr["manual_selection"] = True
+                session_attr["alert_in_progress"] = False
+
+                dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
+                speech_text = f"Mostrando o ativo {fund_name.upper()}."
+
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="mainScreenToken",
+                        document=apl_document,
+                        datasources={"dados_update": {
+                            **dados_info
+                            }
+                        }
+                    )
+                ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
+
+                return handler_input.response_builder.response
 
             else:
                 # Nome inválido → direcionar para tela de entrada manual
-                logging.info(f"Fundo não reconhecido: {fund_name}. Exibindo APL para entrada manual.")
+                logging.info(f"Fundo não reconhecido: {fund_name.upper()}. Exibindo APL para entrada manual.")
 
                 apl_document = _load_apl_document("apl_select_ativo.json") # carrega o APL de entrada de dados
                 session_attr["alert_in_progress"] = True
@@ -949,89 +984,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             speech_text = "Desculpe, ocorreu um erro ao tentar mostrar o fundo. Por favor, tente novamente."
             handler_input.response_builder.speak(speech_text)
             return handler_input.response_builder.response
-    
-    def mostrar_ativo(self, handler_input):
-        """ Método reutilizável para mostrar o ativo """
-        session_attr = handler_input.attributes_manager.session_attributes
-
-        # Recupera valores da sessão (se vier do APL)
-        fund_name = session_attr.get("sigla_select_ativo")
-
-        # Se os valores ainda estiverem vazios, pega dos slots (caso tenha sido falado por voz)
-        if not fund_name:
-            slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-            fund_name = fund_name or slots.get("fundName", {}).get("value")
-
-        # Valida se os valores necessários foram capturados
-        if not fund_name:
-            speech_text = "Erro ao mostrar ativo. Certifique-se de preencher os campos corretamente."
-            logging.info(f"Erro: fundName={fund_name}")
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
-
-        # Reseta a sessão
-        session_attr["alert_in_progress"] = False
-        session_attr["manual_selection"] = False
-        session_attr["state"] = 2  # ou o state que desejar voltar
-
-        fundo_key = fund_name.lower() if fund_name else ""
-        fundo_full = None
-        fundo_state_id = None
-
-        for state_id, nome in state_fund_mapping.items():
-            if remover_sufixo_numerico(nome).lower() == fundo_key:
-                fundo_full = nome
-                fundo_state_id = state_id
-                break
-
-        #if fund_name and fund_name.lower() in allowed_funds and fundo_full:
-        speech_text = f"Mostrando o ativo {fund_name}."
-        session_attr["state"] = fundo_state_id
-        session_attr["manual_selection"] = True
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
-
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={
-                    "dados_update": {
-                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                    }
-                }
-            )
-        ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
-        return handler_input.response_builder.response
-
-
-"""
-        # Volta para o primeiro fundo, ou outro desejado
-        fundo = state_fund_mapping[1]
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-        handler_input.response_builder.speak(
-            f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}. Voltando para a tela inicial. <break time='700ms'/>"
-        ).add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={
-                    "dados_update": {
-                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                    }
-                }
-            )
-        ).add_directive(  # AGENDANDO AUTO-NAVEGAÇÃO!
-            ExecuteCommandsDirective(
-                token="mainScreenToken",
-                commands=[
-                    SendEventCommand(
-                        arguments=["autoNavigate"],
-                        delay=5000  # Aguarda 5 segundos antes de continuar a navegação automática
-                    )
-                ]
-            )
-        ).set_should_end_session(False)
-        return handler_input.response_builder.response"""
+# ============================================================================================
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS PARA MOSTRAR FUNDO
 class SelectInputHandler(AbstractRequestHandler):
@@ -1053,10 +1006,10 @@ class SelectInputHandler(AbstractRequestHandler):
             session_attr["sigla_select_ativo"] = arguments[1].strip().lower()
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
-                speech_text).set_should_end_session(False)
+                "Você pode confirmar ou corrigir o nome do ativo.").set_should_end_session(False)
             return handler_input.response_builder.response
 
-        if arguments[0] == "cancelarAlerta":
+        if arguments[0] == "cancelarSelect":
             session_attr.pop("sigla_select_ativo", None)
             session_attr["alert_in_progress"] = False
             session_attr["manual_selection"] = True
@@ -1083,6 +1036,7 @@ class SelectInputHandler(AbstractRequestHandler):
         if arguments[0] == "confirmarSelect":
             sigla = session_attr.get("sigla_select_ativo")
             logging.info(f"O valor de Sigla é: {sigla}")
+            
             if not sigla:
                 logging.info("Erro ao Mostrar Ativo")
                 handler_input.response_builder.speak("Erro ao Mostrar Ativo. Tente novamente.").ask(
@@ -1091,14 +1045,47 @@ class SelectInputHandler(AbstractRequestHandler):
 
             # Validação: sigla já existe?
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-            if sigla and sigla.lower() not in allowed_funds:
+            if sigla.lower() not in allowed_funds:
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
                 return handler_input.response_builder.response
             
-            else:
-                logging.info("Direcionando para Mostrar Ativo...")
-                return SelectFundIntentHandler().mostrar_ativo(handler_input)  # Reutiliza a lógica de gravação
+            # Encontrar fundo completo e ID
+            fundo_key = sigla.lower()
+            fundo_full = None
+            fundo_state_id = None
+            for state_id, nome in state_fund_mapping.items():
+                if remover_sufixo_numerico(nome).lower() == fundo_key:
+                    fundo_full = nome
+                    fundo_state_id = state_id
+                    break
+
+            if not fundo_full:
+                handler_input.response_builder.speak(
+                    "Ativo não encontrado. Por favor, tente novamente."
+                ).set_should_end_session(False)
+                return handler_input.response_builder.response
+
+            # Atualiza sessão
+            session_attr["state"] = fundo_state_id
+            session_attr["manual_selection"] = True
+            session_attr["alert_in_progress"] = False
+
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
+            speech_text = f"Mostrando o ativo {sigla.upper()}."
+
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={"dados_update": {
+                        **dados_info
+                        }
+                    }
+                )
+            ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
+
+            return handler_input.response_builder.response
 # ============================================================================================
 
     
