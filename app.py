@@ -929,9 +929,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             if fund_name and fund_name.strip().lower() in allowed_funds:
-
                 fund_name = fund_name.strip().lower()
-
                 fundo_full = None
                 fundo_state_id = None
                 for state_id, nome in state_fund_mapping.items():
