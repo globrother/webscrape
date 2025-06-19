@@ -917,7 +917,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         try:
             slots = handler_input.request_envelope.request.intent.slots
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            logging.info(f"FUND_NAME CAPTURADO: {fund_name}")
+            logging.info(f"FUND_NAME captado por voz: {fund_name!r}")
             logging.info("Entrou na Seleção Manual")
             logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
