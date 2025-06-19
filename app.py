@@ -917,12 +917,17 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         try:
             slots = handler_input.request_envelope.request.intent.slots
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
+            logging.info(f"FUND_NAME CAPTURADO: {fund_name}")
             logging.info("Entrou na Seleção Manual")
             logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
-            #
+            if not fund_name:
+                speech_text = "Não consegui entender o nome do ativo. Pode repetir, por favor?"
+                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                return handler_input.response_builder.response
+
             if fund_name and fund_name.strip().lower() in allowed_funds:
 
                 fund_name = fund_name.strip().lower()
