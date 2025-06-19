@@ -1316,6 +1316,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         logging.info("FallbackIntent acionado. Redirecionando conforme o contexto.")
 
+        apl_document = None
         session_attr = handler_input.attributes_manager.session_attributes
         contexto_atual = session_attr.get("contexto_atual", "desconhecido")
 
@@ -1340,7 +1341,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
         response_builder = handler_input.response_builder.speak(speech_text).set_should_end_session(False)
 
-        if apl_document:
+        if apl_document is not None:
             response_builder.add_directive(
                 RenderDocumentDirective(
                     token="inputScreenToken",
