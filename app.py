@@ -1307,10 +1307,15 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         # Coleta motivo e detalhes do encerramento
         reason = getattr(request, "reason", "Motivo não informado")
         error = getattr(request, "error", None)
+        if error:
+            logging.error(f"💥 Detalhes do erro: {error}")
+            # Tenta acessar campos específicos com segurança
+            if hasattr(error, "type"):
+                logging.error(f"🔎 Tipo: {error.type}")
+            if hasattr(error, "message"):
+                logging.error(f"📝 Mensagem: {error.message}")
 
         logging.warning(f"⚠️ Motivo do encerramento da sessão: {reason}")
-        if error:
-            logging.error(f"💥 Detalhes do erro: Type={error.type}, Message={error.message}")
 
         logging.info(f"📦 Atributos de sessão no encerramento: {session_attr}")
 
