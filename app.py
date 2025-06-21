@@ -885,7 +885,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                is_intent_name("AMAZON.NextIntent")(handler_input)
 
     def handle(self, handler_input):
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
         session_attr["contexto_atual"] = "selecao_ativo"
