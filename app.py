@@ -72,7 +72,7 @@ app = Flask(__name__)
 
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
-logging.info(f"\n O Mapa é: {state_fund_mapping}")
+#logging.info(f"\n O Mapa é: {state_fund_mapping}")
 
 # time.sleep(5)
 # logging.info(f"\n A lista é: {lista_ativos}")
@@ -108,7 +108,6 @@ letras_extenso = {
 }
 
 ativos_favoritos = [1, 2, 3, 4]
-
 
 def remover_sufixo_numerico(codigo):
     # Remove qualquer sequência de dígitos no final do código
@@ -179,32 +178,27 @@ voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = No
 
 # ============================================================================================
 
-
 def comparador(historico, cota_atual, voz_fundo):
     # Verificar se o histórico é válido e contém pelo menos um registro
     if historico and isinstance(historico, list) and len(historico) >= 1:
         alert_value = historico[0].get("valor", "").replace("R$ ", "")
-        logging.info(f"\n Valor do Alerta: {alert_value} \n")
-        logging.info(f"\n Valor Atual da Cota: {cota_atual} \n")
+        logging.info(f"Valor do Alerta: {alert_value}")
+        logging.info(f"Valor Atual da Cota: {cota_atual}")
 
         # Verificar se o valor do alerta é válido
         if alert_value:
             try:
                 alert_value_float = float(alert_value.replace(',', '.'))
                 cota_atual_float = float(cota_atual.replace(',', '.'))
-                logging.info(
-                    f"\n Valor de alert_value_float: {alert_value_float} \n")
-                logging.info(
-                    f"\n Valor de cota_atual_float: {cota_atual_float} \n")
+                #logging.info(f"Valor de alert_value_float: {alert_value_float}")
+                #logging.info(f"Valor de cota_atual_float: {cota_atual_float} \n")
 
                 # Comparar os valores e adicionar aviso de fala se necessário
                 if cota_atual_float <= alert_value_float:
-                    logging.info(":::::: ----> PASSOU")
                     voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
             except ValueError as e:
                 logging.error(f"Erro ao converter valores para float: {e}")
     else:
-        logging.info(":::::: ----> SE NÃO")
         logging.info("\n Histórico está vazio ou não é uma lista válida \n")
 
     return voz_fundo
@@ -234,11 +228,10 @@ def web_scrape(fundo):
     # 🔹 Obtendo Url do Gráfico
     #url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
     url_grafico = obter_grafico.requisitando_chart(fii)
-    logging.info(f"URL do Gráfico 1: {url_grafico}")
     timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
-    logging.info(f"Timestamp: {timestamp}")
+    #logging.info(f"Timestamp: {timestamp}")
     url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
-    logging.info(f"URL do Gráfico 2: {url_grafico}")
+    #logging.info(f"URL do Gráfico 2: {url_grafico}")
 
     # Lista de links de imagens de planos de fundo
     background_images = [
@@ -257,8 +250,7 @@ def web_scrape(fundo):
     if fundo_index is not None:
         logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
     else:
-        logging.error(
-            f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
+        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
         # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
         fundo_index = 1
         logging.info(f"Usando índice padrão: {fundo_index}")
@@ -279,7 +271,6 @@ def web_scrape(fundo):
 
     #logging.info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
-    logging.info(f"A Metade é: {meio}")
     hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
     hist_text_ativo_col2 = hist_text_fii[meio:]   # Segunda metade da lista
     #logging.info(f"COl2 é: {hist_text_ativo_col2}")
@@ -326,7 +317,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exemplo: exibir só favoritos durante o dia
         # hora = datetime.now().hour
         hora = int(datetime.now(brt_tz).strftime("%H"))
-        logging.info(f"Hora para favoritos: {hora}")
 
         # Função para verificar se a hora está em algum intervalo
         def intervalos_exibe(hora, intervalos):
@@ -342,7 +332,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr["ativos_ids"] = ativos_ids
 
         logging.info("=== LaunchRequestHandler.handle ===")
-        logging.info(f"Hora: {hora}")
+        #logging.info(f"Hora: {hora}")
         logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
         logging.info(f"ativos_ids definidos: {ativos_ids}")
 
@@ -549,8 +539,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                         get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    logging.info(f"Valor recebido para valor do alerta: {alert_value}")
-                    logging.info(f"Valor recebido para centavos: {alert_value_cents}")
+                    #logging.info(f"Valor recebido para valor do alerta: {alert_value}")
+                    #logging.info(f"Valor recebido para centavos: {alert_value_cents}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
@@ -718,7 +708,7 @@ class AlertaInputHandler(AbstractRequestHandler):
         if arguments[0] == "valorAlerta":
             session_attr["valor_alerta"] = arguments[1]
             valor = session_attr.get("valor_alerta")
-            logging.info(f"O valor de Sigla e Valor são: {valor}")
+            logging.info(f"O valor é: {valor}")
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
