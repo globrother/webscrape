@@ -518,7 +518,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        # handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr["contexto_atual"] = "alerta_preco"  # Definido contexto do Handler
 
         try:
@@ -535,8 +535,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 logging.info("Criando Novo Alerta")
                 if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    handler_input.response_builder.add_directive(
-                        get_dynamic_entities_directive())
+                    #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     logging.info(f"Valor recebido para fund_name: {fund_name}")
                     #logging.info(f"Valor recebido para valor do alerta: {alert_value}")
