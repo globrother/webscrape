@@ -518,8 +518,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
 
         # Bloqueia alerta de preço se seleção estiver ativo
-        if session_attr.get("select_in_progress") or session_attr.get("manual_selection"):
-            logging.info("DynamicScreenHandler: Seleção ativo. Pausando Criação de Alerta.")
+        if session_attr.get("select_in_progress") and not handler_input.request_envelope.request.intent.slots.get("fundName").value:
+            logging.info("🛑 Seleção ainda em andamento e slot fundName não informado. Pausando Criação de Alerta.")
             return False
         
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -535,6 +535,18 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
             alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
             fund_name = slots.get("fundName").value if slots.get("fundName") else None
+
+            if not fund_name:
+                fundo_id = session_attr.get("current_fund_id")
+                fundo_nome = session_attr.get("current_fund_name")
+                
+                if fundo_id and fundo_nome:
+                    logging.info(f"💡 Alerta será criado para fundo exibido atualmente: {fundo_nome}")
+                    # continue normalmente com fundo_id como referência
+                else:
+                    speech = "Você quer criar alerta para qual fundo?"
+                    return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
+
 
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
@@ -973,11 +985,12 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 ).set_should_end_session(False).response
 
             session_attr.update({
-            "state": fundo_state_id,
-            "manual_selection": True,
-            "alert_in_progress": False,
-            "select_in_progress": False,
-            "tentativas_fundo": 0
+                "state": fundo_state_id,
+                "manual_selection": None,
+                "current_fund_id": fundo_state_id,
+                "current_fund_name": fundo_full,
+                "select_in_progress": False,
+                "manual_selection": False
             })
 
             try:
@@ -996,8 +1009,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     "dados_update": dados_info
                 }
             )).speak(f"{speech}<break time='500ms'/>{voz}").set_should_end_session(False)
-            session_attr["select_in_progress"] = False
-            session_attr["alert_in_progress"] = True
             return handler_input.response_builder.response
 
         # Fundo inválido reconhecido, redireciona para entrada manual
