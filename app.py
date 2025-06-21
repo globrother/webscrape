@@ -935,6 +935,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
             if not fund_name:
                 speech = "Qual ativo deseja consultar?"
+                logging.info("Qual ativo deseja consultar?")
                 return (
                     handler_input.response_builder
                         .add_directive(
@@ -947,6 +948,8 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         .ask(speech)
                         .response
                 )
+            
+            logging.info("Saindo do bloco <if not fund_name:>")
 
             if fund_name and fund_name.strip().lower() in allowed_funds:
                 fund_name = fund_name.strip().lower()
