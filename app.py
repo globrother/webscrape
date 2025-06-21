@@ -903,8 +903,17 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         intent = handler_input.request_envelope.request.intent
         slots = intent.slots
         fund_name = slots.get("fundName").value #if slots.get("fundName") else None
+        logging.info(f"🧠 Slot raw: {slots['fundName'].value}")
         logging.info(f"🎙️ fund_name captado: {repr(fund_name)}")
         logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+
+        resolutions = slots["fundName"].resolutions
+        if resolutions and resolutions.resolutions_per_authority:
+            for authority in resolutions.resolutions_per_authority:
+                for value in authority.values:
+                    resolved_id = value.value.id
+                    logging.info(f"🎯 Resolvido como ID: {resolved_id}")
+
 
         allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
@@ -960,7 +969,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             session_attr.update({
             "state": fundo_state_id,
             "manual_selection": True,
-            "alert_in_progress": True,
+            "alert_in_progress": False,
             "tentativas_fundo": 0
             })
 
