@@ -132,7 +132,7 @@ def gerar_sinonimos(fundo):
     # 2) Sigla separada por espaço: "k n c r"
     separado = " ".join(letras)
     # 3) Sigla com pontos: "k.n.c.r"
-    pontuada = ".".join(letras)
+    pontuada = ". ".join(letras)
     # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
     pontuada_upper = pontuada.upper()
     # 5) Letras por extenso: "kê ene cê erre"
