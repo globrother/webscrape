@@ -37,7 +37,7 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
-from ask_sdk_model.dialog import ElicitSlotDirective
+from ask_sdk_model import SessionEndedRequest
 # from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -1217,7 +1217,9 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         logging.info("FallbackIntent acionado. Redirecionando conforme o contexto.")
-        logging.info(f"Motivo do fim da sessão: {handler_input.request_envelope.request.reason}")
+
+        if isinstance(request, SessionEndedRequest):
+            logging.info(f"Motivo do fim da sessão: {request.reason}")
 
         apl_document = None
         session_attr = handler_input.attributes_manager.session_attributes
