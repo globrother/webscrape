@@ -927,7 +927,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
         #handler_input.response_builder.add_directive(directive)
 
-        """REATIVAR DEPOIS
         if intent_name == "AMAZON.NextIntent":
             session_attr.pop("manual_selection", None)
             speech_text = "Continuando a navegação pelos ativos."
@@ -939,7 +938,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     ]
                 )
             ).speak(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response"""
+            return handler_input.response_builder.response
 
         # Tentativa de reconhecimento por voz
         tentativas = session_attr.get("tentativas_fundo", 0)
@@ -947,7 +946,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         if not fund_name:
             session_attr["tentativas_fundo"] = tentativas + 1
             if tentativas < 2:
-                speech = "Desculpe, não entendi o nome do ativo. Pode repetir?"
+                speech = "Desculpe, não entendi o nome do ativo. Tente falar: mostrar ativo segido do nome do ativo sem o número?"
                 return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
             else:
                 session_attr["tentativas_fundo"] = 0
@@ -1326,7 +1325,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
         elif contexto == "selecao_ativo":
             apl_document = _load_apl_document("apl_select_ativo.json")
-            speech = "Não consegui entender o nome do ativo. Você pode repetir ou digitar na tela."
+            speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
 
         elif contexto == "cadastro_ativo":
             apl_document = _load_apl_document("apl_add_ativo.json")
