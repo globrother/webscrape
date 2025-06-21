@@ -37,6 +37,7 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
+from ask_sdk_model.dialog import ElicitSlotDirective
 # from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -914,10 +915,25 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
-            if not fund_name:
+            """if not fund_name:
                 speech_text = "Não consegui entender o nome do ativo. Pode repetir, por favor?"
                 handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-                return handler_input.response_builder.response
+                return handler_input.response_builder.response"""
+
+            if not fund_name:
+                speech = "Qual ativo deseja consultar?"
+                return (
+                    handler_input.response_builder
+                        .add_directive(
+                            ElicitSlotDirective(
+                                slot_to_elicit="fundName",
+                                updated_intent=handler_input.request_envelope.request.intent
+                            )
+                        )
+                        .speak(speech)
+                        .ask(speech)
+                        .response
+                )
 
             if fund_name and fund_name.strip().lower() in allowed_funds:
                 fund_name = fund_name.strip().lower()
