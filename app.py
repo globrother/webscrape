@@ -113,7 +113,6 @@ def remover_sufixo_numerico(codigo):
     # Remove qualquer sequência de dígitos no final do código
     return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
 
-
 def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
     letras = list(fundo)
@@ -122,7 +121,6 @@ def gerar_sinonimos(fundo):
     # Letras por extenso: "eme xis erre efe"
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
     return [fundo, separado, extenso]
-
 
 def get_dynamic_entities_directive():
     fundos = [remover_sufixo_numerico(v).lower()
@@ -255,14 +253,6 @@ def web_scrape(fundo):
     # ,_ significa que a variável variac_xpml11 não será utilizada
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
 
-    # Alterar valores das chaves do apl_document
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][0]['text'] = card_fii
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][1]['items'][1]['text'] = variac_fii
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][2]['item'][0]['text'] = hist_text_fii
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][0]['items'][0]['items'][2]['items'][1]['text'] = hist_alert
-    #apl_document['mainTemplate']['items'][0]['items'][0]['backgroundImageSource'] = background_image
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][0]['items'][1]['items'][0]['source'] = logo_url_atv
-    #apl_document['mainTemplate']['items'][0]['items'][1]['items'][1]['items'][1]['items'][0]['item'][0]['source'] = url_grafico
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
 
     cota_atual = cota_fii
@@ -901,6 +891,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         logging.info(f"Intent recebido: {intent_name}")
 
+        """REATIVAR DEPOIS
         if intent_name == "AMAZON.NextIntent":
             session_attr.pop("manual_selection", None)
             speech_text = "Continuando a navegação pelos ativos."
@@ -912,7 +903,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     ]
                 )
             ).speak(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
+            return handler_input.response_builder.response"""
 
         try:
             slots = handler_input.request_envelope.request.intent.slots
