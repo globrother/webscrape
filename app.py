@@ -898,9 +898,9 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         logging.info(f"Intent recebido: {intent_name}")
 
-        directive = get_dynamic_entities_directive()
-        logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
-        handler_input.response_builder.add_directive(directive)
+        #directive = get_dynamic_entities_directive()
+        #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
+        #handler_input.response_builder.add_directive(directive)
 
 
         """REATIVAR DEPOIS
