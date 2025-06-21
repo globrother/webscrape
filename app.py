@@ -114,14 +114,14 @@ def remover_sufixo_numerico(codigo):
     # Remove qualquer sequência de dígitos no final do código
     return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
 
-def gerar_sinonimos(fundo):
+"""def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
     letras = list(fundo)
     # Sigla separada por espaço: "m x r f"
     separado = " ".join(letras)
     # Letras por extenso: "eme xis erre efe"
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
-    return [fundo, separado, extenso]
+    return [fundo, separado, extenso]"""
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
