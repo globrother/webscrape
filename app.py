@@ -72,7 +72,7 @@ app = Flask(__name__)
 
 # Mapeamento de Estados e Fundos
 state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
-#logging.info(f"\n O Mapa é: {state_fund_mapping}")
+logging.info(f"\n O Mapa é: {state_fund_mapping}")
 
 # time.sleep(5)
 # logging.info(f"\n A lista é: {lista_ativos}")
