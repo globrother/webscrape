@@ -1326,6 +1326,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         elif contexto == "selecao_ativo":
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
+            session_attr["alert_in_progress"] = True
 
         elif contexto == "cadastro_ativo":
             apl_document = _load_apl_document("apl_add_ativo.json")
