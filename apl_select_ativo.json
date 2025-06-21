@@ -112,7 +112,7 @@
                                         "item": {
                                             "type": "Text",
                                             "fontSize": "50dp",
-                                            "text": "Cadastrar",
+                                            "text": "Confirmar",
                                             "color": "white",
                                             "height": "90",
                                             "width": "300",

@@ -136,6 +136,7 @@ def gerar_sinonimos(fundo):
     pontuada_upper = pontuada.upper()
     # 5) Sigla com pontos em minusculas: 'k. n. c. r.'
     pontuada_literal = ". ".join(letras) + "." 
+    logging.info(f"PONTUADA LITERAL: : >> >>  {pontuada_literal}")
     # 6) Letras por extenso: "kê ene cê erre"
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
     # Monta um set pra evitar duplicatas e retorna como lista
