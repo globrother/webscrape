@@ -37,7 +37,8 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
-from ask_sdk_model import SessionEndedRequest
+from ask_sdk_model import SessionEndedRequest, IntentRequest
+
 # from typing import Dict, Any
 
 # NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
@@ -1302,55 +1303,52 @@ class FallbackIntentHandler(AbstractRequestHandler):
 
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        logging.info("CatchAllRequestHandler: Verificando solicitação.")
-
-        # Permitir APENAS FallbackIntent e ignorar outros IntentRequests
-        if is_request_type("IntentRequest")(handler_input) and \
-                handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
-            logging.info("CatchAllRequestHandler acionado para FallbackIntent.")
-            return True
-        
-        return False  # 🔹 Isso impede que ele capture tudo!
-
-        """logging.info("CatchAllRequestHandler: Verificando solicitação.")
-        return True"""
+        logging.info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
+        return True  # aceita qualquer solicitação que não casou com outros handlers
 
     def handle(self, handler_input):
-        # Log para depuração
-        # print("CatchAllRequestHandler acionado")
-        logging.info("CatchAllRequestHandler acionado")
-        print(f"Tipo de Requisição: {handler_input.request_envelope.request}")
+        request = handler_input.request_envelope.request
+        session_attr = handler_input.attributes_manager.session_attributes
+        contexto = session_attr.get("contexto_atual")
+        apl_document = None
 
-        # Verificar se é um FallbackIntent
-        if handler_input.request_envelope.request.object_type == "IntentRequest" and \
-                handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent":
-            print("FallbackIntent em CatchAllRequest detectado")
-            # Cria uma instância de TouchHandler
-            # touch_handler = TouchHandler()
+        logging.warning(f"⚠️ Nenhum handler específico capturou esta requisição. Tipo: {request.object_type}")
+        if isinstance(request, IntentRequest):
+            intent_name = request.intent.name
+            logging.warning(f"📌 Intent inesperada recebida: {intent_name}")
+        else:
+            logging.warning("📌 Requisição não foi do tipo IntentRequest.")
 
-            # Chama o método handle de TouchHandler
-            # return touch_handler.handle(handler_input)
+        # Respostas contextuais
+        if contexto == "alerta_preco":
+            apl_document = _load_apl_document("apl_add_alerta.json")
+            speech = "Desculpe, não entendi o nome do fundo. Por favor, digite na tela."
 
-            # Não altere o estado e não forneça resposta audível
-            handler_input.response_builder.set_should_end_session(False)
-            return handler_input.response_builder.response
+        elif contexto == "selecao_ativo":
+            apl_document = _load_apl_document("apl_select_ativo.json")
+            speech = "Não consegui entender o nome do ativo. Você pode repetir ou digitar na tela."
 
-        # Mensagem padrão caso não seja um FallbackIntent
-        handler_input.response_builder.speak(
-            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente.").set_should_end_session(False)
+        elif contexto == "cadastro_ativo":
+            apl_document = _load_apl_document("apl_add_ativo.json")
+            speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
 
-        # Em vez de encerrar, vamos definir uma mensagem padrão
-        handler_input.response_builder.speak(
-            "<break time='1000ms'/>Encerrando a skill. Até a próxima!").set_should_end_session(True)
-        logging.info("\n Encerrando Aplicativo...\n")
-        # os.kill(os.getpid(), signal.SIGTERM) # Finalizar servidor Flask usando sinal
-        return handler_input.response_builder.response
+        elif contexto == "auto_navegacao":
+            speech = "Desculpe, não entendi. Diga 'próximo' para continuar ou 'favoritos' para ver sua lista."
+            apl_document = None
 
-        """handler_input.response_builder.speak(
-            "Desculpe, não consegui entender sua solicitação. Diga sair para encerrar a sessão, ou tente novamente."
-        ).set_should_end_session(False)
-        logging.info("\n CatchAllRequestHandler: Mantendo a sessão ativa.\n")
-        return handler_input.response_builder.response"""
+        else:
+            speech = "Hmm, não consegui entender o que você quis dizer. Encerrando por agora, mas você pode me chamar de novo quando quiser."
+            logging.info("🚪 Encerrando sessão por ausência de contexto.")
+            return handler_input.response_builder.speak(speech).set_should_end_session(True).response
+
+        if apl_document:
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(token="fallbackToken", document=apl_document)
+            )
+
+        logging.info(f"🎤 Resposta de fallback gerada com contexto: {contexto}")
+        return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
+
 # ============================================================================================
 # ============================================================================================
 
