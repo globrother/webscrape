@@ -530,111 +530,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         session_attr["contexto_atual"] = "alerta_preco"  # Definido contexto do Handler
 
         try:
-            slots = handler_input.request_envelope.request.intent.slots
-            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
-            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-
-            # Recupera fund_name da sessão caso não tenha sido falado
-            if not fund_name or not fund_name.strip():
-                fund_name_session = session_attr.get("current_fund_name")
-                if fund_name_session:
-                    fund_name = limpar_fund_name(fund_name_session)
-                    session_attr["sigla_alerta"] = fund_name
-                    logging.info(f"🔁 fund_name herdado da sessão: {fund_name}")
-                else:
-                    speech = "Você quer criar alerta para qual fundo?"
-                    return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
-            else:
-                fund_name = limpar_fund_name(fund_name)
-                session_attr["sigla_alerta"] = fund_name
-
-            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-
-            # Passo 1: Se valor do alerta ainda não foi informado
-            if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    logging.info(f"💰 Alerta capturado: {session_attr['AlertValue']}")
-                    session_attr["alert_in_progress"] = True
-                else:
-                    session_attr["AlertValue"] = None
-                    speech_text = "Qual é o valor do alerta em reais e centavos?"
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-                    session_attr["alert_in_progress"] = True
-                    return handler_input.response_builder.speak(speech_text).ask(reprompt_text).response
-
-            # Passo 2: Validar fundo
-            if not fund_name or fund_name not in allowed_funds:
-                logging.info(f"⚠️ fund_name não reconhecido: {fund_name}")
-                apl_document = _load_apl_document("apl_add_alerta.json")
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl_document
-                    )
-                )
-                speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
-                return handler_input.response_builder.speak(speech_text).response
-
-            # Passo 3: Todos os dados OK, processar alerta
-            return self.processar_cadastro(handler_input)
-
-        except Exception as e:
-            logging.error(f"❌ Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            return handler_input.response_builder.speak(speech_text).response
-    
-    def processar_cadastro(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-
-        fund_name = session_attr.get("sigla_alerta")
-        alert_value = session_attr.get("AlertValue")
-
-        if not fund_name or not alert_value:
-            speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
-            logging.info(f"Erro: fund_name={fund_name}, alert_value={alert_value}")
-            return handler_input.response_builder.speak(speech_text).response
-
-        session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
-        logging.info(f"✅ Alerta criado: Fundo={fund_name}, Valor={alert_value}")
-
-        # Grava histórico
-        sufixo = f"alert_value_{fund_name.lower()}"
-        valor = f"R$ {alert_value}"
-        grava_historico.gravar_historico(sufixo, valor)
-        historico = grava_historico.ler_historico(sufixo)
-        hist_alert = grava_historico.gerar_texto_historico(historico, "alert")
-
-        # Reset
-        session_attr["AlertValue"] = None
-        session_attr["alert_in_progress"] = False
-        session_attr["manual_selection"] = False
-        session_attr["state"] = 2
-
-        fundo = state_fund_mapping[1]
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-
-        return handler_input.response_builder.speak(
-            f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}. Voltando para a tela inicial. <break time='700ms'/>"
-        ).add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={
-                    "dados_update": {**dados_info}
-                }
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="mainScreenToken",
-                commands=[
-                    SendEventCommand(arguments=["autoNavigate"], delay=5000)
-                ]
-            )
-        ).set_should_end_session(False).response
-
-        """try:
             # Coleta os slots
             slots = handler_input.request_envelope.request.intent.slots
             alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
@@ -662,7 +557,24 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
                 logging.info("Criando Novo Alerta")
                 logging.info(f"Valor de fund_name: {fund_name}")
-                if alert_value and alert_value_cents and not fund_name:
+
+                if not alert_value and not alert_value_cents:
+                    session_attr["AlertValue"] = None
+                    speech_text = "Qual é o valor do alerta em reais e centavos?"
+                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
+                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    session_attr["alert_in_progress"] = True
+                elif alert_value and alert_value_cents and not fund_name:
+                    #session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    logging.info(f"Valor recebido para fund_name: {fund_name}")
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
+                    session_attr["alert_in_progress"] = True
+
+
+                """if alert_value and alert_value_cents and not fund_name:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
@@ -674,12 +586,11 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["AlertValue"] = None
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-                    session_attr["alert_in_progress"] = True
+                    session_attr["alert_in_progress"] = True"""
 
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name or fund_name.lower() not in allowed_funds:
                 logging.info("FundName não foi capturado corretamente. Exibindo tela de entrada manual.")
-
                 session_attr["alert_in_progress"] = True  # Mantém alerta ativo
 
                 # Carregar APL para entrada manual
@@ -810,7 +721,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 ]
             )
         ).set_should_end_session(False)
-        return handler_input.response_builder.response """
+        return handler_input.response_builder.response
 # ============================================================================================
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS DO ALERTA DE PREÇOS
