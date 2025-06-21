@@ -916,7 +916,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
             if not fund_name:
                 speech_text = "Não consegui entender o nome do ativo. Pode repetir, por favor?"
-                handler_input.response_builder.speak(speech_text).ask(speech_text)
+                handler_input.response_builder.speak(speech_text).set_should_end_session(False)
                 return handler_input.response_builder.response
 
             if fund_name and fund_name.strip().lower() in allowed_funds:
