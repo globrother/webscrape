@@ -591,6 +591,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # Passo 3: Cria o alerta se tudo estiver preenchido
             elif fund_name and fund_name.strip().lower() in allowed_funds:
+                session_attr["sigla_alerta"] = fund_name  # isso garante persistência até o cadastro
                 return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
 
             elif fund_name and fund_name.lower() not in allowed_funds:
