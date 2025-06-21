@@ -909,6 +909,11 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         logging.info(f"Intent recebido: {intent_name}")
 
+        directive = get_dynamic_entities_directive()
+        logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
+        handler_input.response_builder.add_directive(directive)
+
+
         """REATIVAR DEPOIS
         if intent_name == "AMAZON.NextIntent":
             session_attr.pop("manual_selection", None)
@@ -925,10 +930,12 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         try:
             slots = handler_input.request_envelope.request.intent.slots
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
+            fund_name = slots.get("fundName").value #if slots.get("fundName") else None
             logging.info(f"FUND_NAME captado por voz: {fund_name!r}")
+            logging.info(f"🎙️ Valor real captado no slot: {repr(fund_name)}")
             logging.info("Entrou na Seleção Manual")
             logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+            
 
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
