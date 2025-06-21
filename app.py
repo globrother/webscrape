@@ -517,6 +517,13 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
 # HANDLER PARA CRIAR UM ALERTA DE PREÇO.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        # Bloqueia navegação se alerta de preço estiver ativo
+        if session_attr.get("select_in_progress") or session_attr.get("manual_selection"):
+            logging.info("DynamicScreenHandler: Seleção ativo. Pausando Criação de Alerta.")
+            return False
+        
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -945,7 +952,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
             else:
                 session_attr["tentativas_fundo"] = 0
-                session_attr["alert_in_progress"] = True
+                session_attr["select_in_progress"] = True
                 apl_doc = _load_apl_document("apl_select_ativo.json")
                 handler_input.response_builder.add_directive(RenderDocumentDirective(
                     token="inputScreenToken", document=apl_doc))
