@@ -123,6 +123,23 @@ def gerar_sinonimos(fundo):
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
     return [fundo, separado, extenso]
 
+def gerar_sinonimos(fundo):
+    # normaliza tudo em minúsculas
+    base = fundo.strip().lower()
+    letras = list(base)
+    # 1) Sigla contínua
+    contigua = base
+    # 2) Sigla separada por espaço: "k n c r"
+    separado = " ".join(letras)
+    # 3) Sigla com pontos: "k.n.c.r"
+    pontuada = ".".join(letras)
+    # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
+    pontuada_upper = pontuada.upper()
+    # 5) Letras por extenso: "kê ene cê erre"
+    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
+    # Monta um set pra evitar duplicatas e retorna como lista
+    return list({contigua, separado, pontuada, pontuada_upper, extenso})
+
 def get_dynamic_entities_directive():
     fundos = [remover_sufixo_numerico(v).lower()
               for v in state_fund_mapping.values()]
