@@ -584,6 +584,55 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             logging.error(f"❌ Erro ao processar CreatePriceAlertIntent: {e}")
             speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
             return handler_input.response_builder.speak(speech_text).response
+    
+    def processar_cadastro(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+
+        fund_name = session_attr.get("sigla_alerta")
+        alert_value = session_attr.get("AlertValue")
+
+        if not fund_name or not alert_value:
+            speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
+            logging.info(f"Erro: fund_name={fund_name}, alert_value={alert_value}")
+            return handler_input.response_builder.speak(speech_text).response
+
+        session_attr[f"alert_value_{fund_name.lower()}"] = alert_value
+        logging.info(f"✅ Alerta criado: Fundo={fund_name}, Valor={alert_value}")
+
+        # Grava histórico
+        sufixo = f"alert_value_{fund_name.lower()}"
+        valor = f"R$ {alert_value}"
+        grava_historico.gravar_historico(sufixo, valor)
+        historico = grava_historico.ler_historico(sufixo)
+        hist_alert = grava_historico.gerar_texto_historico(historico, "alert")
+
+        # Reset
+        session_attr["AlertValue"] = None
+        session_attr["alert_in_progress"] = False
+        session_attr["manual_selection"] = False
+        session_attr["state"] = 2
+
+        fundo = state_fund_mapping[1]
+        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+
+        return handler_input.response_builder.speak(
+            f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}. Voltando para a tela inicial. <break time='700ms'/>"
+        ).add_directive(
+            RenderDocumentDirective(
+                token="mainScreenToken",
+                document=apl_document,
+                datasources={
+                    "dados_update": {**dados_info}
+                }
+            )
+        ).add_directive(
+            ExecuteCommandsDirective(
+                token="mainScreenToken",
+                commands=[
+                    SendEventCommand(arguments=["autoNavigate"], delay=5000)
+                ]
+            )
+        ).set_should_end_session(False).response
 
         """try:
             # Coleta os slots
@@ -690,10 +739,10 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
             speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
             handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response"""
+            return handler_input.response_builder.response
     
     def processar_cadastro(self, handler_input):
-        """ Método reutilizável para salvar o alerta de preço """
+        # Método reutilizável para salvar o alerta de preço 
         session_attr = handler_input.attributes_manager.session_attributes
 
         # Recupera valores da sessão (se vier do APL)
@@ -761,7 +810,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 ]
             )
         ).set_should_end_session(False)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.response """
 # ============================================================================================
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS DO ALERTA DE PREÇOS
