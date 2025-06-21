@@ -519,7 +519,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
 
-        # Bloqueia navegação se alerta de preço estiver ativo
+        # Bloqueia alerta de preço se seleção estiver ativo
         if session_attr.get("select_in_progress") or session_attr.get("manual_selection"):
             logging.info("DynamicScreenHandler: Seleção ativo. Pausando Criação de Alerta.")
             return False
@@ -905,6 +905,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
         session_attr["contexto_atual"] = "selecao_ativo"
+        session_attr["select_in_progress"] = True
         logging.info(f"Intent recebido: {intent_name}")
 
         intent = handler_input.request_envelope.request.intent
