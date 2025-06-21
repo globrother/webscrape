@@ -115,17 +115,9 @@ def remover_sufixo_numerico(codigo):
 
 def limpar_fund_name(raw):
     # Remove pontos e espaços, e converte pra minúsculas
+    if not raw:
+        return None
     return re.sub(r'[\s\.]', '', raw.lower())
-
-
-"""def gerar_sinonimos(fundo):
-    # Exemplo: "mxrf"
-    letras = list(fundo)
-    # Sigla separada por espaço: "m x r f"
-    separado = " ".join(letras)
-    # Letras por extenso: "eme xis erre efe"
-    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
-    return [fundo, separado, extenso]"""
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
@@ -928,7 +920,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         resolved_id = value.value.id
                         logging.info(f"🎯 Resolvido como ID: {resolved_id}")
 
-        fund_name = limpar_fund_name(fund_name) # normaliza fund_name
         allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
@@ -953,6 +944,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         tentativas = session_attr.get("tentativas_fundo", 0)
 
         if not fund_name:
+            fund_name = limpar_fund_name(fund_name) # normaliza fund_name
             session_attr["tentativas_fundo"] = tentativas + 1
             if tentativas < 2:
                 speech = "Desculpe, não entendi o nome do ativo. Pode repetir?"
