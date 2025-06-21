@@ -944,7 +944,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         tentativas = session_attr.get("tentativas_fundo", 0)
 
         if not fund_name:
-            fund_name = limpar_fund_name(fund_name) # normaliza fund_name
             session_attr["tentativas_fundo"] = tentativas + 1
             if tentativas < 2:
                 speech = "Desculpe, não entendi o nome do ativo. Pode repetir?"
@@ -958,6 +957,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 speech = "Não consegui entender. Por favor, digite o nome do fundo na tela."
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
+        fund_name = limpar_fund_name(fund_name) # normaliza fund_name
         fund_name = fund_name.strip().lower()
 
         if fund_name in allowed_funds:
@@ -976,6 +976,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             "state": fundo_state_id,
             "manual_selection": True,
             "alert_in_progress": False,
+            "select_in_progress": False,
             "tentativas_fundo": 0
             })
 
