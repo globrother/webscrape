@@ -113,6 +113,11 @@ def remover_sufixo_numerico(codigo):
     # Remove qualquer sequência de dígitos no final do código
     return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
 
+def limpar_fund_name(raw):
+    # Remove pontos e espaços, e converte pra minúsculas
+    return re.sub(r'[\s\.]', '', raw.lower())
+
+
 """def gerar_sinonimos(fundo):
     # Exemplo: "mxrf"
     letras = list(fundo)
@@ -917,12 +922,13 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         resolutions = slots["fundName"].resolutions
         if resolutions and resolutions.resolutions_per_authority:
-            for authority in resolutions.resolutions_per_authority:
-                for value in authority.values:
-                    resolved_id = value.value.id
-                    logging.info(f"🎯 Resolvido como ID: {resolved_id}")
+           for authority in resolutions.resolutions_per_authority:
+                if authority.status.code == "ER_SUCCESS_MATCH" and authority.values:
+                    for value in authority.values:
+                        resolved_id = value.value.id
+                        logging.info(f"🎯 Resolvido como ID: {resolved_id}")
 
-
+        fund_name = limpar_fund_name(fund_name) # normaliza fund_name
         allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
