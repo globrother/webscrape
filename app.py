@@ -665,9 +665,17 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
         # Se os valores ainda estiverem vazios, pega dos slots (caso tenha sido falado por voz)
         if not fund_name or not alert_value:
-            slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-            fund_name = fund_name or slots.get("fundName", {}).get("value")
-            alert_value = alert_value or slots.get("alertValue", {}).get("value")
+            intent = getattr(handler_input.request_envelope.request, "intent", None)
+            slots = getattr(intent, "slots", {}) if intent else {}
+
+            fund_slot = slots.get("fundName")
+            valor_slot = slots.get("alertValue")
+
+            if fund_slot and fund_slot.value:
+                fund_name = fund_name or fund_slot.value
+
+            if valor_slot and valor_slot.value:
+                alert_value = alert_value or valor_slot.value
 
         # Valida se os valores necessários foram capturados
         if not fund_name or not alert_value:
