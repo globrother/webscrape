@@ -538,11 +538,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             if not fund_name:
                 fundo_id = session_attr.get("current_fund_id")
-                fundo_nome = session_attr.get("current_fund_name")
+                fund_name_selected = session_attr.get("current_fund_name")
                 
-                if fundo_id and fundo_nome:
-                    logging.info(f"💡 Alerta será criado para fundo exibido atualmente: {fundo_nome}")
+                if fundo_id and fund_name_selected:
+                    logging.info(f"💡 Alerta será criado para fundo exibido atualmente: {fund_name_selected}")
                     # continue normalmente com fundo_id como referência
+                    fund_name = fund_name_selected.strip().lower()
                 else:
                     speech = "Você quer criar alerta para qual fundo?"
                     return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
