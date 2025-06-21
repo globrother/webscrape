@@ -518,11 +518,21 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
 
         # Bloqueia alerta de preço se seleção estiver ativo
-        if session_attr.get("select_in_progress") and not handler_input.request_envelope.request.intent.slots.get("fundName").value:
+        if isinstance(request, IntentRequest):
+            fund_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
+            if session_attr.get("select_in_progress") and not fund_name:
+                logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
+                return False
+
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+
+        """if session_attr.get("select_in_progress") and not handler_input.request_envelope.request.intent.slots.get("fundName").value:
             logging.info("🛑 Seleção ainda em andamento e slot fundName não informado. Pausando Criação de Alerta.")
             return False
         
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
+        return is_intent_name("CreatePriceAlertIntent")(handler_input)"""
+
+        
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
