@@ -555,7 +555,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
                 logging.info("Criando Novo Alerta")
                 logging.info(f"Valor de fund_name: {fund_name}")
-                if alert_value and alert_value_cents and not fund_name:
+                if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
@@ -593,6 +593,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             # Passo 3: Cria o alerta se tudo estiver preenchido
             elif fund_name and fund_name.strip().lower() in allowed_funds:
                 session_attr["sigla_alerta"] = fund_name  # isso garante persistência até o cadastro
+                teste = session_attr["sigla_alerta"]
+                logging.info(f"Valor de session silga_alerta: {teste}")
                 return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
 
             elif fund_name and fund_name.lower() not in allowed_funds:
@@ -641,6 +643,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Recupera valores da sessão (se vier do APL)
         fund_name = session_attr.get("sigla_alerta")
         alert_value = session_attr.get("valor_alerta")
+
+        teste = session_attr["sigla_alerta"]
+        logging.info(f"Valor de session silga_alerta 2: {teste}")
 
         # Se os valores ainda estiverem vazios, pega dos slots (caso tenha sido falado por voz)
         if not fund_name or not alert_value:
