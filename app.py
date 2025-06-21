@@ -115,10 +115,10 @@ def remover_sufixo_numerico(codigo):
     return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
 
 def limpar_fund_name(raw):
-    # Remove pontos e espaços, e converte pra minúsculas
+    """Remove espaços, pontos, números e converte para minúsculas"""
     if not raw:
         return None
-    return re.sub(r'[\s\.]', '', raw.lower())
+    return re.sub(r'[\s\.\d+$]', '', raw.lower())
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
@@ -543,7 +543,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 if fundo_id and fund_name_selected:
                     logging.info(f"💡 Alerta será criado para fundo exibido atualmente: {fund_name_selected}")
                     # continue normalmente com fundo_id como referência
-                    fund_name = fund_name_selected.strip().lower()
+                    fund_name = limpar_fund_name(fund_name_selected) # normaliza fund_name
                 else:
                     speech = "Você quer criar alerta para qual fundo?"
                     return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
