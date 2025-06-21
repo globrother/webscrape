@@ -937,7 +937,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
                 session_attr["state"] = fundo_state_id
                 session_attr["manual_selection"] = True
-                session_attr["alert_in_progress"] = False
+                session_attr["alert_in_progress"] = True
 
                 dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
                 speech_text = f"Mostrando o ativo {fund_name.upper()}."
