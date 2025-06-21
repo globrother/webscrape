@@ -996,6 +996,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     "dados_update": dados_info
                 }
             )).speak(f"{speech}<break time='500ms'/>{voz}").set_should_end_session(False)
+            session_attr["alert_in_progress"] = True
             return handler_input.response_builder.response
 
         # Fundo inválido reconhecido, redireciona para entrada manual
@@ -1326,7 +1327,6 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         elif contexto == "selecao_ativo":
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
-            session_attr["alert_in_progress"] = True
 
         elif contexto == "cadastro_ativo":
             apl_document = _load_apl_document("apl_add_ativo.json")
