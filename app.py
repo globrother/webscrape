@@ -134,10 +134,12 @@ def gerar_sinonimos(fundo):
     pontuada = ". ".join(letras)
     # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
     pontuada_upper = pontuada.upper()
-    # 5) Letras por extenso: "kê ene cê erre"
+    # 5) Sigla com pontos em minusculas: 'k. n. c. r.'
+    pontuada_literal = ". ".join(letras) + "." 
+    # 6) Letras por extenso: "kê ene cê erre"
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
     # Monta um set pra evitar duplicatas e retorna como lista
-    return list({contigua, separado, pontuada, pontuada_upper, extenso})
+    return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
 
 def get_dynamic_entities_directive():
     fundos = [remover_sufixo_numerico(v).lower()
