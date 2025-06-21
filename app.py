@@ -895,13 +895,19 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
         session_attr["contexto_atual"] = "selecao_ativo"
-
         logging.info(f"Intent recebido: {intent_name}")
+
+        intent = handler_input.request_envelope.request.intent
+        slots = intent.slots
+        fund_name = slots.get("fundName").value #if slots.get("fundName") else None
+        logging.info(f"🎙️ fund_name captado: {repr(fund_name)}")
+        logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+
+        allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
         #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
         #handler_input.response_builder.add_directive(directive)
-
 
         """REATIVAR DEPOIS
         if intent_name == "AMAZON.NextIntent":
@@ -917,99 +923,69 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             ).speak(speech_text).set_should_end_session(False)
             return handler_input.response_builder.response"""
 
-        try:
-            slots = handler_input.request_envelope.request.intent.slots
-            fund_name = slots.get("fundName").value #if slots.get("fundName") else None
-            logging.info(f"FUND_NAME captado por voz: {fund_name!r}")
-            logging.info(f"🎙️ Valor real captado no slot: {repr(fund_name)}")
-            logging.info("Entrou na Seleção Manual")
-            logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
-            
+        # Tentativa de reconhecimento por voz
+        tentativas = session_attr.get("tentativas_fundo", 0)
 
-            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-
-            """if not fund_name:
-                speech_text = "Não consegui entender o nome do ativo. Pode repetir, por favor?"
-                handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-                return handler_input.response_builder.response"""
-
-            if not fund_name:
-                speech = "Qual ativo deseja consultar?"
-                logging.info("Qual ativo deseja consultar?")
-                return (
-                    handler_input.response_builder
-                        .add_directive(
-                            ElicitSlotDirective(
-                                slot_to_elicit="fundName",
-                                updated_intent=handler_input.request_envelope.request.intent
-                            )
-                        )
-                        .speak(speech)
-                        .ask(speech)
-                        .response
-                )
-            
-            logging.info("Saindo do bloco <if not fund_name:>")
-
-            if fund_name and fund_name.strip().lower() in allowed_funds:
-                fund_name = fund_name.strip().lower()
-                fundo_full = None
-                fundo_state_id = None
-                for state_id, nome in state_fund_mapping.items():
-                    if remover_sufixo_numerico(nome).lower() == fund_name:
-                        fundo_full = nome
-                        fundo_state_id = state_id
-                        break
-
-                if not fundo_full:
-                    handler_input.response_builder.speak(
-                        f"Não consegui localizar o ativo {fund_name.upper()}."
-                    ).set_should_end_session(False)
-                    return handler_input.response_builder.response
-
-                session_attr["state"] = fundo_state_id
-                session_attr["manual_selection"] = True
-                session_attr["alert_in_progress"] = True
-
-                dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
-                speech_text = f"Mostrando o ativo {fund_name.upper()}."
-
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="mainScreenToken",
-                        document=apl_document,
-                        datasources={"dados_update": {
-                            **dados_info
-                            }
-                        }
-                    )
-                ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
-
-                return handler_input.response_builder.response
-
+        if not fund_name:
+            session_attr["tentativas_fundo"] = tentativas + 1
+            if tentativas < 2:
+                speech = "Desculpe, não entendi o nome do ativo. Pode repetir?"
+                return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
             else:
-                # Nome inválido → direcionar para tela de entrada manual
-                logging.info(f"Fundo não reconhecido: {fund_name.upper()}. Exibindo APL para entrada manual.")
-
-                apl_document = _load_apl_document("apl_select_ativo.json") # carrega o APL de entrada de dados
+                session_attr["tentativas_fundo"] = 0
                 session_attr["alert_in_progress"] = True
+                apl_doc = _load_apl_document("apl_select_ativo.json")
+                handler_input.response_builder.add_directive(RenderDocumentDirective(
+                    token="inputScreenToken", document=apl_doc))
+                speech = "Não consegui entender. Por favor, digite o nome do fundo na tela."
+                return handler_input.response_builder.speak(speech).set_should_end_session(False).response
+        
+        fund_name = fund_name.strip().lower()
 
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl_document
-                    )
-                )
+        if fund_name in allowed_funds:
+            fundo_full, fundo_state_id = next(
+                ((nome, state_id) for state_id, nome in state_fund_mapping.items()
+                if remover_sufixo_numerico(nome).lower() == fund_name),
+                (None, None)
+            )
 
-                speech_text = "Não consegui identificar o ativo que você mencionou. Digite o nome do fundo na tela."
-                handler_input.response_builder.speak(speech_text).set_should_end_session(False)
-                return handler_input.response_builder.response
+            if not fundo_full:
+                return handler_input.response_builder.speak(
+                    f"Não consegui localizar o ativo {fund_name.upper()}."
+                ).set_should_end_session(False).response
 
-        except Exception as e:
-            logging.error(f"Erro ao processar SelectFundIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao tentar mostrar o fundo. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
+            session_attr.update({
+            "state": fundo_state_id,
+            "manual_selection": True,
+            "alert_in_progress": True,
+            "tentativas_fundo": 0
+            })
+
+            try:
+                dados_info, _, _, _, apl_doc, voz = web_scrape(fundo_full)
+            except Exception as e:
+                logging.error(f"Erro no web_scrape para {fundo_full}: {e}")
+                return handler_input.response_builder.speak(
+                    "Ocorreu um erro ao recuperar as informações do ativo."
+                ).set_should_end_session(False).response
+
+            speech = f"Mostrando o ativo {fund_name.upper()}."
+            handler_input.response_builder.add_directive(RenderDocumentDirective(
+                token="mainScreenToken",
+                document=apl_doc,
+                datasources={
+                    "dados_update": dados_info
+                }
+            )).speak(f"{speech}<break time='500ms'/>{voz}").set_should_end_session(False)
             return handler_input.response_builder.response
+
+        # Fundo inválido reconhecido, redireciona para entrada manual
+        apl_doc = _load_apl_document("apl_select_ativo.json")
+        session_attr["alert_in_progress"] = True
+        handler_input.response_builder.add_directive(RenderDocumentDirective(
+            token="inputScreenToken", document=apl_doc))
+        speech = "Não reconheci esse ativo. Por favor, digite o nome na tela."
+        return handler_input.response_builder.speak(speech).set_should_end_session(False).response
 # ============================================================================================
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS PARA MOSTRAR FUNDO
