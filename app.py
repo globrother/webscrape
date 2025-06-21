@@ -555,17 +555,15 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
                 logging.info("Criando Novo Alerta")
                 logging.info(f"Valor de fund_name: {fund_name}")
-                if alert_value and alert_value_cents:
+                if alert_value and alert_value_cents and not fund_name:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
                     speech_text = "Para qual fundo você gostaria de criar esse alerta?"
                     logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    #logging.info(f"Valor recebido para valor do alerta: {alert_value}")
-                    #logging.info(f"Valor recebido para centavos: {alert_value_cents}")
                     reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
                     logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
-                else:
+                elif not alert_value and alert_value_cents:
                     session_attr["AlertValue"] = None
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
