@@ -45,7 +45,6 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 from alert_service import tratar_alerta
 from scraper import web_scrape
 import grava_historico
-import obter_grafico
 # ============================================================================================
 
 # LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS

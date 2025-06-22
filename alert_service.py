@@ -9,8 +9,8 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 from utils import limpar_asset_name  # onde estiver sua função
 from utils import state_asset_mapping
 from utils import _load_apl_document
+from scraper import web_scrape
 import grava_historico
-from app import web_scrape
 
 def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     """
