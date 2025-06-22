@@ -1135,7 +1135,8 @@ class SelectInputHandler(AbstractRequestHandler):
                 RenderDocumentDirective(
                     token="mainScreenToken",
                     document=apl_document,
-                    datasources={"dados_update": dados_info
+                    datasources={
+                        "dados_update": dados_info
                     }
                 )
             ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
@@ -1208,9 +1209,7 @@ class TouchHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 document=apl_document,
                 datasources={
-                    "dados_update": {
-                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
-                    }
+                    "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                 }
             )
         )
@@ -1258,8 +1257,6 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         # Mantém a sessão como 'não finalizada', caso algo esteja escutando
         handler_input.response_builder.set_should_end_session(False)
         return handler_input.response_builder.response
-
-
 # ============================================================================================
 
 # ============================================================================================
@@ -1308,32 +1305,13 @@ class FallbackIntentHandler(AbstractRequestHandler):
             )
 
         return response_builder.response
-
-    """def can_handle(self, handler_input):
-        return is_request_type("IntentRequest")(handler_input) and \
-            handler_input.request_envelope.request.intent.name == "AMAZON.FallbackIntent"
-
-    def handle(self, handler_input):
-        print("FallbackIntent acionado")
-        # Cria uma instância de TouchHandler
-        # touch_handler = TouchHandler()
-
-        # Chama o método handle de TouchHandler
-        # return touch_handler.handle(handler_input)
-
-        # Não altere o estado e não forneça resposta audível
-        handler_input.response_builder.set_should_end_session(False)
-        return handler_input.response_builder.response"""
 # ============================================================================================
-
 
 """
     Aqui eu peço o encerramento da skill caso nenhum handler seja capaz de lidar com a solicitação.
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
     método para essa solicitação.
 """
-
-
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         logging.info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
@@ -1385,7 +1363,6 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 # ============================================================================================
 
-
 @app.route('/webscrape', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -1393,7 +1370,7 @@ def webhook():
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
 
-    # Inicialize os handlers com card_xpml11
+    # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
@@ -1428,7 +1405,6 @@ def webhook():
     # Gere a resposta
     response = sb.lambda_handler()(data, None)
     return jsonify(response)
-
 
 if __name__ == '__main__':
     logging.info("\n Iniciando o servidor Flask...\n")
