@@ -590,6 +590,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 session_attr["sigla_alerta"] = fund_name  # isso garante persistência até o cadastro
                 teste = session_attr["sigla_alerta"]
                 logging.info(f"Valor de session silga_alerta: {teste}")
+                logging.info(f"Valor alert_value FORA: {alert_value}")
                 return self.processar_cadastro(handler_input)  # Chama a lógica de gravação
 
             elif fund_name and fund_name.lower() not in allowed_funds:
@@ -638,6 +639,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Recupera valores da sessão (se vier do APL ou de voz)
         fund_name = session_attr.get("sigla_alerta")
         alert_value = session_attr.get("AlertValue")
+        logging.info(f"Valor alert_value em Processar: {alert_value}")
 
         teste = session_attr["sigla_alerta"]
         logging.info(f"Valor de session silga_alerta 2: {teste}")
