@@ -697,7 +697,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         logging.info(f"\n Alerta criado: Fundo={fund_name}, Valor={valor}, Histórico={hist_alert_xpml}\n")
 
         # Reseta a sessão
-        session_attr["AlertValue"] = None  # Reset para uso futuro
+        #session_attr["AlertValue"] = None  # Reset para uso futuro
         session_attr["alert_in_progress"] = False
         session_attr["manual_selection"] = False
         session_attr["state"] = 2  # ou o state que desejar voltar
