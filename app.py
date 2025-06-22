@@ -144,8 +144,7 @@ def gerar_sinonimos(fundo):
     return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
 
 def get_dynamic_entities_directive():
-    fundos = [limpar_fund_name(v).lower()
-              for v in state_fund_mapping.values()]
+    fundos = [limpar_fund_name(v) for v in state_fund_mapping.values()]
     entities = [
         {
             "id": fundo,
