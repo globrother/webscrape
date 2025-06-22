@@ -997,10 +997,9 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 speech = "Não consegui entender. Por favor, digite o nome do fundo na tela."
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
-        fund_name = limpar_fund_name(fund_name) # normaliza fund_name
-        fund_name = fund_name.strip().lower()
+        sigla_normalizada = limpar_fund_name(fund_name)
 
-        if fund_name in allowed_funds:
+        if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_fund_mapping.items()
                 if remover_sufixo_numerico(nome).lower() == fund_name),
