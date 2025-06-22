@@ -652,27 +652,23 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Método reutilizável para salvar o alerta de preço 
         session_attr = handler_input.attributes_manager.session_attributes
 
-        # Recupera valores da sessão (se vier do APL ou de voz)
+        # Recupera valores da sessão (preferência para alerta completo)
         fund_name = session_attr.get("sigla_alerta")
-        alert_value = session_attr.get("AlertValue")
-        logging.info(f"Valor alert_value em Processar: {alert_value}")
+        alert_value = session_attr.get("AlertValue")  # Usa sempre esse!
+
+        logging.info(f"⚠️ Valor alert_value em Processar: {alert_value}")
 
         teste = session_attr["sigla_alerta"]
         logging.info(f"Valor de session silga_alerta 2: {teste}")
-
-        # Se os valores ainda estiverem vazios, pega dos slots (caso tenha sido falado por voz)
-        if not fund_name or not alert_value:
+        
+        # Se ainda não capturado, tenta recuperar de slot de voz como fallback
+        if not fund_name:
             intent = getattr(handler_input.request_envelope.request, "intent", None)
             slots = getattr(intent, "slots", {}) if intent else {}
 
             fund_slot = slots.get("fundName")
-            valor_slot = slots.get("alertValue")
-
             if fund_slot and fund_slot.value:
-                fund_name = fund_name or fund_slot.value
-
-            if valor_slot and valor_slot.value:
-                alert_value = alert_value or valor_slot.value
+                fund_name = fund_slot.value
 
         sigla_normalizada = limpar_fund_name(fund_name)
        
