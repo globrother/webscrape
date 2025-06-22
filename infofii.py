@@ -208,7 +208,7 @@ def get_dadosfii(fii):
         # meu_historico = grava_historico.ler_historico("historico_xpml.json")
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
         # logging.info("começar a chamar função de gravar Veja")
-        sufixo = app.remover_sufixo_numerico(fii)
+        sufixo = app.limpar_fund_name(fii)
         valor = f"R$ {cota_fii}"
         aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)
