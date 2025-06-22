@@ -575,21 +575,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
                     session_attr["alert_in_progress"] = True
 
-
-                """if alert_value and alert_value_cents and not fund_name:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
-                    session_attr["alert_in_progress"] = True
-                elif not alert_value and not alert_value_cents:
-                    session_attr["AlertValue"] = None
-                    speech_text = "Qual é o valor do alerta em reais e centavos?"
-                    reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
-                    session_attr["alert_in_progress"] = True"""
-
             # Passo 2: Pergunta o nome do fundo
             elif not fund_name or fund_name.lower() not in allowed_funds:
                 logging.info("FundName não foi capturado corretamente. Exibindo tela de entrada manual.")
@@ -679,6 +664,13 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if valor_slot and valor_slot.value:
                 alert_value = alert_value or valor_slot.value
 
+        # Capturando sigla completa do ativo
+        fundo_full = next(
+                ((nome) for nome in state_fund_mapping.items()
+                if nome or remover_sufixo_numerico(nome).lower() == fund_name),
+                (None, None)
+            )
+
         # Valida se os valores necessários foram capturados
         if not fund_name or not alert_value:
             speech_text = "Erro ao criar alerta. Certifique-se de preencher os campos corretamente."
@@ -709,7 +701,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         fundo = state_fund_mapping[1]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         handler_input.response_builder.speak(
-            f"Alerta de preço de {alert_value} reais criado para o fundo {fund_name}. Voltando para a tela inicial. <break time='700ms'/>"
+            f"Alerta de preço de {alert_value} reais criado para o fundo {fundo_full}. Voltando para a tela inicial. <break time='700ms'/>"
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
@@ -1022,7 +1014,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 "state": fundo_state_id,
                 "manual_selection": None,
                 "current_fund_id": fundo_state_id, # para uso em Alerta de Preço
-                "current_fund_name": fund_name, # para uso em Alerta de Preço
+                "current_fund_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False
             })
@@ -1093,10 +1085,8 @@ class SelectInputHandler(AbstractRequestHandler):
                     token="mainScreenToken",
                     document=apl_document,
                     datasources={
-                        "dados_update": {
-                            **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
-                        }
-                    }
+                        "dados_update": dados_info  # Agora o APL acessa esse valor 
+                    } # (o uso de ** expande o dicionário, ex: **{dados_info})
                 )
             ).set_should_end_session(False)
             return handler_input.response_builder.response
@@ -1139,7 +1129,7 @@ class SelectInputHandler(AbstractRequestHandler):
                 "state": fundo_state_id,
                 "manual_selection": None,
                 "current_fund_id": fundo_state_id, # para uso em Alerta de Preço
-                "current_fund_name": sigla, # para uso em Alerta de Preço
+                "current_fund_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False
             })
