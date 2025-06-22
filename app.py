@@ -993,7 +993,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_fund_mapping.items()
-                if nome == fund_name or limpar_fund_name(nome) == fund_name),
+                if limpar_fund_name(nome) == sigla_normalizada),
                 (None, None)
             )
 
@@ -1097,7 +1097,7 @@ class SelectInputHandler(AbstractRequestHandler):
 
             # Validação: sigla já existe?
             allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
-            sigla_normalizada = limpar_fund_name(sigla).strip()
+            sigla_normalizada = limpar_fund_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
@@ -1109,7 +1109,7 @@ class SelectInputHandler(AbstractRequestHandler):
             fundo_full = None
             fundo_state_id = None
             for state_id, nome in state_fund_mapping.items():
-                if nome == fundo_key or limpar_fund_name(nome) == fundo_key:
+                if limpar_fund_name(nome) == sigla_normalizada:
                     fundo_full = nome
                     fundo_state_id = state_id
                     break
