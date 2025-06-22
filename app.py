@@ -118,10 +118,11 @@ def limpar_fund_name(raw):
     # Normaliza o nome do ativo. Converte para minúsculas. Ex: 'X.P ML11' -> 'xpml'
     if not raw:
         return None
-    raw = str(raw).lower()
-    raw = re.sub(r'\s|\.', '', raw)         # Remove espaços e pontos
-    raw = re.sub(r'\d+$', '', raw)          # Remove números no final
-    return raw
+    if not isinstance(raw, str):
+        raw = str(raw).lower()
+        raw = re.sub(r'\s|\.', '', raw)         # Remove espaços e pontos
+        raw = re.sub(r'\d+$', '', raw)          # Remove números no final
+        return raw
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
