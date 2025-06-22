@@ -552,12 +552,21 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                 logging.info(f"Valor de fund_name: {fund_name}")
 
                 if not alert_value and not alert_value_cents:
-                    session_attr["AlertValue"] = None
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
                     session_attr["alert_in_progress"] = True
+                    session_attr["AlertValue"] = None
+                    return handler_input.response_builder.speak(speech_text).ask(reprompt_text).response
 
-                elif alert_value and alert_value_cents:
+                if alert_value and alert_value_cents and not fund_name:
+                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
+                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
+                    session_attr["alert_in_progress"] = True
+                    logging.info(f"Valor recebido para fund_name: {fund_name}")
+                    logging.info(f"Valor recebido para o alerta: {alert_value},{alert_value_cents}")
+                    return handler_input.response_builder.speak(speech_text).ask(reprompt_text).response
+
+                if alert_value and alert_value_cents:
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
                     logging.info(f"💰 Valor completo capturado: {session_attr['AlertValue']}")
 
@@ -569,16 +578,11 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     session_attr["AlertValue"] = f"0,{alert_value_cents}"
                     logging.info(f"💰 Apenas centavos capturado: {session_attr['AlertValue']}")
 
-                elif alert_value and alert_value_cents and not fund_name:
-                    #session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                    #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-                    speech_text = "Para qual fundo você gostaria de criar esse alerta?"
-                    logging.info(f"Valor recebido para fund_name: {fund_name}")
-                    reprompt_text = "Por favor, me diga o nome do fundo para o alerta."
-                    logging.info(f"\n Valor recebido para o alerta: {session_attr['AlertValue']}\n")
-                    session_attr["alert_in_progress"] = True
+                else:
+                    # Não capturou valor válido
+                    session_attr.setdefault("AlertValue", None)
 
-            # Passo 2: Pergunta o nome do fundo
+            # Passo 2: Nome do fundo inválido indo para o APL 
             elif not fund_name or fund_name.lower() not in allowed_funds:
                 logging.info("FundName não foi capturado corretamente. Exibindo tela de entrada manual.")
                 session_attr["alert_in_progress"] = True  # Mantém alerta ativo
