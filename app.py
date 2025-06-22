@@ -654,11 +654,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             if valor_slot and valor_slot.value:
                 alert_value = alert_value or valor_slot.value
-
+                
+        sigla_normalizada = limpar_fund_name(fund_name)
         # Capturando sigla completa do ativo
         fundo_full = next(
                 ((nome) for nome in state_fund_mapping.items()
-                if nome  == fund_name or limpar_fund_name(nome) == fund_name),
+                if limpar_fund_name(nome) == sigla_normalizada),
                 (None, None)
             )
 
@@ -1017,8 +1018,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 dados_info, _, _, _, apl_doc, voz = web_scrape(fundo_full)
             except Exception as e:
                 logging.error(f"Erro no web_scrape para {fundo_full}: {e}")
-                return handler_input.response_builder.speak(
-                    "Ocorreu um erro ao recuperar as informações do ativo."
+                return handler_input.response_builder.speak("Ocorreu um erro ao recuperar as informações do ativo."
                 ).set_should_end_session(False).response
 
             speech = f"Mostrando o ativo {fund_name.upper()}."
