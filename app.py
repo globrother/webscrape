@@ -667,7 +667,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Capturando sigla completa do ativo
         fundo_full = next(
                 ((nome) for nome in state_fund_mapping.items()
-                if nome or remover_sufixo_numerico(nome).lower() == fund_name),
+                if nome  == fund_name or remover_sufixo_numerico(nome).lower() == fund_name),
                 (None, None)
             )
 
@@ -1002,7 +1002,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_fund_mapping.items()
-                if remover_sufixo_numerico(nome).lower() == fund_name),
+                if nome == fund_name or remover_sufixo_numerico(nome).lower() == fund_name),
                 (None, None)
             )
 
@@ -1104,7 +1104,7 @@ class SelectInputHandler(AbstractRequestHandler):
 
             # Validação: sigla já existe?
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-            sigla_normalizada = limpar_fund_name(sigla)
+            sigla_normalizada = limpar_fund_name(sigla).strip()
 
             if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
@@ -1116,7 +1116,7 @@ class SelectInputHandler(AbstractRequestHandler):
             fundo_full = None
             fundo_state_id = None
             for state_id, nome in state_fund_mapping.items():
-                if remover_sufixo_numerico(nome).lower() == fundo_key:
+                if nome == fundo_key or remover_sufixo_numerico(nome).lower() == fundo_key:
                     fundo_full = nome
                     fundo_state_id = state_id
                     break
