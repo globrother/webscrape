@@ -136,8 +136,7 @@ def gerar_sinonimos(fundo):
     # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
     pontuada_upper = pontuada.upper()
     # 5) Sigla com pontos em minusculas: 'k. n. c. r.'
-    pontuada_literal = ". ".join(letras) + "." 
-    logging.info(f"PONTUADA LITERAL: : >> >>  {pontuada_literal}")
+    pontuada_literal = ". ".join(letras) + "."
     # 6) Letras por extenso: "kê ene cê erre"
     extenso = " ".join([letras_extenso.get(l, l) for l in letras])
     # Monta um set pra evitar duplicatas e retorna como lista
@@ -163,7 +162,7 @@ def get_dynamic_entities_directive():
         ]
     )
 
-
+# Carrega documentos APL da pasta principal
 def _load_apl_document(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -177,11 +176,10 @@ def _load_apl_document(file_path):
         print(f"File not found: {file_path}")
         return None
 
-
-voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
+#voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ============================================================================================
-
+# Faz a comparação do valor da cota com o valor para o alerta de preço.
 def comparador(historico, cota_atual, voz_fundo):
     # Verificar se o histórico é válido e contém pelo menos um registro
     if historico and isinstance(historico, list) and len(historico) >= 1:
@@ -207,12 +205,7 @@ def comparador(historico, cota_atual, voz_fundo):
 
     return voz_fundo
 
-# =====::::: SESSÃO WEBSCRAPE: ADICIONE UM NOVO FUNDO AQUI :::::=====
-
-# Receber o valor repassado pela tupla da função get_xxxx (alterar 4 var);
-# Criar uma nova função "web_scrape_xxxx" para cada novo fundo e definir as variáveis do fundo;
-# Ao todo são 18 alterações incluindo a função scrape e get.
-
+# ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
     fundo_fii = limpar_fund_name(fundo)
@@ -230,12 +223,10 @@ def web_scrape(fundo):
     #logging.info(f"valor de fii: {fii}")
     
     # 🔹 Obtendo Url do Gráfico
-    #url_grafico  = "https://graficoapi.duckdns.org:5000/static/grafico-bbas3-15dias.png?v=15"
     url_grafico = obter_grafico.requisitando_chart(fii)
     timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
-    #logging.info(f"Timestamp: {timestamp}")
     url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
-    #logging.info(f"URL do Gráfico 2: {url_grafico}")
+    #logging.info(f"URL do Gráfico: {url_grafico}")
 
     # Lista de links de imagens de planos de fundo
     background_images = [
@@ -273,6 +264,7 @@ def web_scrape(fundo):
     voz_fundo = voz
     voz = comparador(historico, cota_atual, voz_fundo)
 
+    # DIVIDE O HISTÓRICO EM DUAS COLUNAS
     #logging.info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
     hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
@@ -294,7 +286,7 @@ def web_scrape(fundo):
 
 # ============================================================================================
 
-# =====::::: CLASSES E INTENTS DA SKILL ALEXA :::::=====
+# ====================::::: CLASSES E INTENTS DA SKILL ALEXA :::::====================
 
 # HANDLER INICIAL DA SKILL, EXIBE PRIMEIRO ATIVO
 class LaunchRequestHandler(AbstractRequestHandler):
@@ -351,9 +343,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 document=apl_document,
                 datasources={
-                    "dados_update": {
-                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
-                    }
+                    "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                 }
             )
         )
@@ -489,11 +479,9 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 token="mainScreenToken",  # token para exibição de fundos
                 document=apl_document,
                 datasources={
-                    "dados_update": {
-                        **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
-                    }
+                    "dados_update":
+                        dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                 }
-                # Se APL usa datasources, adicionar: , datasources={...}
             )
         ).set_should_end_session(False)
         return handler_input.response_builder.response
