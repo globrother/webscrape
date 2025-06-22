@@ -586,6 +586,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # Passo 3: Cria o alerta se tudo estiver preenchido
             elif fund_name and fund_name.strip().lower() in allowed_funds:
+                alert_value = session_attr["AlertValue"]
                 session_attr["sigla_alerta"] = fund_name  # isso garante persistência até o cadastro
                 teste = session_attr["sigla_alerta"]
                 logging.info(f"Valor de session silga_alerta: {teste}")
@@ -634,9 +635,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Método reutilizável para salvar o alerta de preço 
         session_attr = handler_input.attributes_manager.session_attributes
 
-        # Recupera valores da sessão (se vier do APL)
+        # Recupera valores da sessão (se vier do APL ou de voz)
         fund_name = session_attr.get("sigla_alerta")
-        alert_value = session_attr.get("valor_alerta")
+        alert_value = session_attr.get("AlertValue")
 
         teste = session_attr["sigla_alerta"]
         logging.info(f"Valor de session silga_alerta 2: {teste}")
@@ -697,7 +698,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         fundo = state_fund_mapping[1]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         handler_input.response_builder.speak(
-            f"Alerta de preço de {alert_value} reais criado para o fundo {fundo_full}. Voltando para a tela inicial. <break time='700ms'/>"
+            f"Alerta de preço de {alert_value} reais e {alert_value_cents} criado para o fundo {fundo_full}. Voltando para a tela inicial. <break time='700ms'/>"
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
@@ -747,8 +748,8 @@ class AlertaInputHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 
         if arguments[0] == "valorAlerta":
-            session_attr["valor_alerta"] = arguments[1]
-            valor = session_attr.get("valor_alerta")
+            session_attr["AlertValue"] = arguments[1]
+            valor = session_attr.get("AlertValue")
             logging.info(f"O valor é: {valor}")
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
@@ -757,7 +758,7 @@ class AlertaInputHandler(AbstractRequestHandler):
 
         if arguments[0] == "cancelarAlerta":
             session_attr.pop("sigla_alerta", None)
-            session_attr.pop("valor_alerta", None)
+            session_attr.pop("AlertValue", None)
             session_attr["alert_in_progress"] = False
             session_attr["manual_selection"] = True
             session_attr["state"] = 2  # ou o state que desejar voltar
@@ -782,7 +783,7 @@ class AlertaInputHandler(AbstractRequestHandler):
 
         if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
-            valor = session_attr.get("valor_alerta")
+            valor = session_attr.get("AlertValue")
             logging.info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
             if not sigla or not valor:
                 logging.info("Erro ao cadastrar Ativo")
