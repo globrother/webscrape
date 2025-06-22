@@ -9,5 +9,5 @@ gunicorn==23.0.0
 parse==1.20.2
 pip==25.0.1
 pytz==2024.2
-Requests==2.32.3
+Requests==2.32.4
 ParsePy==0.3.20150629
