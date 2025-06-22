@@ -174,7 +174,7 @@ def _load_apl_document(file_path):
         print(f"File not found: {file_path}")
         return None
 
-#voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
+voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ============================================================================================
 # Faz a comparação do valor da cota com o valor para o alerta de preço.
@@ -635,12 +635,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     speech_text).ask(reprompt_text)
                 session_attr["alert_in_progress"] = True
                 return handler_input.response_builder.response
-
-            handler_input.response_builder.speak(speech_text)
-            if reprompt_text:
-                handler_input.response_builder.ask(reprompt_text)
-
-            return handler_input.response_builder.response
 
         except Exception as e:
             logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
