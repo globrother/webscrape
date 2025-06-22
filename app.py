@@ -526,14 +526,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
 
-        """if session_attr.get("select_in_progress") and not handler_input.request_envelope.request.intent.slots.get("fundName").value:
-            logging.info("🛑 Seleção ainda em andamento e slot fundName não informado. Pausando Criação de Alerta.")
-            return False
-        
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)"""
-
-        
-
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         # handler_input.response_builder.add_directive(get_dynamic_entities_directive())
@@ -1029,8 +1021,8 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             session_attr.update({
                 "state": fundo_state_id,
                 "manual_selection": None,
-                "current_fund_id": fundo_state_id,
-                "current_fund_name": fundo_full,
+                "current_fund_id": fundo_state_id, # para uso em Alerta de Preço
+                "current_fund_name": fund_name, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False
             })
@@ -1053,7 +1045,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             )).speak(f"{speech}<break time='500ms'/>{voz}").set_should_end_session(False)
             return handler_input.response_builder.response
 
-        # Fundo inválido reconhecido, redireciona para entrada manual
+        # O ativo não é válido, redireciona para entrada manual
         apl_doc = _load_apl_document("apl_select_ativo.json")
         session_attr["alert_in_progress"] = True
         handler_input.response_builder.add_directive(RenderDocumentDirective(
@@ -1080,7 +1072,7 @@ class SelectInputHandler(AbstractRequestHandler):
 
         if arguments[0] == "siglaSelectAtivo":
             session_attr["sigla_select_ativo"] = arguments[1].strip().lower()
-            speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
+            speech_text = "Se os dados estiverem corretos, toque em Confirmar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 "Você pode confirmar ou corrigir o nome do ativo.").set_should_end_session(False)
             return handler_input.response_builder.response
@@ -1143,9 +1135,14 @@ class SelectInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Atualiza sessão
-            session_attr["state"] = fundo_state_id
-            session_attr["manual_selection"] = True
-            session_attr["alert_in_progress"] = False
+            session_attr.update({
+                "state": fundo_state_id,
+                "manual_selection": None,
+                "current_fund_id": fundo_state_id, # para uso em Alerta de Preço
+                "current_fund_name": sigla, # para uso em Alerta de Preço
+                "select_in_progress": False,
+                "manual_selection": False
+            })
 
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
             speech_text = f"Mostrando o ativo {sigla.upper()}."
@@ -1154,9 +1151,7 @@ class SelectInputHandler(AbstractRequestHandler):
                 RenderDocumentDirective(
                     token="mainScreenToken",
                     document=apl_document,
-                    datasources={"dados_update": {
-                        **dados_info
-                        }
+                    datasources={"dados_update": dados_info
                     }
                 )
             ).speak(f"{speech_text}<break time='500ms'/>{voz}").set_should_end_session(False)
