@@ -41,14 +41,9 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 
 # from typing import Dict, Any
 
-# NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json PARA CADA FII QUE DESEJA MONITORAR
-
-# IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
-# Não se esqueça de duplicar um arquivo nome-do-fundo.py ...
-# ... e alterar o nome da função get_xxxx e todas as variáveis.
-from infofii import get_dadosfii
+#from infofii import get_dadosfii
 from alert_service import tratar_alerta
-# from xpml11 import get_xpml
+from scraper import web_scrape
 import grava_historico
 import obter_grafico
 # ============================================================================================
@@ -178,7 +173,7 @@ def _load_apl_document(file_path):
 voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ============================================================================================
-# Faz a comparação do valor da cota com o valor para o alerta de preço.
+"""# Faz a comparação do valor da cota com o valor para o alerta de preço.
 def comparador(historico, cota_atual, voz_fundo):
     # Verificar se o histórico é válido e contém pelo menos um registro
     if historico and isinstance(historico, list) and len(historico) >= 1:
@@ -203,9 +198,9 @@ def comparador(historico, cota_atual, voz_fundo):
         logging.info("\n Histórico está vazio ou não é uma lista válida \n")
 
     return voz_fundo
-
+"""
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
-def web_scrape(fundo):
+"""def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
     fundo_fii = limpar_fund_name(fundo)
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
@@ -282,7 +277,7 @@ def web_scrape(fundo):
     }
 
     return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
-
+"""
 # ============================================================================================
 
 # ====================::::: CLASSES E INTENTS DA SKILL ALEXA :::::====================

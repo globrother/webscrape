@@ -1,0 +1,169 @@
+{
+    "type": "APL",
+    "version": "2024.3",
+    "description": "Documento APL para selecionar um ativo",
+    "theme": "dark",
+    "import": [
+        {
+            "name": "alexa-layouts",
+            "version": "1.7.0"
+        },
+        {
+            "name": "alexa-styles",
+            "version": "1.6.0"
+        }
+    ],
+    "mainTemplate": {
+        "items": [
+            {
+                "type": "Container",
+                "height": "100%",
+                "width": "100%",
+                "alignItems": "stretch",
+                "padding": [
+                    "@marginHorizontal",
+                    "@spacing3XLarge"
+                ],
+                "bind": [
+                    {
+                        "name": "FinalInput",
+                        "value": ""
+                    }
+                ],
+                "items": [
+                    {
+                        "type": "AlexaBackground",
+                        "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+                        "backgroundScale": "best-fill"
+                    },
+                    {
+                        "type": "Text",
+                        "text": "Entrada de Dados para Selecionar o Ativo",
+                        "fontSize": "50dp",
+                        "textAlign": "center",
+                        "style": "textStylePrimary1"
+                    },
+                    {
+                        "type": "Text",
+                        "text": "Digite a sigla sem número para o ativo:",
+                        "fontSize": "30dp",
+                        "textAlign": "left",
+                        "spacing": "@spacing3XLarge",
+                        "style": "textStylePrimary1"
+                    },
+                    {
+                        "type": "Frame",
+                        "height": "65",
+                        "borderColor": "#3B82F6",
+                        "borderWidth": 2,
+                        "borderRadius": 15,
+                        "paddingLeft": 15,
+                        "paddingTop": 12,
+                        "spacing": 10,
+                        "items": [
+                            {
+                                "type": "EditText",
+                                "id": "ativoInput",
+                                "hint": "Ex: mxrf",
+                                "hintColor": "#547c8e",
+                                "hintWeight": "100",
+                                "fontSize": "35dp",
+                                "submitKeyType": "done",
+                                "onSubmit": [
+                                    {
+                                        "type": "SendEvent",
+                                        "arguments": [
+                                            "siglaSelectAtivo",
+                                            "${event.source.value}"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Container",
+                        "direction": "row",
+                        "spacing": 60,
+                        "alignItems": "center",
+                        "justifyContent": "center",
+                        "items": [
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#3B82F6",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#3B82F6",
+                                "alignSelf": "center",
+                                "right": "50",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "confirmarSelect"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Confirmar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#F87171",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#F87171",
+                                "alignSelf": "center",
+                                "left": "50",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "cancelarSelect"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Cancelar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "paddingLeft": 40,
+                "paddingRight": 40,
+                "paddingTop": 40,
+                "paddingBottom": 40
+            }
+        ]
+    }
+}

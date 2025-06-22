@@ -55,12 +55,12 @@ def gravar_historico(sufixo, valor):
     logging.info("--> Iniciando Gravar Histórico\n")
     
     if not testar_conexao():
-        print("\n Erro ao conectar com o servidor Back4App.")
+        print("Erro ao conectar com o servidor Back4App.")
         return
     
     nome_classe = obter_nome_classe(sufixo)
     
-    logger.info(f"Função gravar iniciada para: {nome_classe}\n")
+    logger.info(f"Função gravar iniciada para: {nome_classe}")
     
     data_atual = datetime.datetime.now(brt_tz).strftime("%d/%m/%Y")
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
@@ -141,19 +141,19 @@ def gravar_historico(sufixo, valor):
 
 def ler_historico(sufixo):
     try:
-        logging.info("--> Iniciando Ler Histórico\n")
+        logging.info("--> Iniciando Ler Histórico")
         
         if not testar_conexao():
-            print("\n Erro ao conectar com o servidor Back4App.\n")
+            print("Erro ao conectar com o servidor Back4App.")
             return
         
         nome_classe = obter_nome_classe(sufixo)
-        logging.info(f"\n Iniciando Leitura de: {nome_classe}\n")
+        logging.info(f"Iniciando Leitura de: {nome_classe}")
         
         # Conexão ao servidor Back4App
         connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
         connection.connect()
-        logger.info(f"\n Conectando ao servidor para ler: {nome_classe}\n")
+        logger.info(f"Conectando ao servidor para ler: {nome_classe}")
 
         # Requisição GET para recuperar objetos da classe ordenados por createdAt
         connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
@@ -179,12 +179,12 @@ def gerar_texto_historico(historico, aux):
         logger.info("\n Histórico está vazio\n")
         return "• 00/00/0000\u2003R$ 0,00"
     
-    logging.info("Iniciando condição")
+    #logging.info("Iniciando condição")
     
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"]}\u2003{registro["valor"]}' for registro in historico]
-        logging.info(f"\n Linhas antes: {linhas}\n")
+        linhas = [f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{registro["valor"]}' for registro in historico]
+        #logging.info(f"\n Linhas antes: {linhas}\n")
         if len(linhas) > 1:
             if len(linhas) >= 4:
                 linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
@@ -198,14 +198,17 @@ def gerar_texto_historico(historico, aux):
             linhas = [linhas[0]]
         #if len(linhas) > 1:
             #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-        logger.info(f"Histórico de alerta gerado: {linhas}\n")
+        logger.info(f"Histórico de alerta gerado: {linhas}")
         return "<br>".join(linhas)
     else:
-        linhas = [f'{registro["data"]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        logger.info("\n Histórico de fundo gerado\n")
-        return "<br>".join(linhas)
+        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
+        
+        #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
+        logger.info("Histórico de fundo gerado")
+        #return "<br>".join(linhas)
+        return linhas
 
-
+#::--> CARREGAR LISTA DE ATIVOS - USA CACHE EM ATÉ 10 MINUTOS <--::
 # Variáveis globais para cache
 _ativos_cache = None
 _ativos_cache_time = 0
@@ -228,7 +231,7 @@ def carregar_ativos():
     }
     response = requests.get(url, headers=headers)
     data = response.json()
-    print("DEBUG resposta Back4App:", data)  # ou logger.info(...)
+    logger.info("DEBUG resposta Back4App:", data)  # ou logger.info(...)
     ativos = data['results']
     state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['ativo']}
     # Atualiza o cache
@@ -239,6 +242,7 @@ def carregar_ativos():
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
 
+#::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
 def adicionar_ativo(ativo_dict):
     url = "https://parseapi.back4app.com/classes/map_ativo"
     headers = {
