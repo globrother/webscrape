@@ -698,7 +698,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         fundo = state_fund_mapping[1]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         handler_input.response_builder.speak(
-            f"Alerta de preço de {alert_value} reais e {alert_value_cents} criado para o fundo {fundo_full}. Voltando para a tela inicial. <break time='700ms'/>"
+            f"Alerta de preço de {alert_value} reais criado para o fundo {fundo_full}. Voltando para a tela inicial. <break time='700ms'/>"
         ).add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
