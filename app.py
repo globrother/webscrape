@@ -115,14 +115,12 @@ ativos_favoritos = [1, 2, 3, 4]
     return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)"""
 
 def limpar_fund_name(raw):
-    # Normaliza o nome do ativo. Converte para minúsculas. Ex: 'X.P ML11' -> 'xpml'
     if not raw:
         return None
-    if not isinstance(raw, str):
-        raw = str(raw).lower()
-        raw = re.sub(r'\s|\.', '', raw)         # Remove espaços e pontos
-        raw = re.sub(r'\d+$', '', raw)          # Remove números no final
-        return raw
+    raw = str(raw).lower()
+    raw = re.sub(r'\s|\.', '', raw)     # Remove espaços e pontos
+    raw = re.sub(r'\d+$', '', raw)      # Remove números no final
+    return raw
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
