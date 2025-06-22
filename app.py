@@ -796,7 +796,9 @@ class AlertaInputHandler(AbstractRequestHandler):
 
             # Validação: sigla já existe?
             allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
-            if sigla and sigla.lower() not in allowed_funds:
+            sigla_normalizada = limpar_fund_name(sigla)
+
+            if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
                 return handler_input.response_builder.response
