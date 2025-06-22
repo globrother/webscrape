@@ -997,7 +997,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 (None, None)
             )
 
-            logging.infor(f"fundo full é: {fundo_full}")
+            logging.info(f"fundo full é: {fundo_full}")
 
             if not fundo_full:
                 return handler_input.response_builder.speak(
