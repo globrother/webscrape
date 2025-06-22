@@ -512,8 +512,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
         # Bloqueia alerta de preço se seleção estiver ativo
         if isinstance(request, IntentRequest):
-            fund_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
-            if session_attr.get("select_in_progress") and not fund_name:
+            asset_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
+            if session_attr.get("select_in_progress") and not asset_name:
                 logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
                 return False
 
