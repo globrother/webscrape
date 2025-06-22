@@ -654,14 +654,18 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             if valor_slot and valor_slot.value:
                 alert_value = alert_value or valor_slot.value
-                
+
         sigla_normalizada = limpar_fund_name(fund_name)
+       
         # Capturando sigla completa do ativo
-        fundo_full = next(
-                ((nome) for nome in state_fund_mapping.items()
-                if limpar_fund_name(nome) == sigla_normalizada),
-                (None, None)
-            )
+        fundo_full, fundo_state_id = next(
+            (
+                (nome, state_id)
+                for state_id, nome in state_fund_mapping.items()
+                if limpar_fund_name(nome) == sigla_normalizada
+            ),
+            (None, None)
+        )
 
         # Valida se os valores necessários foram capturados
         if not fund_name or not alert_value:
