@@ -110,15 +110,18 @@ letras_extenso = {
 
 ativos_favoritos = [1, 2, 3, 4]
 
-def remover_sufixo_numerico(codigo):
+"""def remover_sufixo_numerico(codigo):
     # Remove qualquer sequência de dígitos no final do código
-    return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)
+    return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)"""
 
 def limpar_fund_name(raw):
-    """Remove espaços, pontos, números e converte para minúsculas"""
+    # Normaliza o nome do ativo. Converte para minúsculas. Ex: 'X.P ML11' -> 'xpml'
     if not raw:
         return None
-    return re.sub(r'[\s\.\d+$]', '', raw.lower())
+    raw = str(raw).lower()
+    raw = re.sub(r'\s|\.', '', raw)         # Remove espaços e pontos
+    raw = re.sub(r'\d+$', '', raw)          # Remove números no final
+    return raw
 
 def gerar_sinonimos(fundo):
     # normaliza tudo em minúsculas
@@ -141,7 +144,7 @@ def gerar_sinonimos(fundo):
     return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
 
 def get_dynamic_entities_directive():
-    fundos = [remover_sufixo_numerico(v).lower()
+    fundos = [limpar_fund_name(v).lower()
               for v in state_fund_mapping.values()]
     entities = [
         {
@@ -212,7 +215,7 @@ def comparador(historico, cota_atual, voz_fundo):
 
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo
-    fundo_fii = remover_sufixo_numerico(fundo)
+    fundo_fii = limpar_fund_name(fundo)
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
     # Carregar APL padrão de exibiçaõ dos fundos
     apl_document = _load_apl_document(doc_apl)
@@ -459,7 +462,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 "state_id": novo_state_id,
                 "codigo": sigla,
                 "nome": nome,
-                "apelido": remover_sufixo_numerico(sigla).upper(),
+                "apelido": limpar_fund_name(sigla).upper(),
                 "ativo": True
             }
         grava_historico.adicionar_ativo(novo_ativo)
@@ -553,7 +556,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
 
 
-            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
+            allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
 
             # Passo 1: Pergunta o valor do alerta se ainda não foi informado
             if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
@@ -667,7 +670,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # Capturando sigla completa do ativo
         fundo_full = next(
                 ((nome) for nome in state_fund_mapping.items()
-                if nome  == fund_name or remover_sufixo_numerico(nome).lower() == fund_name),
+                if nome  == fund_name or limpar_fund_name(nome) == fund_name),
                 (None, None)
             )
 
@@ -795,7 +798,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
+            allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
             sigla_normalizada = limpar_fund_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
@@ -961,7 +964,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         resolved_id = value.value.id
                         logging.info(f"🎯 Resolvido como ID: {resolved_id}")
 
-        allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
+        allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
         #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
@@ -1002,7 +1005,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_fund_mapping.items()
-                if nome == fund_name or remover_sufixo_numerico(nome).lower() == fund_name),
+                if nome == fund_name or limpar_fund_name(nome) == fund_name),
                 (None, None)
             )
 
@@ -1103,7 +1106,7 @@ class SelectInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [remover_sufixo_numerico(v).lower() for v in state_fund_mapping.values()]
+            allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
             sigla_normalizada = limpar_fund_name(sigla).strip()
 
             if sigla_normalizada not in allowed_funds:
@@ -1116,7 +1119,7 @@ class SelectInputHandler(AbstractRequestHandler):
             fundo_full = None
             fundo_state_id = None
             for state_id, nome in state_fund_mapping.items():
-                if nome == fundo_key or remover_sufixo_numerico(nome).lower() == fundo_key:
+                if nome == fundo_key or limpar_fund_name(nome) == fundo_key:
                     fundo_full = nome
                     fundo_state_id = state_id
                     break
