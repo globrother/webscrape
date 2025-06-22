@@ -556,6 +556,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
                     speech_text = "Qual é o valor do alerta em reais e centavos?"
                     reprompt_text = "Por favor, me diga o valor do alerta em reais e centavos."
                     session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
+                    logging.info(f"Valor alert_value COMEÇO: {alert_value}")
                     session_attr["alert_in_progress"] = True
                 elif alert_value and alert_value_cents and not fund_name:
                     #session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
