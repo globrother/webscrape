@@ -20,15 +20,15 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
       reprompt: opcional, texto para reprompt
       directives: opcional, lista de directives APL/Commands
     """
-    # 1) Se slot de fundName veio, grava IMEDIATAMENTE em sessão
-    slot_asset = slots.get("fundName")
-    if slot_asset and slot_asset.value:
-        session_attr["sigla_alerta"] = limpar_asset_name(slot_asset.value)
-        logging.info(f"[Service] Slot fundName salvo em sessão: {session_attr['sigla_alerta']}")
+    # 1) lê os slots de voz
+    alert_value = slots.get("alertValue")
+    alert_value = alert_value.value if alert_value else None
+    alert_value_cents = slots.get("alertValueCents")
+    alert_value_cents = alert_value_cents.value if alert_value_cents else None
+    asset_name = slots.get("fundName")
+    asset_name = asset_name.value if asset_name else None
 
-    # 2) Recupera o ativo da sessão (pode ter vindo de APL ou do slot acima)
-    asset_name = session_attr.get("sigla_alerta")
-    # Se ainda não tiver asset_name, tenta seleção via APL (current_asset_id/name)
+    # 2) slot de ativo vazio? tenta seleção APL já existente
     if not asset_name:
         cid = session_attr.get("current_asset_id")
         cname = session_attr.get("current_asset_name")
@@ -37,53 +37,43 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
             session_attr["sigla_alerta"] = asset_name
             logging.info(f"[Service] Usando ativo atual: {asset_name}")
         else:
-            # nunca apareceu nomal na sessão → pergunta somente 1x
-            session_attr["alert_in_progress"] = True
             return {
                 "action": "ask_fund",
                 "speech": "Para qual ativo você quer criar o alerta?",
                 "reprompt": "Por favor, diga o nome do ativo."
             }
 
-    # 3) Normaliza e identifica full name + id
-    sigla = asset_name  # já limpo
+    # 3) normaliza e busca full name + id
+    sigla = limpar_asset_name(asset_name)
     ativos_permitidos = [limpar_asset_name(n) for n in state_asset_mapping.values()]
     asset_full, asset_state_id = next(
-        ((n, sid)
-         for sid, n in state_asset_mapping.items()
-         if limpar_asset_name(n) == sigla),
+        ((n, sid) for sid, n in state_asset_mapping.items() if limpar_asset_name(n) == sigla),
         (None, None)
     )
 
-    # 4) Valor do alerta: só entra aqui se não tiver sido montado
-    alert_value = session_attr.get("AlertValue")
-    if alert_value is None:
-        # lê slots de valor
-        rv = slots.get("alertValue")
-        cv = slots.get("alertValueCents")
-        real = rv.value if rv and rv.value else None
-        cents = cv.value if cv and cv.value else None
-
-        # 4.1) nenhum slot de valor informado -> pergunta 1x
-        if not real and not cents:
+    # 4) valor ainda não montado?
+    if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
+        # nenhum slot de valor
+        if not alert_value and not alert_value_cents:
             session_attr["alert_in_progress"] = True
             return {
                 "action": "ask_value",
                 "speech": "Qual é o valor do alerta em reais e centavos?",
                 "reprompt": "Por favor, diga o valor em reais e centavos."
             }
-
-        # 4.2) monta AlertValue
-        if real and cents:
-            session_attr["AlertValue"] = f"{real},{cents}"
-        elif real:
-            session_attr["AlertValue"] = f"{real},00"
+        # slot informou só reais
+        if alert_value and not alert_value_cents:
+            session_attr["AlertValue"] = f"{alert_value},00"
+        # slot informou só centavos
+        elif alert_value_cents and not alert_value:
+            session_attr["AlertValue"] = f"0,{alert_value_cents}"
+        # slot informou ambos
         else:
-            session_attr["AlertValue"] = f"0,{cents}"
+            session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
 
         logging.info(f"[Service] AlertValue montado: {session_attr['AlertValue']}")
 
-    # 5) Valida sigla: se inválida, exibe APL 1x
+    # 5) sigla inválida → exibe APL de entrada manual
     if sigla not in ativos_permitidos or not asset_full:
         session_attr["alert_in_progress"] = True
         apl = _load_apl_document("apl_add_alerta.json")
@@ -95,20 +85,20 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
             ]
         }
 
-    # 6) Tudo OK: CRIA o alerta
+    # 6) tudo OK: cria alerta
     alert_value = session_attr["AlertValue"]
     key = f"alert_value_{sigla}"
     session_attr[key] = alert_value
     logging.info(f"[Service] Salvando alerta: {sigla} → {alert_value}")
 
-    # Grava histórico
+    # grava histórico
     valor_formatado = f"R$ {alert_value}"
     grava_historico.gravar_historico(key, valor_formatado)
     historico = grava_historico.ler_historico(key)
     texto_hist = grava_historico.gerar_texto_historico(historico, "alert")
     logging.info(f"[Service] Histórico gerado: {texto_hist}")
 
-    # Prepara directives de retorno (tela inicial + navegação)
+    # prepara directives de retorno (tela inicial + navegação)
     first_asset = state_asset_mapping[1]
     dados_info, _, _, _, apl_doc, _ = web_scrape(first_asset)
     directives = [
@@ -123,7 +113,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
         )
     ]
 
-    # Limpa estado
+    # limpa estado
     session_attr["AlertValue"] = None
     session_attr["alert_in_progress"] = False
     session_attr["manual_selection"] = False
