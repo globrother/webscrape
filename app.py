@@ -90,6 +90,25 @@ logger.warning("🟠 WARNING ativo")
 logger.error("🔴 ERROR ativo")
 
 
+try:
+    response = requests.post(
+        url="https://s1357375.eu-nbg-2.betterstackdata.com",  # sua URL de ingestão
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {LOG_LOGTAIL_KEY}"
+        },
+        json={
+            "dt": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "message": "🚀 Enviado manualmente com requests.post()"
+        }
+    )
+    logging.info(f"✅ Envio manual feito. Status: {response.status_code}")
+except Exception as e:
+    logging.info(f"❌ Falha ao enviar log manual: e")
+
+
+
+
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
 
