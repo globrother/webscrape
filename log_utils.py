@@ -45,24 +45,6 @@ if LOG_LOGTAIL_KEY:
 else:
     logger.warning("⚠️ LOG_LOGTAIL_KEY ausente — sem envio externo de logs.")
 
-# 🎯 Configura também o logger raiz (root logger) para capturar logging.info()
-root_logger = logging.getLogger()
-root_logger.setLevel(logging.DEBUG if DEBUG_MODE else logging.INFO)
-
-# Console handler para o root logger
-root_console_handler = logging.StreamHandler()
-root_console_handler.setFormatter(formatter)
-root_logger.addHandler(root_console_handler)
-
-# Logtail handler para o root logger
-if LOG_LOGTAIL_KEY:
-    root_logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
-    root_logtail_handler.setFormatter(formatter)
-    root_logger.addHandler(root_logtail_handler)
-    logging.info("✅ Root logger conectado ao Logtail com sucesso!")
-else:
-    logging.warning("⚠️ Root logger sem Logtail — apenas saída local")
-
 # funções utilitárias
 
 def log_debug(msg):
