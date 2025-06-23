@@ -66,17 +66,15 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_intent_ev
 if not DEBUG_MODE:
     logging.basicConfig(level=logging.INFO)
 
-from log_utils import LogtailSafeHandler  # importa o handler direto
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
 
-root_logger = logging.getLogger()
-root_logger.setLevel(logging.INFO)
+    formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
 
-formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
-
-if LOG_LOGTAIL_KEY:
-    root_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
-    root_handler.setFormatter(formatter)
-    root_logger.addHandler(root_handler)
+    if LOG_LOGTAIL_KEY:
+        root_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
+        root_handler.setFormatter(formatter)
+        root_logger.addHandler(root_handler)
 
 # ============================================================================
 
