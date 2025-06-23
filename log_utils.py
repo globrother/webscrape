@@ -1,6 +1,7 @@
 import logging
 import datetime
 import requests
+import json
 import os
 
 DEBUG_MODE = False  # Defina como False para ocultar logs de debug
@@ -64,6 +65,14 @@ def log_intent_event(handler_input, detalhe=""):
     try:
         intent = handler_input.request_envelope.request.intent.name
         user_id = handler_input.request_envelope.context.system.user.user_id
-        logger.info(f"🧠 Intent: {intent} | Usuário: {user_id} | {detalhe}")
+        logger.info(f"🧠 Intent: {intent} | {detalhe}") # | Usuário: {user_id}
     except Exception as e:
         logger.warning(f"⚠️ Erro ao logar evento de intent: {e}")
+
+def log_session_state(handler_input, contexto=""):
+    try:
+        session_attr = handler_input.attributes_manager.session_attributes
+        session_str = json.dumps(session_attr, ensure_ascii=False)
+        logger.info(f"🗂️ Sessão atual {f'({contexto})' if contexto else ''}: {session_str}")
+    except Exception as e:
+        logger.warning(f"⚠️ Erro ao registrar estado da sessão: {e}")

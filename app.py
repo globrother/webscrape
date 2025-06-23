@@ -60,7 +60,7 @@ import grava_historico
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
-from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, DEBUG_MODE, LOG_LOGTAIL_KEY
+from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
 
 # Para uso dos logs já configurados como root: logging.info("")
 """if not DEBUG_MODE:
@@ -547,7 +547,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         if isinstance(request, IntentRequest):
             asset_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
             if session_attr.get("select_in_progress") and not asset_name:
-                log_info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
+                log_warning("🛑 Seleção em andamento, fundName ausente. Bloqueando CreatePriceAlertIntent.")
                 return False
 
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -671,7 +671,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler DynamicScreen")
         session_attr = handler_input.attributes_manager.session_attributes
-        log_info(f"session_attr no início: {session_attr}")
+        log_session_state(handler_input, "session_attr no início")
         request_type = handler_input.request_envelope.request.object_type
         log_debug(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
 
@@ -707,7 +707,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_info(f"ativos_ids: {ativos_ids}")
         #log_info(f"exibir_favoritos: {exibir_favoritos}")
         log_info(f"current_state: {current_state}")
-        log_info(f"session_attr: {session_attr}")
+        log_session_state(handler_input, "Atributos da sessão")
 
         # Garante que tipos são iguais (tudo int ou tudo str)
         ativos_ids = [int(a) for a in ativos_ids]
