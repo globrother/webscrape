@@ -86,7 +86,7 @@ time.sleep(1)
 
 app = Flask(__name__)
 
-log_debug("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
+log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
@@ -1090,7 +1090,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
 
-        log_intent_event(handler_input, "📌 SessionEndedRequestHandler acionado.")
+        log_warning("SessionEndedRequestHandler acionado.")
 
         # Coleta motivo e detalhes do encerramento
         reason = getattr(request, "reason", "Motivo não informado")
