@@ -63,7 +63,7 @@ import logging
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, DEBUG_MODE, LOG_LOGTAIL_KEY
 
 # Para uso dos logs já configurados como root: logging.info("")
-if not DEBUG_MODE:
+"""if not DEBUG_MODE:
     logging.basicConfig(level=logging.INFO)
 
     root_logger = logging.getLogger()
@@ -76,6 +76,7 @@ if not DEBUG_MODE:
         root_handler.setFormatter(formatter)
         root_logger.addHandler(root_handler)
 
+"""
 # ============================================================================
 
 # Define o fuso horário para horário de Brasília
@@ -347,13 +348,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr["ativos_ids"] = ativos_ids
 
         log_debug("=== LaunchRequestHandler.handle ===")
-        #logging.info(f"Hora: {hora}")
-        logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
-        logging.info(f"ativos_ids definidos: {ativos_ids}")
+        #log_info(f"Hora: {hora}")
+        log_info(f"intervalos_favoritos: {intervalos_favoritos}")
+        log_info(f"ativos_ids definidos: {ativos_ids}")
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
-        logging.info(f"state inicial: {session_attr['state']}")
+        log_info(f"state inicial: {session_attr['state']}")
         fundo = state_asset_mapping[ativos_ids[0]]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -496,7 +497,7 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
         # Feedback imediato e avanço de tela
         fundo = state_asset_mapping[novo_state_id]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-        logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
+        log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
         session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
         session_attr["state"] = 1 # Estado da Sessão para primeira página
@@ -546,7 +547,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         if isinstance(request, IntentRequest):
             asset_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
             if session_attr.get("select_in_progress") and not asset_name:
-                logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
+                log_info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
                 return False
 
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
@@ -607,7 +608,7 @@ class AlertaInputHandler(APLUserEventHandler):
         if arguments[0] == "valorAlerta":
             session_attr["AlertValue"] = arguments[1]
             valor = session_attr.get("AlertValue")
-            logging.info(f"O valor é: {valor}")
+            log_info(f"O valor é: {valor}")
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
@@ -641,9 +642,9 @@ class AlertaInputHandler(APLUserEventHandler):
         if arguments[0] == "confirmarAlerta":
             sigla = session_attr.get("sigla_alerta")
             valor = session_attr.get("AlertValue")
-            logging.info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
+            log_info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
             if not sigla or not valor:
-                logging.info("Erro ao cadastrar Ativo")
+                log_info("Erro ao cadastrar Ativo")
                 handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
@@ -658,7 +659,7 @@ class AlertaInputHandler(APLUserEventHandler):
                 return handler_input.response_builder.response
             
             else:
-                logging.info("Direcionando para Processar Cadastro...")
+                log_info("Direcionando para Processar Cadastro...")
                 return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
 # ============================================================================================
 
@@ -670,28 +671,28 @@ class DynamicScreenHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler DynamicScreen")
         session_attr = handler_input.attributes_manager.session_attributes
-        logging.info(f"session_attr no início: {session_attr}")
+        log_info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
         log_debug(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
 
         # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
         if is_request_type("IntentRequest")(handler_input):
-            logging.info("DynamicScreenHandler: Rejeitando IntentRequest!")
+            log_info("DynamicScreenHandler: Rejeitando IntentRequest!")
             return False
 
         # Bloqueia navegação se alerta de preço estiver ativo
         if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
-            logging.info("DynamicScreenHandler: Alertas ativos. Pausando navegação automática.")
+            log_info("DynamicScreenHandler: Alertas ativos. Pausando navegação automática.")
             return False
 
         # Permite apenas eventos de auto-navegação
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             if arguments and arguments[0] == "autoNavigate":
-                logging.info("DynamicScreenHandler acionado para evento autoNavigate.")
+                log_warning("DynamicScreenHandler acionado para evento autoNavigate.")
                 return True
 
-        logging.info("DynamicScreenHandler ignorado para eventos de toque ou intent errado.")
+        log_warning("DynamicScreenHandler ignorado para eventos de toque ou intent errado.")
         return False
 
     def handle(self, handler_input):
@@ -702,11 +703,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         current_state = session_attr.get(
             "state", ativos_ids[0])  # Estado inicial padrão é 1
 
-        logging.info("=== DynamicScreenHandler.handle ===")
-        logging.info(f"ativos_ids: {ativos_ids}")
-        #logging.info(f"exibir_favoritos: {exibir_favoritos}")
-        logging.info(f"current_state: {current_state}")
-        logging.info(f"session_attr: {session_attr}")
+        log_info("=== DynamicScreenHandler.handle ===")
+        log_info(f"ativos_ids: {ativos_ids}")
+        #log_info(f"exibir_favoritos: {exibir_favoritos}")
+        log_info(f"current_state: {current_state}")
+        log_info(f"session_attr: {session_attr}")
 
         # Garante que tipos são iguais (tudo int ou tudo str)
         ativos_ids = [int(a) for a in ativos_ids]
@@ -720,12 +721,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         except ValueError:
             idx = 0
 
-        logging.info(f"ativos_ids: {ativos_ids}")
-        logging.info(f"current_state: {current_state}")
-        logging.info(f"idx: {idx}")
-        logging.info(f"idx (posição do fundo atual): {idx}")
+        log_info(f"ativos_ids: {ativos_ids}")
+        log_info(f"current_state: {current_state}")
+        log_info(f"idx: {idx}")
+        log_info(f"idx (posição do fundo atual): {idx}")
         fundo = self.state_asset_mapping[ativos_ids[idx]]
-        logging.info(f"Fundo selecionado: {fundo}")
+        log_info(f"Fundo selecionado: {fundo}")
 
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_asset_mapping[ativos_ids[idx]]
@@ -736,11 +737,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         if next_idx is not None:
             session_attr["state"] = ativos_ids[next_idx]
-            logging.info(f"Avançando para o próximo state: {session_attr['state']}")
+            log_info(f"Avançando para o próximo state: {session_attr['state']}")
         else:
             session_attr["state"] = None
-            logging.info("Último ativo exibido, encerrando ciclo.")
-            logging.info(f"Novo state definido: {session_attr['state']}")
+            log_info("Último ativo exibido, encerrando ciclo.")
+            log_info(f"Novo state definido: {session_attr['state']}")
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
@@ -762,7 +763,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Se houver um próximo estado, agende a navegação automática.
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
-            logging.info("Agendando próximo autoNavigate.")
+            log_info("Agendando próximo autoNavigate.")
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
@@ -778,7 +779,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável
-            logging.info("Encerrando skill após o último ativo.")
+            log_info("Encerrando skill após o último ativo.")
             if not exibir_favoritos:
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
@@ -800,14 +801,14 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         intent_name = handler_input.request_envelope.request.intent.name
         session_attr["contexto_atual"] = "selecao_ativo"
         session_attr["select_in_progress"] = True
-        logging.info(f"Intent recebido: {intent_name}")
+        log_info(f"Intent recebido: {intent_name}")
 
         intent = handler_input.request_envelope.request.intent
         slots = intent.slots
         fund_name = slots.get("fundName").value #if slots.get("fundName") else None
-        logging.info(f"🧠 Slot raw: {slots['fundName'].value}")
-        logging.info(f"🎙️ fund_name captado: {repr(fund_name)}")
-        logging.info(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+        log_intent_event(f"🧠 Slot raw: {slots['fundName'].value}")
+        log_info(f"🎙️ fund_name captado: {repr(fund_name)}")
+        log_intent_event(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
         resolutions = slots["fundName"].resolutions
         if resolutions and resolutions.resolutions_per_authority:
@@ -815,12 +816,12 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 if authority.status.code == "ER_SUCCESS_MATCH" and authority.values:
                     for value in authority.values:
                         resolved_id = value.value.id
-                        logging.info(f"🎯 Resolvido como ID: {resolved_id}")
+                        log_info(f"🎯 Resolvido como ID: {resolved_id}")
 
         allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
-        #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
+        #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
         #handler_input.response_builder.add_directive(directive)
 
         if intent_name == "AMAZON.NextIntent":
@@ -862,7 +863,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 (None, None)
             )
 
-            logging.info(f"fundo full é: {fundo_full}")
+            log_info(f"fundo full é: {fundo_full}")
 
             if not fundo_full:
                 return handler_input.response_builder.speak(
@@ -950,10 +951,10 @@ class SelectInputHandler(APLUserEventHandler):
 
         if arguments[0] == "confirmarSelect":
             sigla = session_attr.get("sigla_select_ativo")
-            logging.info(f"O valor de Sigla é: {sigla}")
+            log_info(f"O valor de Sigla é: {sigla}")
             
             if not sigla:
-                logging.info("Erro ao Mostrar Ativo")
+                log_warning("Erro ao Mostrar Ativo")
                 handler_input.response_builder.speak("Erro ao Mostrar Ativo. Tente novamente.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
@@ -1019,12 +1020,12 @@ class TouchHandler(APLUserEventHandler):
     """def can_handle(self, handler_input):
 
         #request_type = handler_input.request_envelope.request.object_type
-        #logging.info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
+        #log_info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
 
         #def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
-            logging.info(f"TouchHandler: Argumentos recebidos: {arguments}")
+            log_info(f"TouchHandler: Argumentos recebidos: {arguments}")
             
             # Filtrar apenas eventos de toque
             return arguments and len(arguments) > 0 and arguments[0] == "touch"
@@ -1032,7 +1033,7 @@ class TouchHandler(APLUserEventHandler):
         return False"""
 
     def handle(self, handler_input):
-        logging.info("TouchHandler: handle chamado.")
+        log_info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", 1)
@@ -1089,7 +1090,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
 
-        logging.info("📌 SessionEndedRequestHandler acionado.")
+        log_intent_event("📌 SessionEndedRequestHandler acionado.")
 
         # Coleta motivo e detalhes do encerramento
         reason = getattr(request, "reason", "Motivo não informado")
@@ -1104,9 +1105,9 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
         request = handler_input.request_envelope.request
         if hasattr(request, "reason"):
-            logging.info(f"Motivo do fim da sessão: {request.reason}")
+            log_warning(f"Motivo do fim da sessão: {request.reason}")
 
-        logging.info(f"📦 Atributos de sessão no encerramento: {session_attr}")
+        log_info(f"📦 Atributos de sessão no encerramento: {session_attr}")
 
         # Você pode usar isso para métricas ou análises futuras
         if reason == "ERROR" and error:
@@ -1125,10 +1126,10 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
-        logging.info("FallbackIntent acionado. Redirecionando conforme o contexto.")
+        log_intent_event("FallbackIntent acionado. Redirecionando conforme o contexto.")
 
         if isinstance(request, SessionEndedRequest):
-            logging.info(f"Motivo do fim da sessão: {request.reason}")
+            log_warning(f"Motivo do fim da sessão: {request.reason}")
 
         apl_document = None
         session_attr = handler_input.attributes_manager.session_attributes
@@ -1174,7 +1175,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler CatchAllRequest")
-        logging.info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
+        log_info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
         return True  # aceita qualquer solicitação que não casou com outros handlers
 
     def handle(self, handler_input):
@@ -1189,14 +1190,14 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         if request.object_type == "Alexa.Presentation.APL.UserEvent":
             arguments = getattr(request, "arguments", [])
             if arguments and arguments[0] == "touch":
-                logging.warning("[CatchAll] UserEvent de toque 'touch' ignorado como evento fantasma.")
+                log_warning("[CatchAll] UserEvent de toque 'touch' ignorado como evento fantasma.")
                 return handler_input.response_builder.response  # ignora silenciosamente
         
         if isinstance(request, IntentRequest):
             intent_name = request.intent.name
-            logging.warning(f"📌 Intent inesperada recebida: {intent_name}")
+            log_warning(f"📌 Intent inesperada recebida: {intent_name}")
         else:
-            logging.warning("📌 Requisição não foi do tipo IntentRequest.")
+            log_warning("📌 Requisição não foi do tipo IntentRequest.")
 
         # Respostas contextuais
         if contexto == "alerta_preco":
@@ -1217,7 +1218,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
         else:
             speech = "Hmm, não consegui entender o que você quis dizer. Encerrando por agora, mas você pode me chamar de novo quando quiser."
-            logging.info("🚪 Encerrando sessão por ausência de contexto.")
+            log_warning("🚪 Encerrando sessão por ausência de contexto.")
             return handler_input.response_builder.speak(speech).set_should_end_session(True).response
 
         if apl_document:
@@ -1225,7 +1226,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
                 RenderDocumentDirective(token="fallbackToken", document=apl_document)
             )
 
-        logging.info(f"🎤 Resposta de fallback gerada com contexto: {contexto}")
+        log_info(f"🎤 Resposta de fallback gerada com contexto: {contexto}")
         return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
 
 # ============================================================================================
@@ -1275,6 +1276,6 @@ def webhook():
     return jsonify(response)
 
 if __name__ == '__main__':
-    logging.info("\n Iniciando o servidor Flask...\n")
+    log_info("\n Iniciando o servidor Flask...\n")
     # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
