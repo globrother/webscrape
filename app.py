@@ -76,7 +76,7 @@ logging.info(f"🔑Token logtail: {LOG_LOGTAIL_KEY}")
 #handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
 #logger = logging.getLogger()
 #logger.handlers = []  # limpa possíveis handlers antigos
-#logger.addHandler(handler)
+# logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 # ===================================================
 
