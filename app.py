@@ -63,16 +63,21 @@ logging.basicConfig(level=logging.INFO)
 
 # ==========:: CONFIGURAÇÃO DO LOGTAIL ::==========
 from logtail import LogtailHandler
-import logging
 
 LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
-print("🔑 Token logtail:", LOG_LOGTAIL_KEY)
-#handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
 
-#logger = logging.getLogger()
+if LOG_LOGTAIL_KEY:
+    logtail_handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
+    logger.addHandler(logtail_handler)
+else:
+    logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")
+
+logging.info("🔑 Token logtail:", LOG_LOGTAIL_KEY)
+#handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
+logger = logging.getLogger()
 #logger.handlers = []  # limpa possíveis handlers antigos
 #logger.addHandler(handler)
-#logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 # ===================================================
 
 # Define o fuso horário para horário de Brasília
