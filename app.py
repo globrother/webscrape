@@ -80,6 +80,8 @@ logging.info(f"🔑Token logtail: {LOG_LOGTAIL_KEY}")
 logger.setLevel(logging.INFO)
 # ===================================================
 
+logging.info(f"Handlers ativos: {logger.handlers}")
+
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
 
