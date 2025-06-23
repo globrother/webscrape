@@ -324,6 +324,7 @@ def comparador(historico, cota_atual, voz_fundo):
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
     log_info("Iniciando a skill")
+    log_debug("Agora no Handler LaunchRequest")
     def can_handle(self, handler_input):
         return is_request_type("LaunchRequest")(handler_input)
 
@@ -415,6 +416,7 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
         "confirmarCadastro",
         "cancelarCadastro"
     }
+    log_debug("Agora no Handler LaunchRequest")
 
     """def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
@@ -532,6 +534,7 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
 # HANDLER PARA ADICIONAR NOVO ATIVO (carregando página de entrata de dados)
 class AddAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler AddAtivoIntent")
         return is_intent_name("AddAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -548,6 +551,7 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
 # HANDLER PARA CRIAR UM ALERTA DE PREÇO.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler CreatePriceAlertIntent")
         if not is_intent_name("CreatePriceAlertIntent")(handler_input):
             return False  # corta logo se não é a intent certa
         session_attr = handler_input.attributes_manager.session_attributes
@@ -601,7 +605,9 @@ class AlertaInputHandler(APLUserEventHandler):
         "confirmarAlerta",
         "cancelarAlerta"
     }
-    
+
+    log_debug("Agora no Handler AlertaInput")
+
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
@@ -677,6 +683,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         self.state_asset_mapping = state_asset_mapping
 
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler DynamicScreen")
         session_attr = handler_input.attributes_manager.session_attributes
         logging.info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
@@ -798,6 +805,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 # HANDLER PARA MOSTRAR FUNDO SOLICITADO
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler SelectFundInput")
         return is_intent_name("SelectFundIntent")(handler_input) or \
                is_intent_name("AMAZON.NextIntent")(handler_input)
 
@@ -920,6 +928,8 @@ class SelectInputHandler(APLUserEventHandler):
         "cancelarSelect"
     }
     
+    log_debug("Agora no Handler SelectInput")
+
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
@@ -1016,6 +1026,7 @@ class SelectInputHandler(APLUserEventHandler):
 
 class TouchHandler(APLUserEventHandler):
     comandos_validos = {"touch"}
+    log_debug("Agora no Handler Touch de toque na tela")
 
     def __init__(self, state_asset_mapping):
         self.state_asset_mapping = state_asset_mapping
@@ -1086,6 +1097,7 @@ class TouchHandler(APLUserEventHandler):
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler SessionEndedRequest")
         return is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
@@ -1124,6 +1136,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler FallbackIntent")
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -1175,6 +1188,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
 """
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler CatchAllRequest")
         logging.info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
         return True  # aceita qualquer solicitação que não casou com outros handlers
 
@@ -1184,7 +1198,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         contexto = session_attr.get("contexto_atual")
         apl_document = None
 
-        logging.warning(f"⚠️ Nenhum handler específico capturou esta requisição. Tipo: {request.object_type}")
+        log_warning(f"⚠️ Nenhum handler específico capturou esta requisição. Tipo: {request.object_type}")
         
         # 🔒 Tratamento especial para User Touch Event fantasma
         if request.object_type == "Alexa.Presentation.APL.UserEvent":
