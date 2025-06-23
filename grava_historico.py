@@ -1,3 +1,5 @@
+# grava_historico.py
+
 import datetime
 import pytz
 import os
@@ -52,7 +54,7 @@ def testar_conexao():
             connection.close()
             return False
     except Exception as e:
-        logger.error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
+        log_error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
         return False
 
 def gravar_historico(sufixo, valor):
