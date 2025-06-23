@@ -67,7 +67,7 @@ import logging
 
 LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 print("🔑 Token logtail:", LOG_LOGTAIL_KEY)
-handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
+#handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
 
 #logger = logging.getLogger()
 #logger.handlers = []  # limpa possíveis handlers antigos
