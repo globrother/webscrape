@@ -37,10 +37,11 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model import SessionEndedRequest, IntentRequest
-
 # from typing import Dict, Any
 
 #from infofii import get_dadosfii
+from logtail import LogtailHandler
+from logtail_custom import LogtailSafeHandler  # se estiver num arquivo separado
 from utils import state_asset_mapping
 from can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
@@ -54,60 +55,33 @@ import grava_historico
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
 # ==========:: CONFIGURAÇÃO DO LOGGER ::==========
-from logtail import LogtailHandler
 import logging
 #  - registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 # =================================================
 
-# ==========:: CONFIGURAÇÃO DO LOGTAIL ::==========
-from logtail import LogtailHandler
-
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+if LOG_LOGTAIL_KEY:
+    logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
+    formatter = logging.Formatter("[%(levelname)s] %(asctime)s — %(name)s: %(message)s")
+    logtail_handler.setFormatter(formatter)
+    logger.addHandler(logtail_handler)
+    logging.info("✅ LogtailSafeHandler ativado com sucesso!")
+else:
+    logging.warning("⚠️ LOG_LOGTAIL_KEY ausente — logs externos desativados.")
 
 if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
     logger.addHandler(logtail_handler)
 else:
     logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")
-
-logging.info(f"🔑Token logtail: {LOG_LOGTAIL_KEY}")
-#handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
-#logger = logging.getLogger()
-#logger.handlers = []  # limpa possíveis handlers antigos
-# logger.addHandler(handler)
-logger.setLevel(logging.INFO)
-# ===================================================
-
-logging.info(f"⚙️ Handlers ativos: {logger.handlers}")
-for h in logger.handlers:
-    logging.info(f"🔍 Handler: {h} com nível: {h.level}")
-
-logging.getLogger().info("🎯 Log de teste explícito para Logtail")
-logger.debug("🟢 DEBUG ativo")
-logger.warning("🟠 WARNING ativo")
-logger.error("🔴 ERROR ativo")
-
-
-try:
-    response = requests.post(
-        url="https://s1357375.eu-nbg-2.betterstackdata.com",  # sua URL de ingestão
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {LOG_LOGTAIL_KEY}"
-        },
-        json={
-            "dt": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-            "message": "🚀 Enviado manualmente com requests.post()"
-        }
-    )
-    logging.info(f"✅ Envio manual feito. Status: {response.status_code}")
-except Exception as e:
-    logging.info(f"❌ Falha ao enviar log manual: e")
-
-
-
+# ============================================================================
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
