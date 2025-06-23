@@ -806,9 +806,9 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         intent = handler_input.request_envelope.request.intent
         slots = intent.slots
         fund_name = slots.get("fundName").value #if slots.get("fundName") else None
-        log_intent_event(f"🧠 Slot raw: {slots['fundName'].value}")
+        log_intent_event(handler_input, f"🧠 Slot raw: {slots['fundName'].value}")
         log_info(f"🎙️ fund_name captado: {repr(fund_name)}")
-        log_intent_event(f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+        log_intent_event(handler_input, f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
         resolutions = slots["fundName"].resolutions
         if resolutions and resolutions.resolutions_per_authority:
@@ -1090,7 +1090,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
 
-        log_intent_event("📌 SessionEndedRequestHandler acionado.")
+        log_intent_event(handler_input, "📌 SessionEndedRequestHandler acionado.")
 
         # Coleta motivo e detalhes do encerramento
         reason = getattr(request, "reason", "Motivo não informado")
@@ -1126,7 +1126,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
-        log_intent_event("FallbackIntent acionado. Redirecionando conforme o contexto.")
+        log_intent_event(handler_input, "FallbackIntent acionado. Redirecionando conforme o contexto.")
 
         if isinstance(request, SessionEndedRequest):
             log_warning(f"Motivo do fim da sessão: {request.reason}")

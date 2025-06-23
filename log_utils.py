@@ -32,7 +32,7 @@ LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 logger = logging.getLogger("skill")
 logger.setLevel(logging.DEBUG if DEBUG_MODE else logging.INFO)
 
-formatter = logging.Formatter("[%(levelname)s] — %(name)s: %(message)s")#, %(asctime)s - "%Y-%m-%d %H:%M:%S")
+formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")#, %(asctime)s - "%Y-%m-%d %H:%M:%S")
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
