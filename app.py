@@ -60,7 +60,11 @@ import grava_historico
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
-from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event
+from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, DEBUG_MODE
+
+if not DEBUG_MODE:
+    logger = logging.getLogger("skill")
+    logger.setLevel(logging.INFO)
 
 #DEBUG_MODE = True
 #LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
