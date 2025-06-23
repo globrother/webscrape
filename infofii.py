@@ -14,15 +14,20 @@ import os
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-import logging
-
+#import logging
 # Usar o logger para registrar mensagens
-logger = logging.getLogger(__name__)
-logger.info('Função iniciada')
+#logger = logging.getLogger(__name__)
+#log_info('Função iniciada')
 
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+import logging
+from log_utils import log_debug, log_info, log_warning, log_error
+
+# =====================================================================
 
 def get_dadosfii(fii):
     start = time()
+    log_debug("Agora no método get_dadosfii")
 
     # Determina o tipo de ativo pelo sufixo
     if fii.endswith("11"):
@@ -39,7 +44,7 @@ def get_dadosfii(fii):
         tipo_ativo = "acao"
         tipo_ativo_str = "da Ação"
 
-    logger.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+    log_info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
     try:
         # fii = "xpml11" # apagar depois
@@ -63,7 +68,7 @@ def get_dadosfii(fii):
         }
 
         response = requests.get(url, headers=headers)
-        logger.info(f"\n Status Code: {response.status_code}\n")
+        log_info(f"\n Status Code: {response.status_code}\n")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -105,7 +110,7 @@ def get_dadosfii(fii):
                     data = json.loads(script_image_fii[2].string)
                     # Acesse o campo da logo
                     logo_url = data.get('image', {}).get('url')
-                    logger.info(f"LOGO DO ATIVO: {logo_url}")
+                    log_info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):
@@ -118,20 +123,17 @@ def get_dadosfii(fii):
                 containers = soup.find_all('div', class_='container')
                 container = containers[5]
                 if not container:
-                    logger.info(
-                        f"Quantidade de containers encontrados: {len(container)}")
-                    raise ValueError(
-                        "Container principal NÃO encontrado para ação.")
+                    log_info(f"Quantidade de containers encontrados: {len(container)}")
+                    raise ValueError("Container principal NÃO encontrado para ação.")
                 else:
-                    logger.info(
-                        f"HTML do container encontrado")
+                    log_info(f"HTML do container encontrado")
 
                 # Valor atual
                 valor_atual_tag = container.find(
                     'div', {'title': 'Valor atual do ativo'})
                 cota_fii = valor_atual_tag.find(
                     'strong', class_='value').text.strip() if valor_atual_tag else None
-                logger.info(f"VALOR COTA:{cota_fii}")
+                log_info(f"VALOR COTA:{cota_fii}")
 
                 # Variação do dia
                 variacao_tag = container.find(
@@ -158,7 +160,7 @@ def get_dadosfii(fii):
                     'div', {'title': 'Soma total dos proventos provisionados'})
                 divpc_fii = divpc_tag.find(
                     'strong', class_='value').text.strip() if divpc_tag else None
-                logger.info(f"VALOR DIV POR COTA:{divpc_fii}")
+                log_info(f"VALOR DIV POR COTA:{divpc_fii}")
                 divpc_fii = str(
                     round((float((divpc_fii).replace(',', '.'))), 2)).replace('.', ',')
 
@@ -170,7 +172,7 @@ def get_dadosfii(fii):
                     data = json.loads(script_image[2].string)
                     # Acessa o campo da logo
                     logo_url = data.get('image', {}).get('url')
-                    logger.info(f"LOGO DO ATIVO: {logo_url}")
+                    log_info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):

@@ -1,7 +1,11 @@
 from time import time
 import requests
-import logging
 import os
+
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+import logging
+from log_utils import log_debug, log_info, log_warning, log_error
+# =====================================================================
 
 API_URL = "https://graficoapi.duckdns.org:5000/chart"
 
@@ -12,6 +16,8 @@ if CHART_API_KEY is None:
 
 def requisitando_chart(ticker):
     start = time()
+    log_debug("Agora em requisitando_chart")
+    
     headers = {
         "Content-Type": "application/json",
         "x-api-key": CHART_API_KEY
@@ -20,7 +26,7 @@ def requisitando_chart(ticker):
 
     response = requests.post(API_URL, json=data, headers=headers)
 
-    logging.info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
+    log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
 
     if response.status_code == 200:
         return response.json().get("url", "")  # Retorna a url pronta - resposta da API 

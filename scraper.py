@@ -7,8 +7,12 @@ from utils import comparador
 from infofii import get_dadosfii
 import grava_historico
 import obter_grafico
-import logging
 import time
+
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+import logging
+from log_utils import log_debug, log_info, log_warning, log_error
+# =====================================================================
 
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
@@ -22,16 +26,16 @@ def web_scrape(fundo):
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)
-    # logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
+    # log_info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
 
     fii = fundo
-    #logging.info(f"valor de fii: {fii}")
+    #log_info(f"valor de fii: {fii}")
     
     # 🔹 Obtendo Url do Gráfico
     url_grafico = obter_grafico.requisitando_chart(fii)
     timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
     url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
-    #logging.info(f"URL do Gráfico: {url_grafico}")
+    #log_info(f"URL do Gráfico: {url_grafico}")
 
     # Lista de links de imagens de planos de fundo
     background_images = [
@@ -48,12 +52,12 @@ def web_scrape(fundo):
         (key for key, value in state_asset_mapping.items() if value == fundo), None)
 
     if fundo_index is not None:
-        logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
+        log_info(f"Índice do fundo '{fundo}': {fundo_index}")
     else:
-        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
+        log_error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
         # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
         fundo_index = 1
-        logging.info(f"Usando índice padrão: {fundo_index}")
+        log_info(f"Usando índice padrão: {fundo_index}")
 
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[(
@@ -70,11 +74,11 @@ def web_scrape(fundo):
     voz = comparador(historico, cota_atual, voz_fundo)
 
     # DIVIDE O HISTÓRICO EM DUAS COLUNAS
-    #logging.info(f"hist_text_FII é: {hist_text_fii}")
+    #log_info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
     hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
     hist_text_ativo_col2 = hist_text_fii[meio:]   # Segunda metade da lista
-    #logging.info(f"COl2 é: {hist_text_ativo_col2}")
+    #log_info(f"COl2 é: {hist_text_ativo_col2}")
 
     dados_info = {
         "card_ativo": card_fii,

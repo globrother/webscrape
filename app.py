@@ -62,21 +62,6 @@ import grava_historico
 import logging
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
 
-# Para uso dos logs já configurados como root: logging.info("")
-"""if not DEBUG_MODE:
-    logging.basicConfig(level=logging.INFO)
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
-
-    formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
-
-    if LOG_LOGTAIL_KEY:
-        root_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
-        root_handler.setFormatter(formatter)
-        root_logger.addHandler(root_handler)
-
-"""
 # ============================================================================
 
 # Define o fuso horário para horário de Brasília
