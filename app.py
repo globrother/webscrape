@@ -43,6 +43,7 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 
 #from infofii import get_dadosfii
 from utils import state_asset_mapping
+from can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
 import grava_historico
@@ -370,7 +371,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class NovoAtivoUserEventHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
+    comandos_validos = {
+        "siglaAtivo",
+        "nomeAtivo",
+        "confirmarCadastro",
+        "cancelarCadastro"
+    }
+
+    """def can_handle(self, handler_input):
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
             return arguments and (
@@ -380,7 +388,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
                 arguments[0] == "cancelarCadastro"
             )
         return False
-
+"""
     def handle(self, handler_input):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
@@ -1113,11 +1121,13 @@ class SelectInputHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 # ============================================================================================
 
-class TouchHandler(AbstractRequestHandler):
+class TouchHandler(APLUserEventHandler):
+    comandos_validos = {"touch"}
+
     def __init__(self, state_asset_mapping):
         self.state_asset_mapping = state_asset_mapping
 
-    def can_handle(self, handler_input):
+    """def can_handle(self, handler_input):
 
         #request_type = handler_input.request_envelope.request.object_type
         #logging.info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
@@ -1130,7 +1140,7 @@ class TouchHandler(AbstractRequestHandler):
             # Filtrar apenas eventos de toque
             return arguments and len(arguments) > 0 and arguments[0] == "touch"
         
-        return False
+        return False"""
 
     def handle(self, handler_input):
         logging.info("TouchHandler: handle chamado.")
