@@ -69,10 +69,10 @@ LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 print("🔑 Token logtail:", LOG_LOGTAIL_KEY)
 handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
 
-logger = logging.getLogger()
-logger.handlers = []  # limpa possíveis handlers antigos
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+#logger = logging.getLogger()
+#logger.handlers = []  # limpa possíveis handlers antigos
+#logger.addHandler(handler)
+#logger.setLevel(logging.INFO)
 # ===================================================
 
 # Define o fuso horário para horário de Brasília
