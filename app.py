@@ -72,7 +72,7 @@ if LOG_LOGTAIL_KEY:
 else:
     logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")
 
-logging.info("🔑 Token logtail:", LOG_LOGTAIL_KEY)
+logging.info("🔑Token logtail:", LOG_LOGTAIL_KEY)
 #handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
 #logger = logging.getLogger()
 #logger.handlers = []  # limpa possíveis handlers antigos
