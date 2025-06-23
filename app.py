@@ -60,41 +60,24 @@ import grava_historico
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
-from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, DEBUG_MODE
+from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, DEBUG_MODE, LOG_LOGTAIL_KEY
 
 # Para uso dos logs já configurados como root: logging.info("")
 if not DEBUG_MODE:
     logging.basicConfig(level=logging.INFO)
 
-#DEBUG_MODE = True
-#LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
+from log_utils import LogtailSafeHandler  # importa o handler direto
 
-#logger = logging.getLogger()
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
 
-#if DEBUG_MODE:
-#    logger.setLevel(logging.DEBUG)
-#else:
-#    logger.setLevel(logging.INFO)
-
-# Função para logs completos
-#def log(msg):
-#    if DEBUG_MODE:
-#        logging.debug(msg)
-
-"""if LOG_LOGTAIL_KEY:
-    logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
-    formatter = logging.Formatter("[%(levelname)s] %(asctime)s — %(name)s: %(message)s")
-    logtail_handler.setFormatter(formatter)
-    logger.addHandler(logtail_handler)
-    logging.info("✅ LogtailSafeHandler ativado com sucesso!")
-else:
-    logging.warning("⚠️ LOG_LOGTAIL_KEY ausente — logs externos desativados.")
+formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
 
 if LOG_LOGTAIL_KEY:
-    logtail_handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
-    logger.addHandler(logtail_handler)
-else:
-    logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")"""
+    root_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
+    root_handler.setFormatter(formatter)
+    root_logger.addHandler(root_handler)
+
 # ============================================================================
 
 # Define o fuso horário para horário de Brasília
