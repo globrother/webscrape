@@ -80,7 +80,15 @@ logging.info(f"🔑Token logtail: {LOG_LOGTAIL_KEY}")
 logger.setLevel(logging.INFO)
 # ===================================================
 
-logging.info(f"Handlers ativos: {logger.handlers}")
+logging.info(f"⚙️ Handlers ativos: {logger.handlers}")
+for h in logger.handlers:
+    logging.info(f"🔍 Handler: {h} com nível: {h.level}")
+
+logging.getLogger().info("🎯 Log de teste explícito para Logtail")
+logger.debug("🟢 DEBUG ativo")
+logger.warning("🟠 WARNING ativo")
+logger.error("🔴 ERROR ativo")
+
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
