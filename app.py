@@ -510,6 +510,8 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
 # HANDLER PARA CRIAR UM ALERTA DE PREÇO.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        if not is_intent_name("CreatePriceAlertIntent")(handler_input):
+            return False  # corta logo se não é a intent certa
         session_attr = handler_input.attributes_manager.session_attributes
         request = handler_input.request_envelope.request
 
@@ -519,9 +521,6 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if session_attr.get("select_in_progress") and not asset_name:
                 logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
                 return False
-        
-        if not is_intent_name("CreatePriceAlertIntent")(handler_input):
-            return False  # corta logo se não é a intent certa
 
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
     
