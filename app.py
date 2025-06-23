@@ -519,6 +519,9 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             if session_attr.get("select_in_progress") and not asset_name:
                 logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
                 return False
+        
+        if not is_intent_name("CreatePriceAlertIntent")(handler_input):
+            return False  # corta logo se não é a intent certa
 
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
     
