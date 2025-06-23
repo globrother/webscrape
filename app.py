@@ -872,7 +872,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS PARA MOSTRAR FUNDO
-class SelectInputHandler(AbstractRequestHandler):
+class SelectInputHandler(APLUserEventHandler):
     # verifique comandos_validos em can_handle_base.py para mais detalhes 
     comandos_validos = {
         "siglaSelectAtivo",
@@ -1202,13 +1202,13 @@ def webhook():
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
-    alerta_input_handler = AlertaInputHandler(APLUserEventHandler)
+    alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
-    novo_ativo_usesevent_handler = NovoAtivoUserEventHandler(APLUserEventHandler)
+    novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_asset_mapping)
-    touch_handler = TouchHandler(APLUserEventHandler)
+    touch_handler = TouchHandler(state_asset_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
-    select_input_handler = SelectInputHandler(APLUserEventHandler)
+    select_input_handler = SelectInputHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
