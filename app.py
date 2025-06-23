@@ -90,6 +90,8 @@ time.sleep(1)
 
 app = Flask(__name__)
 
+logging.info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
+
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
