@@ -370,7 +370,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
-class NovoAtivoUserEventHandler(AbstractRequestHandler):
+class NovoAtivoUserEventHandler(APLUserEventHandler):
     comandos_validos = {
         "siglaAtivo",
         "nomeAtivo",
