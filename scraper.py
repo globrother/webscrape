@@ -10,7 +10,6 @@ import obter_grafico
 import logging
 import time
 
-
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
     # extrai os caracteres numéricos de fundo

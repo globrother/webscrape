@@ -5,6 +5,7 @@
 """
 import requests
 from bs4 import BeautifulSoup
+from time import time
 import grava_historico
 import app
 import json
@@ -21,6 +22,8 @@ logger.info('Função iniciada')
 
 
 def get_dadosfii(fii):
+    start = time()
+
     # Determina o tipo de ativo pelo sufixo
     if fii.endswith("11"):
         aux_url = "fundos-imobiliarios"
@@ -176,6 +179,8 @@ def get_dadosfii(fii):
         else:
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
+
+        logging.info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
 
         arrow_fii = ""
         aux_fii = ""

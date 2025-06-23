@@ -41,7 +41,7 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 
 #from infofii import get_dadosfii
 from logtail import LogtailHandler
-from logtail_custom import LogtailSafeHandler  # se estiver num arquivo separado
+from log_utils import LogtailSafeHandler  # se estiver num arquivo separado
 from utils import state_asset_mapping
 from can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
@@ -55,19 +55,29 @@ import grava_historico
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
 # ==========:: CONFIGURAÇÃO DO LOGGER ::==========
-import logging
-#  - registrar mensagens
-#logger = logging.getLogger(__name__)
-#logging.basicConfig(level=logging.INFO)
+
 # =================================================
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
-LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
+import logging
+from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+#DEBUG_MODE = True
+#LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 
-if LOG_LOGTAIL_KEY:
+#logger = logging.getLogger()
+
+#if DEBUG_MODE:
+#    logger.setLevel(logging.DEBUG)
+#else:
+#    logger.setLevel(logging.INFO)
+
+# Função para logs completos
+#def log(msg):
+#    if DEBUG_MODE:
+#        logging.debug(msg)
+
+"""if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
     formatter = logging.Formatter("[%(levelname)s] %(asctime)s — %(name)s: %(message)s")
     logtail_handler.setFormatter(formatter)
@@ -80,7 +90,7 @@ if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailHandler(source_token=LOG_LOGTAIL_KEY)
     logger.addHandler(logtail_handler)
 else:
-    logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")
+    logging.info("⚠️ LOG_LOGTAIL_KEY não definido — Logtail desativado.")"""
 # ============================================================================
 
 # Define o fuso horário para horário de Brasília
