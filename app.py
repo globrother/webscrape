@@ -100,7 +100,7 @@ time.sleep(1)
 
 app = Flask(__name__)
 
-logging.info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
+log_debug("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
@@ -323,6 +323,7 @@ def comparador(historico, cota_atual, voz_fundo):
 # HANDLER INICIAL DA SKILL, EXIBE PRIMEIRO ATIVO
 class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
+    log_info("Iniciando a skill")
     def can_handle(self, handler_input):
         return is_request_type("LaunchRequest")(handler_input)
 

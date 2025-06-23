@@ -52,7 +52,7 @@ def log_debug(msg):
         logger.debug(f"🧪 {msg}")
 
 def log_info(msg):
-    logger.info(f"📌 {msg}")
+    logger.info(f"ℹ️ {msg}")
 
 def log_warning(msg):
     logger.warning(f"⚠️ {msg}")
