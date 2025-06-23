@@ -4,7 +4,7 @@ import requests
 import json
 import os
 
-DEBUG_MODE = False  # Defina como False para ocultar logs de debug
+DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
