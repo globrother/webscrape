@@ -42,6 +42,7 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 # from typing import Dict, Any
 
 #from infofii import get_dadosfii
+from utils import state_asset_mapping
 from alert_service import tratar_alerta
 from scraper import web_scrape
 import grava_historico
@@ -67,8 +68,8 @@ app = Flask(__name__)
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
 # Mapeamento de Estados e Fundos
-state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
-logging.info(f"\n O Mapa é: {state_fund_mapping}")
+"""state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+logging.info(f"\n O Mapa é: {state_asset_mapping}")"""
 
 # time.sleep(5)
 # logging.info(f"\n A lista é: {lista_ativos}")
@@ -137,7 +138,7 @@ def gerar_sinonimos(fundo):
     return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
 
 def get_dynamic_entities_directive():
-    fundos = [limpar_fund_name(v) for v in state_fund_mapping.values()]
+    fundos = [limpar_fund_name(v) for v in state_asset_mapping.values()]
     entities = [
         {
             "id": fundo,
@@ -233,7 +234,7 @@ def comparador(historico, cota_atual, voz_fundo):
 
     # Determina o índice do fundo atual com base no ID do estado
     fundo_index = next(
-        (key for key, value in state_fund_mapping.items() if value == fundo), None)
+        (key for key, value in state_asset_mapping.items() if value == fundo), None)
 
     if fundo_index is not None:
         logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
@@ -315,7 +316,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             ativos_ids = ativos_favoritos[:]
             session_attr["exibir_favoritos"] = True
         else:
-            ativos_ids = sorted(state_fund_mapping.keys())
+            ativos_ids = sorted(state_asset_mapping.keys())
             session_attr["exibir_favoritos"] = False
 
         session_attr["ativos_ids"] = ativos_ids
@@ -328,7 +329,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
         logging.info(f"state inicial: {session_attr['state']}")
-        fundo = state_fund_mapping[ativos_ids[0]]
+        fundo = state_asset_mapping[ativos_ids[0]]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(
@@ -381,7 +382,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         return False
 
     def handle(self, handler_input):
-        global state_fund_mapping, lista_ativos
+        global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
 
@@ -406,7 +407,7 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_fund_mapping[1]
+            fundo = state_asset_mapping[1]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
@@ -457,10 +458,10 @@ class NovoAtivoUserEventHandler(AbstractRequestHandler):
         grava_historico._ativos_cache_time = 0
 
         # Recarregue o mapeamento após adicionar o novo ativo
-        state_fund_mapping, lista_ativos = grava_historico.carregar_ativos()
+        state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
 
         # Feedback imediato e avanço de tela
-        fundo = state_fund_mapping[novo_state_id]
+        fundo = state_asset_mapping[novo_state_id]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         logging.info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
@@ -583,12 +584,12 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
 
             # 3) Normaliza sigla e constrói lista de válidos
             sigla = limpar_fund_name(fund_name)
-            allowed = [limpar_fund_name(n) for n in state_fund_mapping.values()]
+            allowed = [limpar_fund_name(n) for n in state_asset_mapping.values()]
             # Capturando sigla completa do ativo
             fundo_full, fundo_state_id = next(
                 (
                     (nome, s_id)
-                    for s_id, nome in state_fund_mapping.items()
+                    for s_id, nome in state_asset_mapping.items()
                     if limpar_fund_name(nome) == sigla
                 ),
                 (None, None)
@@ -650,7 +651,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             session_attr["state"] = 2
 
             # retoma tela inicial
-            ativo = state_fund_mapping[1]
+            ativo = state_asset_mapping[1]
             dados_info, _, _, _, apl_doc, _ = web_scrape(ativo)
 
             speech = (
@@ -725,7 +726,7 @@ class AlertaInputHandler(AbstractRequestHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_fund_mapping[1]
+            fundo = state_asset_mapping[1]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
@@ -753,7 +754,7 @@ class AlertaInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
+            allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
             sigla_normalizada = limpar_fund_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
@@ -768,8 +769,8 @@ class AlertaInputHandler(AbstractRequestHandler):
 
 # HANDLER DE NAVEGAÇÃO AUTOMÁTICA PELOS ATIVOS
 class DynamicScreenHandler(AbstractRequestHandler):
-    def __init__(self, state_fund_mapping):
-        self.state_fund_mapping = state_fund_mapping
+    def __init__(self, state_asset_mapping):
+        self.state_asset_mapping = state_asset_mapping
 
     def can_handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
@@ -800,7 +801,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         ativos_ids = session_attr.get(
-            "ativos_ids", sorted(self.state_fund_mapping.keys()))
+            "ativos_ids", sorted(self.state_asset_mapping.keys()))
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get(
             "state", ativos_ids[0])  # Estado inicial padrão é 1
@@ -827,11 +828,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         logging.info(f"current_state: {current_state}")
         logging.info(f"idx: {idx}")
         logging.info(f"idx (posição do fundo atual): {idx}")
-        fundo = self.state_fund_mapping[ativos_ids[idx]]
+        fundo = self.state_asset_mapping[ativos_ids[idx]]
         logging.info(f"Fundo selecionado: {fundo}")
 
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[ativos_ids[idx]]
+        fundo = self.state_asset_mapping[ativos_ids[idx]]
         # Chame a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -919,7 +920,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         resolved_id = value.value.id
                         logging.info(f"🎯 Resolvido como ID: {resolved_id}")
 
-        allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
+        allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
         #logging.info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
@@ -959,7 +960,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
-                ((nome, state_id) for state_id, nome in state_fund_mapping.items()
+                ((nome, state_id) for state_id, nome in state_asset_mapping.items()
                 if limpar_fund_name(nome) == sigla_normalizada),
                 (None, None)
             )
@@ -974,8 +975,8 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             session_attr.update({
                 "state": fundo_state_id,
                 "manual_selection": None,
-                "current_fund_id": fundo_state_id, # para uso em Alerta de Preço
-                "current_fund_name": fundo_full, # para uso em Alerta de Preço
+                "current_asset_id": fundo_state_id, # para uso em Alerta de Preço
+                "current_asset_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False
             })
@@ -1036,7 +1037,7 @@ class SelectInputHandler(AbstractRequestHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_fund_mapping[1]
+            fundo = state_asset_mapping[1]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
@@ -1062,7 +1063,7 @@ class SelectInputHandler(AbstractRequestHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [limpar_fund_name(v) for v in state_fund_mapping.values()]
+            allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
             sigla_normalizada = limpar_fund_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
@@ -1074,7 +1075,7 @@ class SelectInputHandler(AbstractRequestHandler):
             fundo_key = sigla.lower()
             fundo_full = None
             fundo_state_id = None
-            for state_id, nome in state_fund_mapping.items():
+            for state_id, nome in state_asset_mapping.items():
                 if limpar_fund_name(nome) == sigla_normalizada:
                     fundo_full = nome
                     fundo_state_id = state_id
@@ -1113,8 +1114,8 @@ class SelectInputHandler(AbstractRequestHandler):
 # ============================================================================================
 
 class TouchHandler(AbstractRequestHandler):
-    def __init__(self, state_fund_mapping):
-        self.state_fund_mapping = state_fund_mapping
+    def __init__(self, state_asset_mapping):
+        self.state_asset_mapping = state_asset_mapping
 
     def can_handle(self, handler_input):
 
@@ -1138,12 +1139,12 @@ class TouchHandler(AbstractRequestHandler):
         current_state = session_attr.get("state", 1)
 
         # Verifica se o estado atual está no mapeamento
-        if current_state not in self.state_fund_mapping:
+        if current_state not in self.state_asset_mapping:
             # Se o estado não for encontrado, reinicia para o primeiro estado
             current_state = 1
 
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_fund_mapping[current_state]
+        fundo = self.state_asset_mapping[current_state]
 
         # Verifica se é o último estado
         if current_state == 1:
@@ -1156,7 +1157,7 @@ class TouchHandler(AbstractRequestHandler):
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Calcula o próximo estado
-        next_state = current_state + 1 if current_state + 1 in state_fund_mapping else None
+        next_state = current_state + 1 if current_state + 1 in state_asset_mapping else None
 
         # Atualiza o estado para o próximo
         session_attr["state"] = next_state
@@ -1334,8 +1335,8 @@ def webhook():
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
     novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
-    dynamic_screen_handler = DynamicScreenHandler(state_fund_mapping)
-    touch_handler = TouchHandler(state_fund_mapping)
+    dynamic_screen_handler = DynamicScreenHandler(state_asset_mapping)
+    touch_handler = TouchHandler(state_asset_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
     select_input_handler = SelectInputHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
