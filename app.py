@@ -23,7 +23,6 @@ import pytz
 import re  # Regex substituir ultimos caracteres numéricos
 import os
 import json
-import logging
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
@@ -54,9 +53,26 @@ import grava_historico
 # ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS
 # DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
 
-# Usar o logger para registrar mensagens
+# ==========:: CONFIGURAÇÃO DO LOGGER ::==========
+from logtail import LogtailHandler
+import logging
+#  - registrar mensagens
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+# =================================================
+
+# ==========:: CONFIGURAÇÃO DO LOGTAIL ::==========
+from logtail import LogtailHandler
+import logging
+
+LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
+handler = LogtailHandler(source_token="LOG_LOGTAIL_KEY")
+
+logger = logging.getLogger()
+logger.handlers = []  # limpa possíveis handlers antigos
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+# ===================================================
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
