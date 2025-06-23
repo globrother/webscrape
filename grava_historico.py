@@ -224,6 +224,7 @@ _CACHE_TTL = 60 * 10  # 10 minutos
 
 def carregar_ativos():
     log_debug("Agora no método carregar_ativos")
+    log_info("Esse é um teste do LOG")
     global _ativos_cache, _ativos_cache_time
     agora = time.time()
     # Se o cache existe e não expirou, retorna do cache
