@@ -360,7 +360,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
         session_attr["ativos_ids"] = ativos_ids
 
-        logging.info("=== LaunchRequestHandler.handle ===")
+        log_debug("=== LaunchRequestHandler.handle ===")
         #logging.info(f"Hora: {hora}")
         logging.info(f"intervalos_favoritos: {intervalos_favoritos}")
         logging.info(f"ativos_ids definidos: {ativos_ids}")
@@ -680,7 +680,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         logging.info(f"session_attr no início: {session_attr}")
         request_type = handler_input.request_envelope.request.object_type
-        logging.info(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
+        log_debug(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
 
         # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
         if is_request_type("IntentRequest")(handler_input):
