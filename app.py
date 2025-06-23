@@ -542,6 +542,7 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
             return False  # corta logo se não é a intent certa
         session_attr = handler_input.attributes_manager.session_attributes
         request = handler_input.request_envelope.request
+        log_intent_event(handler_input, "Criando alerta")
 
         # Bloqueia alerta de preço se seleção estiver ativo
         if isinstance(request, IntentRequest):
@@ -1126,7 +1127,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
-        log_intent_event(handler_input, "FallbackIntent acionado. Redirecionando conforme o contexto.")
+        log_warning("FallbackIntent acionado. Redirecionando conforme o contexto.")
 
         if isinstance(request, SessionEndedRequest):
             log_warning(f"Motivo do fim da sessão: {request.reason}")
