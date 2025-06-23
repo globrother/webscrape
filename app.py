@@ -550,161 +550,17 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         # fallback seguro
         speech = "Desculpe, não entendi. Pode tentar novamente?"
         return builder.speak(speech).ask(speech).response
-
-"""# HANDLER PARA CRIAR UM ALERTA DE PREÇO.
-class CreatePriceAlertIntentHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        request = handler_input.request_envelope.request
-
-        # Bloqueia alerta de preço se seleção estiver ativo
-        if isinstance(request, IntentRequest):
-            fund_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
-            if session_attr.get("select_in_progress") and not fund_name:
-                logging.info("🛑 Seleção ainda em andamento e fundName ausente. Bloqueando CreatePriceAlertIntent.")
-                return False
-
-        return is_intent_name("CreatePriceAlertIntent")(handler_input)
-
-    def handle(self, handler_input):
-        session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["contexto_atual"] = "alerta_preco"  # Definido contexto do Handler
-        request = handler_input.request_envelope.request
-        slots = request.intent.slots
-
-        try:
-            # 1) Coleta os slots
-            alert_value = slots.get("alertValue").value if slots.get("alertValue") else None
-            alert_value_cents = slots.get("alertValueCents").value if slots.get("alertValueCents") else None
-            fund_name = slots.get("fundName").value if slots.get("fundName") else None
-            
-            # 2) Se não veio pelo slot, tenta usar seleção APL atual
-            if not fund_name:
-                current_id = session_attr.get("current_fund_id")
-                current_name = session_attr.get("current_fund_name")
-                if current_id and current_name:
-                    fund_name = limpar_fund_name(current_name)
-                    session_attr["sigla_alerta"] = fund_name
-                    logging.info(f"🔁 Usando fundo atual: {fund_name}")
-                else:
-                    speech = "Para qual fundo você quer criar o alerta?"
-                    return handler_input.response_builder.speak(speech).ask(speech).response
-
-            # 3) Normaliza sigla e constrói lista de válidos
-            sigla = limpar_fund_name(fund_name)
-            allowed = [limpar_fund_name(n) for n in state_asset_mapping.values()]
-            # Capturando sigla completa do ativo
-            fundo_full, fundo_state_id = next(
-                (
-                    (nome, s_id)
-                    for s_id, nome in state_asset_mapping.items()
-                    if limpar_fund_name(nome) == sigla
-                ),
-                (None, None)
-            )
-
-            # 4) Coleta / pergunta valor, se ainda não existe
-            if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
-                logging.info("Criando Novo Alerta")
-                logging.info(f"Valor de fund_name: {fund_name}")
-                # nenhum valor informado ainda
-                if not alert_value and not alert_value_cents:
-                    session_attr["alert_in_progress"] = True
-                    speech = "Qual é o valor do alerta em reais e centavos?"
-                    reprompt = "Por favor, diga o valor em reais e centavos."
-                    return handler_input.response_builder.speak(speech).ask(reprompt).response
-
-                # valor completo, mas sem fundo (já temos fund_name, então pulamos)
-                # monta AlertValue
-                if alert_value and alert_value_cents:
-                    session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
-                elif alert_value:
-                    session_attr["AlertValue"] = f"{alert_value},00"
-                else:
-                    session_attr["AlertValue"] = f"0,{alert_value_cents}"
-
-                logging.info(f"💰 AlertValue montado: {session_attr['AlertValue']}")
-
-            # 5) Verifica nome do fundo e chama APL se necessário
-            if sigla not in allowed:
-                session_attr["alert_in_progress"] = True
-                speech = "Não consegui identificar esse fundo. Digite manualmente na tela."
-                apl = _load_apl_document("apl_add_alerta.json")
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="inputScreenToken",
-                        document=apl
-                    )
-                )
-                return handler_input.response_builder.speak(speech).response
-
-            # 6) Tudo preenchido: cria o alerta
-            alert_value = session_attr["AlertValue"]
-            # armazena por sessão
-            key = f"alert_value_{sigla}" #<<<<<<<<
-            session_attr[key] = alert_value
-            logging.info(f"🔖 Salvando alerta: {sigla} → {alert_value}")
-
-            # grava histórico em Back4App
-            valor_formatado = f"R$ {alert_value}" #<<<<<<<<
-            grava_historico.gravar_historico(key, valor_formatado)
-            historico = grava_historico.ler_historico(key)
-            texto_hist = grava_historico.gerar_texto_historico(historico, "alert") #<<<<<<<<
-            logging.info(f"📜 Histórico gerado: {texto_hist}")
-
-            # prepara resposta e limpa estado
-            session_attr["AlertValue"] = None
-            session_attr["alert_in_progress"] = False
-            session_attr["manual_selection"] = False #<<<<<<<<
-            session_attr["state"] = 2
-
-            # retoma tela inicial
-            ativo = state_asset_mapping[1]
-            dados_info, _, _, _, apl_doc, _ = web_scrape(ativo)
-
-            speech = (
-                f"Alerta de preço de {alert_value} criado para o fundo {fundo_full}. "
-                "Voltando à tela inicial."
-            )
-            return (
-                handler_input.response_builder
-                    .speak(speech)
-                    .add_directive(
-                        RenderDocumentDirective(
-                            token="mainScreenToken",
-                            document=apl_doc,
-                            datasources={"dados_update": {**dados_info}}
-                        )
-                    )
-                    .add_directive(
-                        ExecuteCommandsDirective(
-                            token="mainScreenToken",
-                            commands=[SendEventCommand(arguments=["autoNavigate"], delay=5000)]
-                        )
-                    )
-                    .set_should_end_session(False)
-                    .response
-            )
-
-        except Exception as e:
-            logging.error(f"Erro ao processar CreatePriceAlertIntent: {e}")
-            speech_text = "Desculpe, ocorreu um erro ao criar o alerta de preço. Por favor, tente novamente."
-            handler_input.response_builder.speak(speech_text)
-            return handler_input.response_builder.response
 # ============================================================================================
-"""
+
 # HANDLER PARA TRATAR ENTRADA DE DADOS DO ALERTA DE PREÇOS
-class AlertaInputHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            return arguments and (
-                arguments[0] == "siglaAlerta" or
-                arguments[0] == "valorAlerta" or
-                arguments[0] == "confirmarAlerta" or
-                arguments[0] == "cancelarAlerta"
-            )
-        return False
+class AlertaInputHandler(APLUserEventHandler):
+    # verifique comandos_validos em can_handle_base.py para mais detalhes 
+    comandos_validos = {
+        "siglaAlerta",
+        "valorAlerta",
+        "confirmarAlerta",
+        "cancelarAlerta"
+    }
     
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
@@ -1017,15 +873,12 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
 # HANDLER PARA TRATAR ENTRADA DE DADOS PARA MOSTRAR FUNDO
 class SelectInputHandler(AbstractRequestHandler):
-    def can_handle(self, handler_input):
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            return arguments and (
-                arguments[0] == "siglaSelectAtivo" or
-                arguments[0] == "confirmarSelect" or
-                arguments[0] == "cancelarSelect"
-            )
-        return False
+    # verifique comandos_validos em can_handle_base.py para mais detalhes 
+    comandos_validos = {
+        "siglaSelectAtivo",
+        "confirmarSelect",
+        "cancelarSelect"
+    }
     
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
@@ -1216,7 +1069,6 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         if hasattr(request, "reason"):
             logging.info(f"Motivo do fim da sessão: {request.reason}")
 
-
         logging.info(f"📦 Atributos de sessão no encerramento: {session_attr}")
 
         # Você pode usar isso para métricas ou análises futuras
@@ -1293,6 +1145,14 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         apl_document = None
 
         logging.warning(f"⚠️ Nenhum handler específico capturou esta requisição. Tipo: {request.object_type}")
+        
+        # 🔒 Tratamento especial para User Touch Event fantasma
+        if request.object_type == "Alexa.Presentation.APL.UserEvent":
+            arguments = getattr(request, "arguments", [])
+            if arguments and arguments[0] == "touch":
+                logging.warning("[CatchAll] UserEvent de toque 'touch' ignorado como evento fantasma.")
+                return handler_input.response_builder.response  # ignora silenciosamente
+        
         if isinstance(request, IntentRequest):
             intent_name = request.intent.name
             logging.warning(f"📌 Intent inesperada recebida: {intent_name}")
