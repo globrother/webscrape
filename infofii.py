@@ -60,7 +60,7 @@ def get_dadosfii(fii):
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
         }
-        # logging.info("gobis Status Veja")
+        # log_info("gobis Status Veja")
         proxies = {
             'http': 'http://89.117.22.218:8080',
             # Certifique-se de usar um proxy que suporte HTTPS
@@ -72,12 +72,12 @@ def get_dadosfii(fii):
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            logging.info(f"\nTIPO DE ATIVO 1:> {tipo_ativo}\n")
+            log_info(f"\nTIPO DE ATIVO 1:> {tipo_ativo}\n")
 
             if tipo_ativo == "fii":
                 container_divs = soup.find_all('div', class_='container pb-7')
                 tags = ['v-align-middle', 'value']
-                # logging.info("Veja antes do for")
+                # log_info("Veja antes do for")
                 cota_fii = var_fii = dy_fii = pvp_fii = divpc_fii = None
 
                 for div in container_divs:
@@ -117,7 +117,7 @@ def get_dadosfii(fii):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
-                logging.info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+                log_info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
             elif tipo_ativo == "acao":
                 containers = soup.find_all('div', class_='container')
@@ -182,7 +182,7 @@ def get_dadosfii(fii):
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
-        logging.info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
+        log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
 
         arrow_fii = ""
         aux_fii = ""
@@ -198,7 +198,7 @@ def get_dadosfii(fii):
             f"Houve {aux_fii} de <b>{var_fii}  {arrow_fii}</b> na cota do FII {fii.upper()} (hoje X ontem).")
         # variac_xpml11_aux = (f"<b>VAR {varxpml11}  {arrow_xpml}</b>")
 
-        # logging.info(f"Veja o valor de Variac_xpml:> {variac_xpml11}")
+        # log_info(f"Veja o valor de Variac_xpml:> {variac_xpml11}")
         card_fii = (
             f"Atualizações {tipo_ativo_str} {fii.upper()}:<br><br>"
             f"• Houve {aux_fii} de {var_fii} na cota<br>"
@@ -207,14 +207,14 @@ def get_dadosfii(fii):
             f"• P/VP: {pvp_fii}<br>"
             f"• Último rendimento: R$ {divpc_fii}."
         )
-        # logging.info(f"\n Veja o valor de Card:> {card_xpml11}\n")
+        # log_info(f"\n Veja o valor de Card:> {card_xpml11}\n")
 
         # Com caminho absoluto, parece não ser necessário: os.path.join(os.path.dirname(__file__)
         # nome_do_arquivo = os.path.join(os.path.dirname(__file__), 'historico_xpml.json') # com caminho absoluto
         # grava_historico.gravar_historico(nome_do_arquivo, f"R$ {xpml11_0}")
         # meu_historico = grava_historico.ler_historico("historico_xpml.json")
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
-        # logging.info("começar a chamar função de gravar Veja")
+        # log_info("começar a chamar função de gravar Veja")
         sufixo = app.limpar_fund_name(fii)
         valor = f"R$ {cota_fii}"
         aux = "fund"
@@ -228,13 +228,12 @@ def get_dadosfii(fii):
 
         # print(f"Texto para Histórico: {hist_text_xpml}")
 
-        # logging.info(f"\nVeja os valores:> {hist_text_xpml}\n")
+        # log_info(f"\nVeja os valores:> {hist_text_xpml}\n")
         return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url
 
     except Exception as e:
-        logging.info(f"\n Ocorreu um erro em {fii}: {e}\n")
+        log_error(f"Ocorreu um erro em {fii}: {e}")
         return {"error": str(e)}, 500
-
 
 # -------------------------------------------------------------------------------
 

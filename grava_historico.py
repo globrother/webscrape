@@ -12,9 +12,9 @@ from log_utils import log_debug, log_info, log_warning, log_error
 # =====================================================================
 
 # Usar o logger para registrar mensagens
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-log_info('--> Preparando para gerenciar o hitórico ...')
+#logger = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.INFO)
+#log_info('--> Preparando para gerenciar o hitórico ...')
 
 # Configurar a conexão com o Back4App
 APPLICATION_ID = os.getenv("APPLICATION_ID")
