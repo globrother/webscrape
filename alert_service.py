@@ -105,6 +105,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # 6) se sigla inválida, mostra APL
     if sigla not in ativos_permitidos or not asset_full:
         session_attr["alert_in_progress"] = True
+        session_attr["manual_selection"]  = True
         apl = _load_apl_document("apl_add_alerta.json")
         return {
             "action": "show_apl",

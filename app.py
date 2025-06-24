@@ -159,6 +159,24 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.set_should_end_session(False).response
 # ============================================================================================
 
+# HANDLER PARA ABRIR SKILL DIRETAMENTE EM ALGUM ATIVO
+class LaunchWithAssetIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("LaunchWithFundIntent")(handler_input)
+
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        session_attr["contexto_atual"] = "selecao_ativo"
+        session_attr["manual_selection"] = True
+        session_attr["select_in_progress"] = True
+
+        fund_name = handler_input.request_envelope.request.intent.slots.get("fundName").value
+        log_info(f"🧠 fund_name recebido logo no launch: {fund_name}")
+
+        # Delegue para o mesmo fluxo que o SelectFundIntentHandler usa:
+        return SelectFundIntentHandler().handle(handler_input)
+# ============================================================================================
+
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class NovoAtivoUserEventHandler(APLUserEventHandler):
     comandos_validos = {
@@ -278,6 +296,8 @@ class AddAtivoIntentHandler(AbstractRequestHandler):
         return is_intent_name("AddAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        session_attr["manual_selection"] = True
         apl_document = _load_apl_document("apl_add_ativo.json")
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
@@ -1018,6 +1038,7 @@ def webhook():
 
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
+    launch_with_Asset_intent_handler = LaunchWithAssetIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
@@ -1034,6 +1055,7 @@ def webhook():
 
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
+    sb.add_request_handler(launch_with_Asset_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(alerta_input_handler)
     sb.add_request_handler(add_ativo_intent_handler)
