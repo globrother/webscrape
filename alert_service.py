@@ -1,5 +1,5 @@
 # alerta_service.py
-from ask_sdk_model import IntentRequest
+
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective,
     ExecuteCommandsDirective,
@@ -8,7 +8,6 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
 from utils import limpar_asset_name, state_asset_mapping, _load_apl_document
 from scraper import web_scrape
 import grava_historico
-from flask import request
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error
@@ -22,12 +21,6 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
       reprompt: opcional, texto para reprompt
       directives: opcional, lista de directives APL/Commands
     """
-    # Bloqueia alerta de preço se seleção estiver ativo
-    if isinstance(request, IntentRequest):
-        asset_name = request.intent.slots.get("fundName").value if request.intent.slots.get("fundName") else None
-        if session_attr.get("select_in_progress") and not asset_name:
-            log_warning("🛑 Seleção em andamento, fundName ausente. Bloqueando CreatePriceAlertIntent.")
-            return False
 
     # -------------------------------------------------------
     # 0) Se não estivermos já no meio de um alerta, limpe tudo
