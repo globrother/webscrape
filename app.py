@@ -162,6 +162,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # HANDLER PARA ABRIR SKILL DIRETAMENTE EM ALGUM ATIVO
 class LaunchWithAssetIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug("Agora no Handler LaunchWithAssetIntent")
         return is_intent_name("LaunchWithFundIntent")(handler_input)
 
     def handle(self, handler_input):
