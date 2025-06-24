@@ -176,6 +176,7 @@ class LaunchIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         slots = handler_input.request_envelope.request.intent.slots
         fund_name = slots.get("fundName").value if slots.get("fundName") else None
+        session_attr["contexto_atual"] = "select_in_progress"
         session_attr["select_in_progress"] = True
 
         if fund_name:
