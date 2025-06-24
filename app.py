@@ -165,6 +165,7 @@ class LaunchWithAssetIntentHandler(AbstractRequestHandler):
         return is_intent_name("LaunchWithFundIntent")(handler_input)
 
     def handle(self, handler_input):
+        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["contexto_atual"] = "selecao_ativo"
         session_attr["manual_selection"] = True
