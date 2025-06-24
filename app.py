@@ -168,7 +168,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # HANDLER PARA ABRIR SKILL DIRETAMENTE EM ALGUM ATIVO
-"""class LaunchIntentHandler(AbstractRequestHandler):
+class LaunchIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler LaunchIntent")
         return is_intent_name("LaunchIntent")(handler_input)
@@ -186,8 +186,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             #session_attr["sigla_alerta"] = fund_name
             return SelectFundIntentHandler().handle(handler_input)
 
-        return LaunchRequestHandler().handle(handler_input)"""
-
+        return LaunchRequestHandler().handle(handler_input)
 """
     def can_handle(self, handler_input):
         log_debug("Agora no Handler LaunchWithAssetIntent")
@@ -1068,7 +1067,7 @@ def webhook():
 
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
-    #launch_intent_handler = LaunchIntentHandler()
+    launch_intent_handler = LaunchIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
@@ -1085,7 +1084,7 @@ def webhook():
 
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
-    #sb.add_request_handler(launch_intent_handler)
+    sb.add_request_handler(launch_intent_handler)
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(alerta_input_handler)
     sb.add_request_handler(add_ativo_intent_handler)
