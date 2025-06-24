@@ -1,14 +1,48 @@
+# utils
+
+from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 import logging
 import time
 import json
 import re # Regex para trabalhar com expressões regulares
 import grava_historico
 
+
 # VARIÁVEIS: 
 
 # Mapeamento de Estados e Fundos
 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_asset_mapping}")
+
+# Dicionário para letras em extenso (português)
+letras_extenso = {
+    "a": "a",
+    "b": "bê",
+    "c": "cê",
+    "d": "dê",
+    "e": "é",
+    "f": "éfe",
+    "g": "gê",
+    "h": "agá",
+    "i": "i",
+    "j": "jóta",
+    "k": "cá",
+    "l": "éle",
+    "m": "ême",
+    "n": "êne",
+    "o": "ó",
+    "p": "pê",
+    "q": "quê",
+    "r": "érre",
+    "s": "ésse",
+    "t": "tê",
+    "u": "u",
+    "v": "vê",
+    "w": "dáblio",
+    "x": "xis",
+    "y": "ípsilon",
+    "z": "zê"
+}
 
 # Limpa o nome passado pelo usuário. EX: recebe "X P. mL11" e transforma em "xpml"
 def limpar_asset_name(raw):
@@ -32,6 +66,44 @@ def _load_apl_document(file_path):
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return None
+
+def gerar_sinonimos(fundo):
+    # normaliza tudo em minúsculas
+    base = fundo.strip().lower()
+    letras = list(base)
+    # 1) Sigla contínua
+    contigua = base
+    # 2) Sigla separada por espaço: "k n c r"
+    separado = " ".join(letras)
+    # 3) Sigla com pontos: "k.n.c.r"
+    pontuada = ". ".join(letras)
+    # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
+    pontuada_upper = pontuada.upper()
+    # 5) Sigla com pontos em minusculas: 'k. n. c. r.'
+    pontuada_literal = ". ".join(letras) + "."
+    # 6) Letras por extenso: "kê ene cê erre"
+    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
+    # Monta um set pra evitar duplicatas e retorna como lista
+    return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
+
+def get_dynamic_entities_directive():
+    fundos = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+    entities = [
+        {
+            "id": fundo,
+            "name": {"value": fundo},
+            "synonyms": gerar_sinonimos(fundo)
+        } for fundo in fundos
+    ]
+    return DynamicEntitiesDirective(
+        update_behavior="REPLACE",
+        types=[
+            {
+                "name": "FUNDO_TYPES_xxxx",
+                "values": entities
+            }
+        ]
+    )
 
 # Faz a comparação do valor da cota com o valor para o alerta de preço.
 def comparador(historico, cota_atual, voz_fundo):

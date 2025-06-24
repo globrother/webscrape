@@ -2,7 +2,7 @@
 
 from utils import state_asset_mapping
 from utils import _load_apl_document
-from utils import limpar_asset_name  # onde estiver sua função
+from utils import limpar_asset_name
 from utils import comparador
 from infofii import get_dadosfii
 import grava_historico
@@ -10,7 +10,6 @@ import obter_grafico
 import time
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
-import logging
 from log_utils import log_debug, log_info, log_warning, log_error
 # =====================================================================
 

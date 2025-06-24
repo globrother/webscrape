@@ -1,16 +1,17 @@
 # alerta_service.py
 
-import logging
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective,
     ExecuteCommandsDirective,
     SendEventCommand
 )
-from utils import limpar_asset_name  # onde estiver sua função
-from utils import state_asset_mapping
-from utils import _load_apl_document
+from utils import limpar_asset_name, state_asset_mapping, _load_apl_document
 from scraper import web_scrape
 import grava_historico
+
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+from log_utils import log_debug, log_info, log_warning, log_error
+# =====================================================================
 
 def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     """
@@ -45,7 +46,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # -----------------------------------
     if slot_asset:
         session_attr["sigla_alerta"] = limpar_asset_name(slot_asset)
-        logging.info(f"[Service] Slot fundName salvo em sessão: {session_attr['sigla_alerta']}")
+        log_info(f"[Service] Slot fundName salvo em sessão: {session_attr['sigla_alerta']}")
 
     # -----------------------------------
     # 3) recupere a sigla da sessão
@@ -58,7 +59,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
         if cid and cname:
             asset_name = limpar_asset_name(cname)
             session_attr["sigla_alerta"] = asset_name
-            logging.info(f"[Service] Usando ativo atual: {asset_name}")
+            log_info(f"[Service] Usando ativo atual: {asset_name}")
         else:
             session_attr["alert_in_progress"] = True
             return {
@@ -69,7 +70,6 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     # -----------------------------------
     # 4) normalize e valide a sigla
-    # -----------------------------------
     sigla = asset_name
     ativos_permitidos = [limpar_asset_name(n) for n in state_asset_mapping.values()]
     asset_full, asset_state_id = next(
@@ -81,7 +81,6 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     # -----------------------------------
     # 5) pergunta/monte o valor
-    # -----------------------------------
     if "AlertValue" not in session_attr or session_attr["AlertValue"] is None:
         # sem slot de valor
         if not alert_value and not alert_value_cents:
@@ -100,17 +99,16 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
         else:
             session_attr["AlertValue"] = f"0,{alert_value_cents}"
 
-        logging.info(f"[Service] AlertValue montado: {session_attr['AlertValue']}")
+        log_info(f"[Service] AlertValue montado: {session_attr['AlertValue']}")
 
     # -----------------------------------
     # 6) se sigla inválida, mostra APL
-    # -----------------------------------
     if sigla not in ativos_permitidos or not asset_full:
         session_attr["alert_in_progress"] = True
         apl = _load_apl_document("apl_add_alerta.json")
         return {
             "action": "show_apl",
-            "speech": "Não consegui identificar esse ativo. Digite manualmente na tela.",
+            "speech": "Não consegui identificar o cadastro desse ativo. Digite manualmente na tela.",
             "directives": [
                 RenderDocumentDirective(token="inputScreenToken", document=apl)
             ]
@@ -118,18 +116,17 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     # -----------------------------------
     # 7) tudo OK, CRIA o alerta
-    # -----------------------------------
     alert_value = session_attr["AlertValue"]
     key = f"alert_value_{sigla}"
     session_attr[key] = alert_value
-    logging.info(f"[Service] Salvando alerta: {sigla} → {alert_value}")
+    log_info(f"[Service] Salvando alerta: {sigla} → {alert_value}")
 
     # grava histórico
     valor_formatado = f"R$ {alert_value}"
     grava_historico.gravar_historico(key, valor_formatado)
     historico = grava_historico.ler_historico(key)
     texto_hist = grava_historico.gerar_texto_historico(historico, "alert")
-    logging.info(f"[Service] Histórico gerado: {texto_hist}")
+    log_info(f"[Service] Histórico gerado: {texto_hist}")
 
     # prepara directives de retorno (tela inicial + navegação)
     first_asset = state_asset_mapping[1]

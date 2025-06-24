@@ -5,6 +5,7 @@
 """
 import requests
 from bs4 import BeautifulSoup
+from utils import limpar_asset_name
 from time import time
 import grava_historico
 import app
@@ -215,7 +216,7 @@ def get_dadosfii(fii):
         # meu_historico = grava_historico.ler_historico("historico_xpml.json")
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
         # log_info("começar a chamar função de gravar Veja")
-        sufixo = app.limpar_fund_name(fii)
+        sufixo = limpar_asset_name(fii)
         valor = f"R$ {cota_fii}"
         aux = "fund"
         grava_historico.gravar_historico(sufixo, valor)

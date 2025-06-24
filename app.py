@@ -20,7 +20,6 @@ mas ao tocar em um botão, a skill é encerrada.
 import time
 from datetime import datetime
 import pytz
-import re  # Regex substituir ultimos caracteres numéricos
 import os
 import json
 import requests
@@ -34,34 +33,22 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
-from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model import SessionEndedRequest, IntentRequest
 # from typing import Dict, Any
 
 #from infofii import get_dadosfii
-from logtail import LogtailHandler
-from log_utils import LogtailSafeHandler  # se estiver num arquivo separado
-from utils import state_asset_mapping
+#from logtail import LogtailHandler
+#from log_utils import LogtailSafeHandler  # se estiver num arquivo separado
+from utils import state_asset_mapping, limpar_asset_name, get_dynamic_entities_directive, _load_apl_document
 from can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
 import grava_historico
 # ============================================================================================
 
-# LEMBRE-SE DE IMPORTAR AS FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS
-# LEMBRE-SE DE CARREGAR OS DOCUMENTOS APL JSON ACIMA.
-# ADICIONAR UM NOVO BLOCO (3 LINHAS) PARA ALTERAR DOCUMENTO APL DO FUNDO ADICIONADO: TROCAR apl_document_xxxx E AS OUTRAS 3 VARIÁVEIS
-# DEVE-SE ADICIONAR UMA NOVA LINHA DEFININDO O CARD DO FUNDO: TROCAR voz_xxxxxx e card_xxxxxx PELO NOME DO FUNDO.
-
-# ==========:: CONFIGURAÇÃO DO LOGGER ::==========
-
-# =================================================
-
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
-import logging
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
-
 # ============================================================================
 
 # Define o fuso horário para horário de Brasília
@@ -76,218 +63,11 @@ log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
-# Mapeamento de Estados e Fundos
-"""state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-logging.info(f"\n O Mapa é: {state_asset_mapping}")"""
-
-# time.sleep(5)
-# logging.info(f"\n A lista é: {lista_ativos}")
-
-# Dicionário para letras em extenso (português)
-letras_extenso = {
-    "a": "a",
-    "b": "bê",
-    "c": "cê",
-    "d": "dê",
-    "e": "é",
-    "f": "éfe",
-    "g": "gê",
-    "h": "agá",
-    "i": "i",
-    "j": "jóta",
-    "k": "cá",
-    "l": "éle",
-    "m": "ême",
-    "n": "êne",
-    "o": "ó",
-    "p": "pê",
-    "q": "quê",
-    "r": "érre",
-    "s": "ésse",
-    "t": "tê",
-    "u": "u",
-    "v": "vê",
-    "w": "dáblio",
-    "x": "xis",
-    "y": "ípsilon",
-    "z": "zê"
-}
+# log_info(f"\n A lista é: {lista_ativos}")
 
 ativos_favoritos = [1, 2, 3, 4]
 
-"""def remover_sufixo_numerico(codigo):
-    # Remove qualquer sequência de dígitos no final do código
-    return re.sub(r'\d+$', '', codigo, flags=re.IGNORECASE)"""
-
-def limpar_fund_name(raw):
-    if not raw:
-        return None
-    raw = str(raw).lower()
-    raw = re.sub(r'\s|\.', '', raw)     # Remove espaços e pontos
-    raw = re.sub(r'\d+$', '', raw)      # Remove números no final
-    return raw
-
-def gerar_sinonimos(fundo):
-    # normaliza tudo em minúsculas
-    base = fundo.strip().lower()
-    letras = list(base)
-    # 1) Sigla contínua
-    contigua = base
-    # 2) Sigla separada por espaço: "k n c r"
-    separado = " ".join(letras)
-    # 3) Sigla com pontos: "k.n.c.r"
-    pontuada = ". ".join(letras)
-    # 4) Sigla com pontos em maiúsculas: "K.N.C.R"
-    pontuada_upper = pontuada.upper()
-    # 5) Sigla com pontos em minusculas: 'k. n. c. r.'
-    pontuada_literal = ". ".join(letras) + "."
-    # 6) Letras por extenso: "kê ene cê erre"
-    extenso = " ".join([letras_extenso.get(l, l) for l in letras])
-    # Monta um set pra evitar duplicatas e retorna como lista
-    return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
-
-def get_dynamic_entities_directive():
-    fundos = [limpar_fund_name(v) for v in state_asset_mapping.values()]
-    entities = [
-        {
-            "id": fundo,
-            "name": {"value": fundo},
-            "synonyms": gerar_sinonimos(fundo)
-        } for fundo in fundos
-    ]
-    return DynamicEntitiesDirective(
-        update_behavior="REPLACE",
-        types=[
-            {
-                "name": "FUNDO_TYPES_xxxx",
-                "values": entities
-            }
-        ]
-    )
-
-# Carrega documentos APL da pasta principal
-def _load_apl_document(file_path):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            # print(f"Content of {file_path}: {content}")
-            return json.loads(content)
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from {file_path}: {e}")
-        return None
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
-        return None
-
-voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
-
-# ============================================================================================
-"""# Faz a comparação do valor da cota com o valor para o alerta de preço.
-def comparador(historico, cota_atual, voz_fundo):
-    # Verificar se o histórico é válido e contém pelo menos um registro
-    if historico and isinstance(historico, list) and len(historico) >= 1:
-        alert_value = historico[0].get("valor", "").replace("R$ ", "")
-        logging.info(f"Valor do Alerta: {alert_value}")
-        logging.info(f"Valor Atual da Cota: {cota_atual}")
-
-        # Verificar se o valor do alerta é válido
-        if alert_value:
-            try:
-                alert_value_float = float(alert_value.replace(',', '.'))
-                cota_atual_float = float(cota_atual.replace(',', '.'))
-                #logging.info(f"Valor de alert_value_float: {alert_value_float}")
-                #logging.info(f"Valor de cota_atual_float: {cota_atual_float} \n")
-
-                # Comparar os valores e adicionar aviso de fala se necessário
-                if cota_atual_float <= alert_value_float:
-                    voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
-            except ValueError as e:
-                logging.error(f"Erro ao converter valores para float: {e}")
-    else:
-        logging.info("\n Histórico está vazio ou não é uma lista válida \n")
-
-    return voz_fundo
-"""
-# ===============::::: SESSÃO WEBSCRAPE :::::===============
-"""def web_scrape(fundo):
-    # extrai os caracteres numéricos de fundo
-    fundo_fii = limpar_fund_name(fundo)
-    doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
-    # Carregar APL padrão de exibiçaõ dos fundos
-    apl_document = _load_apl_document(doc_apl)
-    # Adiciona a geração do texto do histórico de alertas
-    sufixo = f"alert_value_{fundo_fii}"
-    historico = grava_historico.ler_historico(sufixo)
-    aux = "alert"
-    hist_alert = grava_historico.gerar_texto_historico(historico, aux)
-    # logging.info(f"\n Recuperando hist_alert_xpml da sessão: {hist_alert} \n")
-
-    fii = fundo
-    #logging.info(f"valor de fii: {fii}")
-    
-    # 🔹 Obtendo Url do Gráfico
-    url_grafico = obter_grafico.requisitando_chart(fii)
-    timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
-    url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
-    #logging.info(f"URL do Gráfico: {url_grafico}")
-
-    # Lista de links de imagens de planos de fundo
-    background_images = [
-        "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
-        "https://lh5.googleusercontent.com/d/1-9P8D-AJCsH6-S2ZSmSURlT8aGDGcgV4",
-        "https://lh5.googleusercontent.com/d/1-Eeo6Kr7MQQ1MTAtFnrYynkaqaDrU_LW",
-        "https://lh5.googleusercontent.com/d/1-8MRaljDqQKt6IlhTtlcKcEsFKO6psqF",
-        "https://lh5.googleusercontent.com/d/1-Eeo6Kr7MQQ1MTAtFnrYynkaqaDrU_LW",
-        "https://lh5.googleusercontent.com/d/1-CUhhgJDaGaTMJL6Ss0hdFENPb07F1FU"
-    ]
-
-    # Determina o índice do fundo atual com base no ID do estado
-    fundo_index = next(
-        (key for key, value in state_asset_mapping.items() if value == fundo), None)
-
-    if fundo_index is not None:
-        logging.info(f"Índice do fundo '{fundo}': {fundo_index}")
-    else:
-        logging.error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
-        # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
-        fundo_index = 1
-        logging.info(f"Usando índice padrão: {fundo_index}")
-
-    # Seleciona a imagem de fundo correspondente ao índice
-    background_image = background_images[(
-        fundo_index - 1) % len(background_images)]
-    # logger.info(f"O link da imagem de fundo é: {background_image}")
-
-    # ,_ significa que a variável variac_xpml11 não será utilizada
-    cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
-
-    voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
-
-    cota_atual = cota_fii
-    voz_fundo = voz
-    voz = comparador(historico, cota_atual, voz_fundo)
-
-    # DIVIDE O HISTÓRICO EM DUAS COLUNAS
-    #logging.info(f"hist_text_FII é: {hist_text_fii}")
-    meio = len(hist_text_fii) // 2  # Divide a lista ao meio
-    hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
-    hist_text_ativo_col2 = hist_text_fii[meio:]   # Segunda metade da lista
-    #logging.info(f"COl2 é: {hist_text_ativo_col2}")
-
-    dados_info = {
-        "card_ativo": card_fii,
-        "variac_ativo": variac_fii,
-        "hist_text_ativo_col1": hist_text_ativo_col1,
-        "hist_text_ativo_col2": hist_text_ativo_col2,
-        "hist_alert": hist_alert,
-        "background_image": background_image,
-        "logo_url_atv": logo_url_atv,
-        "url_grafico": url_grafico
-    }
-
-    return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
-"""
-# ============================================================================================
+#voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ====================::::: CLASSES E INTENTS DA SKILL ALEXA :::::====================
 
@@ -389,17 +169,6 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
     }
     log_debug("Agora no Handler LaunchRequest")
 
-    """def can_handle(self, handler_input):
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            return arguments and (
-                arguments[0] == "siglaAtivo" or
-                arguments[0] == "nomeAtivo" or
-                arguments[0] == "confirmarCadastro" or
-                arguments[0] == "cancelarCadastro"
-            )
-        return False
-"""
     def handle(self, handler_input):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
@@ -467,7 +236,7 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
                 "state_id": novo_state_id,
                 "codigo": sigla,
                 "nome": nome,
-                "apelido": limpar_fund_name(sigla).upper(),
+                "apelido": limpar_asset_name(sigla).upper(),
                 "ativo": True
             }
         grava_historico.adicionar_ativo(novo_ativo)
@@ -662,8 +431,8 @@ class AlertaInputHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
             """# Validação: sigla já existe?
-            allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
-            sigla_normalizada = limpar_fund_name(sigla)
+            allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+            sigla_normalizada = limpar_asset_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
@@ -826,7 +595,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         resolved_id = value.value.id
                         log_info(f"🎯 Resolvido como ID: {resolved_id}")
 
-        allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
+        allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
         #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
@@ -862,12 +631,12 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 speech = "Não consegui entender. Por favor, digite o nome do fundo na tela."
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
-        sigla_normalizada = limpar_fund_name(fund_name)
+        sigla_normalizada = limpar_asset_name(fund_name)
 
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_asset_mapping.items()
-                if limpar_fund_name(nome) == sigla_normalizada),
+                if limpar_asset_name(nome) == sigla_normalizada),
                 (None, None)
             )
 
@@ -890,7 +659,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             try:
                 dados_info, _, _, _, apl_doc, voz = web_scrape(fundo_full)
             except Exception as e:
-                logging.error(f"Erro no web_scrape para {fundo_full}: {e}")
+                log_error(f"Erro no web_scrape para {fundo_full}: {e}")
                 return handler_input.response_builder.speak("Ocorreu um erro ao recuperar as informações do ativo."
                 ).set_should_end_session(False).response
 
@@ -968,8 +737,8 @@ class SelectInputHandler(APLUserEventHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
-            sigla_normalizada = limpar_fund_name(sigla)
+            allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+            sigla_normalizada = limpar_asset_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
@@ -981,7 +750,7 @@ class SelectInputHandler(APLUserEventHandler):
             fundo_full = None
             fundo_state_id = None
             for state_id, nome in state_asset_mapping.items():
-                if limpar_fund_name(nome) == sigla_normalizada:
+                if limpar_asset_name(nome) == sigla_normalizada:
                     fundo_full = nome
                     fundo_state_id = state_id
                     break
@@ -1104,12 +873,12 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         reason = getattr(request, "reason", "Motivo não informado")
         error = getattr(request, "error", None)
         if error:
-            logging.error(f"💥 Detalhes do erro: {error}")
+            log_error(f"💥 Detalhes do erro: {error}")
             # Tenta acessar campos específicos com segurança
             if hasattr(error, "type"):
-                logging.error(f"🔎 Tipo: {error.type}")
+                log_error(f"🔎 Tipo: {error.type}")
             if hasattr(error, "message"):
-                logging.error(f"📝 Mensagem: {error.message}")
+                log_error(f"📝 Mensagem: {error.message}")
 
         request = handler_input.request_envelope.request
         if hasattr(request, "reason"):
@@ -1119,7 +888,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
         # Você pode usar isso para métricas ou análises futuras
         if reason == "ERROR" and error:
-            logging.debug("🔧 Erro interno detectado. Pode ter sido uma exceção silenciosa em outro handler.")
+            log_debug("🔧 Erro interno detectado. Pode ter sido uma exceção silenciosa em outro handler.")
 
         # Mantém a sessão como 'não finalizada', caso algo esteja escutando
         handler_input.response_builder.set_should_end_session(False)
@@ -1285,5 +1054,4 @@ def webhook():
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
-    # logging.basicConfig(level=logging.DEBUG) # Habilita debug logging
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
