@@ -626,27 +626,49 @@ class AlertaInputHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
         if arguments[0] == "confirmarAlerta":
-            sigla = session_attr.get("sigla_alerta")
-            valor = session_attr.get("AlertValue")
-            log_info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
-            if not sigla or not valor:
-                log_info("Erro ao cadastrar Ativo")
-                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
-                    "Por favor, digite novamente.").set_should_end_session(False)
-                return handler_input.response_builder.response
+            log_info("ConfirmarAlerta acionado via APL")
+            #sigla = session_attr.get("sigla_alerta")
+            #valor = session_attr.get("AlertValue")
+            #log_info(f"O valor de Sigla e Valor são: {sigla}::{valor}")
+            fake_slots = {}  # slots não são usados porque já temos os dados em session_attr
 
-            # Validação: sigla já existe?
+            resultado = tratar_alerta(session_attr, fake_slots)
+
+            # Ação esperada: "create", "error", "show_apl", etc
+            if resultado["action"] == "create":
+                handler_input.response_builder.speak(resultado["speech"])
+
+                for directive in resultado.get("directives", []):
+                    handler_input.response_builder.add_directive(directive)
+
+                return handler_input.response_builder.set_should_end_session(False).response
+
+            if resultado["action"] == "show_apl":
+                handler_input.response_builder.speak(resultado["speech"])
+
+                for directive in resultado.get("directives", []):
+                    handler_input.response_builder.add_directive(directive)
+
+                return handler_input.response_builder.set_should_end_session(False).response
+
+            if resultado["action"] == "error":
+                handler_input.response_builder.speak(resultado["speech"]).ask(
+                    resultado.get("reprompt", "")
+                )
+                return handler_input.response_builder.set_should_end_session(False).response
+
+            # Fallback genérico
+            handler_input.response_builder.speak("Houve um erro ao tentar cadastrar o alerta.").set_should_end_session(False)
+            return handler_input.response_builder.response
+
+            """# Validação: sigla já existe?
             allowed_funds = [limpar_fund_name(v) for v in state_asset_mapping.values()]
             sigla_normalizada = limpar_fund_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
-                return handler_input.response_builder.response
-            
-            else:
-                log_info("Direcionando para Processar Cadastro...")
-                return CreatePriceAlertIntentHandler().processar_cadastro(handler_input)  # Reutiliza a lógica de gravação
+                return handler_input.response_builder.response"""
 # ============================================================================================
 
 # HANDLER DE NAVEGAÇÃO AUTOMÁTICA PELOS ATIVOS
