@@ -82,13 +82,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
-        slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
-        fund_name = slots.get("fundName").value if slots.get("fundName") else None
+        #slots = handler_input.request_envelope.request.intent.slots if hasattr(handler_input.request_envelope.request, "intent") else {}
+        #fund_name = slots.get("fundName").value if slots.get("fundName") else None
 
-        if fund_name:
-            log_info(f"[Launch] fundo informado logo na invocação: {fund_name}")
-            handler_input.attributes_manager.session_attributes["sigla_alerta"] = fund_name
-            return SelectFundIntentHandler().handle(handler_input)
+        #if fund_name:
+        #    log_info(f"[Launch] fundo informado logo na invocação: {fund_name}")
+        #    handler_input.attributes_manager.session_attributes["sigla_alerta"] = fund_name
+        #    return SelectFundIntentHandler().handle(handler_input)
 
         # Defina os intervalos em que os favoritos devem ser exibidos
         intervalos_favoritos = [
