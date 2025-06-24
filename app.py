@@ -179,7 +179,7 @@ class LaunchIntentHandler(AbstractRequestHandler):
         if fund_name:
             log_info(f"[LaunchIntent] fundo recebido na invocação: {fund_name}")
             session_attr = handler_input.attributes_manager.session_attributes
-            session_attr["sigla_alerta"] = fund_name
+            #session_attr["sigla_alerta"] = fund_name
             return SelectFundIntentHandler().handle(handler_input)
 
         return LaunchRequestHandler().handle(handler_input)
