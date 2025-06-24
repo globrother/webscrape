@@ -33,7 +33,7 @@ LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 logger = logging.getLogger("skill")
 logger.setLevel(logging.DEBUG if DEBUG_MODE else logging.INFO)
 
-formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")#, %(asctime)s - "%Y-%m-%d %H:%M:%S")
+formatter = logging.Formatter("[%(levelname)s] %(module)s.%(funcName)s: %(message)s")#%(name)s:, %(asctime)s - "%Y-%m-%d %H:%M:%S")
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
@@ -54,7 +54,9 @@ def log_debug(msg):
         logger.debug(f"🧪 {msg}")
 
 def log_info(msg):
-    logger.info(f"ℹ️ {msg}")
+    #logger.info(f"ℹ️ {msg}")
+    logger.findCaller(stack_info=False)  # opcional
+    logger.info(f"ℹ️ {msg}", stacklevel=2)
 
 def log_warning(msg):
     logger.warning(f"⚠️ {msg}")
