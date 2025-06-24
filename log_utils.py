@@ -37,6 +37,7 @@ formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")#, %(ascti
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+logger.propagate = False
 
 if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
