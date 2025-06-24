@@ -167,7 +167,24 @@ class LaunchRequestHandler(AbstractRequestHandler):
 # ============================================================================================
 
 # HANDLER PARA ABRIR SKILL DIRETAMENTE EM ALGUM ATIVO
-class LaunchWithAssetIntentHandler(AbstractRequestHandler):
+class LaunchIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        log_debug("Agora no Handler LaunchIntent")
+        return is_intent_name("LaunchIntent")(handler_input)
+
+    def handle(self, handler_input):
+        slots = handler_input.request_envelope.request.intent.slots
+        fund_name = slots.get("fundName").value if slots.get("fundName") else None
+
+        if fund_name:
+            log_info(f"[LaunchIntent] fundo recebido na invocação: {fund_name}")
+            session_attr = handler_input.attributes_manager.session_attributes
+            session_attr["sigla_alerta"] = fund_name
+            return SelectFundIntentHandler().handle(handler_input)
+
+        return LaunchRequestHandler().handle(handler_input)
+
+"""
     def can_handle(self, handler_input):
         log_debug("Agora no Handler LaunchWithAssetIntent")
         return is_intent_name("LaunchWithFundIntent")(handler_input)
@@ -183,7 +200,7 @@ class LaunchWithAssetIntentHandler(AbstractRequestHandler):
         log_info(f"🧠 fund_name recebido logo no launch: {fund_name}")
 
         # Delegue para o mesmo fluxo que o SelectFundIntentHandler usa:
-        return SelectFundIntentHandler().handle(handler_input)
+        return SelectFundIntentHandler().handle(handler_input)"""
 # ============================================================================================
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
@@ -1047,7 +1064,7 @@ def webhook():
 
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
-    launch_with_Asset_intent_handler = LaunchWithAssetIntentHandler()
+    launch_with_Asset_intent_handler = LaunchIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
