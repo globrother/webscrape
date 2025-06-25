@@ -21,7 +21,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
                 session_attr["monitor_loop"] = False
                 session_attr["contexto_atual"] = None
                 return handler_input.response_builder.speak(
-                    "Tempo de monitoramento encerrado."
+                    "Tempo de monitoramento encerrado. Até a próxima"
                 ).set_should_end_session(True).response
 
         # Caso esteja desativado, apenas retorna silenciosamente
