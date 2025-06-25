@@ -163,6 +163,40 @@
                                 "type": "Frame",
                                 "height": "90",
                                 "width": "300",
+                                "borderColor": "#ffb69d",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#ffb69d",
+                                "alignSelf": "center",
+                                "right": "50",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "excluirAtivo"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Excluir Ativo",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
                                 "borderColor": "#F87171",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
