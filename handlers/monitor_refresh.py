@@ -31,7 +31,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
 
         handler_input.response_builder.add_directive(ExecuteCommandsDirective(
             token="mainScreenToken",
-            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=6000)]
+            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=10000)]
         ))
 
         return handler_input.response_builder.set_should_end_session(False).response
