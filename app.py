@@ -8,11 +8,6 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 mas ao tocar em um botão, a skill é encerrada.
 """
 # ::== AJUDA ==::
-# PARA CADA FII QUE DESEJA MONITORAR:
-# NÃO SE ESQUEÇA DE CRIAR UM ARQUIVO apl_nome_do_fii.json (pasta raiz)
-# IMPORTAR FUNÇÕES get_xxxx DOS FUNDOS ADICIONADOS EM app.py
-# DUPLICAR UM ARQUIVO DE FUNDO: nome-do-fii.py (pasta raiz)
-# ALTERAR O NOME DA FUNÇÃO get_xxxx E TODAS AS VARIÁVEIS DO ARQUIVO nome-do-fundo.py
 # ADICIONAR OS INICIALIZADORES DE HANDLERS: show_xxxxx_screen_handler = ShowXxxxxScreenHandler()
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
@@ -1158,7 +1153,7 @@ def webhook():
     monitor_intent_handler = MonitorIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
-    add_ativo_intent_handler = AddAtivoIntentHandler()
+    add_ativo_intent_handler = GerenciarAtivoIntentHandler()
     novo_ativo_usesevent_handler = GerenciarAtivoInputHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_asset_mapping)
     touch_handler = TouchHandler(state_asset_mapping)

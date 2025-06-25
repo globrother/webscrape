@@ -8,7 +8,7 @@ Flask>=3.0,<4.0
 gunicorn==23.0.0
 logtail-python==0.3.3
 parse==1.20.2
-pip==25.0.1
+pip==25.1.1
 pytz==2024.2
 Requests==2.32.4
 ParsePy==0.3.20150629
