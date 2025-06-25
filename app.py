@@ -189,23 +189,6 @@ class LaunchIntentHandler(AbstractRequestHandler):
             return SelectFundIntentHandler().handle(handler_input)
 
         return LaunchRequestHandler().handle(handler_input)
-"""
-    def can_handle(self, handler_input):
-        log_debug("Agora no Handler LaunchWithAssetIntent")
-        return is_intent_name("LaunchWithFundIntent")(handler_input)
-
-    def handle(self, handler_input):
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-        session_attr = handler_input.attributes_manager.session_attributes
-        session_attr["contexto_atual"] = "selecao_ativo"
-        session_attr["manual_selection"] = True
-        session_attr["select_in_progress"] = True
-
-        fund_name = handler_input.request_envelope.request.intent.slots.get("fundName").value
-        log_info(f"🧠 fund_name recebido logo no launch: {fund_name}")
-
-        # Delegue para o mesmo fluxo que o SelectFundIntentHandler usa:
-        return SelectFundIntentHandler().handle(handler_input)"""
 # ============================================================================================
 
 # EXIBIR ATIVO NO MODO MONITOR
@@ -234,12 +217,13 @@ class MonitorIntentHandler(AbstractRequestHandler):
         return LaunchRequestHandler().handle(handler_input)
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
-class NovoAtivoUserEventHandler(APLUserEventHandler):
+class GerenciarAtivoInputHandler(APLUserEventHandler):
     comandos_validos = {
         "siglaAtivo",
         "nomeAtivo",
         "confirmarCadastro",
-        "cancelarCadastro"
+        "cancelarCadastro",
+        "excluirAtivo"
     }
     log_debug("Agora no Handler LaunchRequest")
 
@@ -285,6 +269,50 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
                 )
             ).set_should_end_session(False)
             return handler_input.response_builder.response
+        
+        if arguments[0] == "excluirAtivo":
+            sigla = session_attr.get("novo_ativo_sigla")
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo selecionado para exclusão."
+                ).set_should_end_session(False).response
+
+            # Recarrega lista e encontra o objectId
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo_encontrado = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if not ativo_encontrado:
+                return handler_input.response_builder.speak(
+                    f"Não encontrei o ativo {sigla.upper()} para excluir."
+                ).set_should_end_session(False).response
+
+            object_id = ativo_encontrado.get("objectId")
+            if object_id:
+                sucesso = grava_historico.excluir_ativo(object_id)
+
+                if sucesso:
+                    # Apaga da memória também
+                    grava_historico._ativos_cache = None
+                    grava_historico._ativos_cache_time = 0
+                    state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+
+                    handler_input.response_builder.speak(
+                        f"O ativo {sigla.upper()} foi excluído com sucesso. Voltando para a tela inicial."
+                    )
+                else:
+                    handler_input.response_builder.speak(
+                        f"Não foi possível excluir o ativo {sigla.upper()}."
+                    )
+
+                # Redireciona para APL principal
+                fundo = state_asset_mapping[1]
+                dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+                handler_input.response_builder.add_directive(RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={"dados_update": dados_info}
+                )).set_should_end_session(False)
+                return handler_input.response_builder.response
 
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
@@ -346,18 +374,19 @@ class NovoAtivoUserEventHandler(APLUserEventHandler):
 # ============================================================================================
 
 # HANDLER PARA ADICIONAR NOVO ATIVO (carregando página de entrata de dados)
-class AddAtivoIntentHandler(AbstractRequestHandler):
+class GerenciarAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
-        log_debug("Agora no Handler AddAtivoIntent")
-        return is_intent_name("AddAtivoIntent")(handler_input)
+        log_debug("Agora no Handler GerenciarAtivoIntent")
+        log_intent_event(handler_input,"Verificar")
+        return is_intent_name("GerenciarAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["manual_selection"] = True
-        apl_document = _load_apl_document("apl_add_ativo.json")
+        apl_document = _load_apl_document("apl_gerenciar_ativo.json")
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
-                token="addAtivoToken",
+                token="GerenciarAtivoToken",
                 document=apl_document
             )
         ).speak("Digite a sigla e o nome completo do novo ativo.").ask("Por favor, digite a sigla do novo ativo.").set_should_end_session(False)
@@ -1028,7 +1057,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
         
         elif contexto_atual == "cadastro_ativo":
-            apl_document = _load_apl_document("apl_add_ativo.json")
+            apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
 
         elif contexto_atual == "auto_navegacao":
@@ -1093,7 +1122,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
 
         elif contexto == "cadastro_ativo":
-            apl_document = _load_apl_document("apl_add_ativo.json")
+            apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
 
         elif contexto == "auto_navegacao":
@@ -1130,7 +1159,7 @@ def webhook():
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
-    novo_ativo_usesevent_handler = NovoAtivoUserEventHandler()
+    novo_ativo_usesevent_handler = GerenciarAtivoInputHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_asset_mapping)
     touch_handler = TouchHandler(state_asset_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()

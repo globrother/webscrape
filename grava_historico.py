@@ -261,5 +261,25 @@ def adicionar_ativo(ativo_dict):
         "Content-Type": "application/json"
     }
     response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
-    log_info(f"Arquivo gravado: {ativo_dict}\n")
-    return response.json()
+    if response.status_code == 200:
+        log_info(f"Arquivo gravado: {ativo_dict}\n")
+        return response.json()
+    else:
+        log_error(f"❌ Erro ao cadastrar ativo: {response.text}")
+        return False
+
+#::--> EXCLUIR ATIVO AO BANCO DE DADOS <--::
+def excluir_ativo(object_id):
+    log_debug(f"🗑️ Agora no método excluir_ativo: {object_id}")
+    url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY
+    }
+    response = requests.delete(url, headers=headers)
+    if response.status_code == 200:
+        log_info(f"✅ Ativo excluído com sucesso: {object_id}")
+        return True
+    else:
+        log_error(f"❌ Erro ao excluir ativo: {response.text}")
+        return False
