@@ -237,7 +237,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
         if arguments[0] == "nomeAtivo":
             session_attr["novo_ativo_nome"] = arguments[1].strip()
-            speech_text = "Se os dados estiverem corretos, toque em Cadastrar para finalizar."
+            speech_text = "Se os dados estiverem corretos, toque em Cadastrar ou Excluir para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
@@ -336,7 +336,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "codigo": sigla,
                 "nome": nome,
                 "apelido": limpar_asset_name(sigla).upper(),
-                "ativo": True
+                "status": True
             }
         grava_historico.adicionar_ativo(novo_ativo)
 
