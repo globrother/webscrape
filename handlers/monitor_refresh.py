@@ -1,6 +1,6 @@
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand
-from log_utils import log_info, log_debug
+from log_utils import log_info, log_debug, log_warning
 from scraper import web_scrape
 from datetime import datetime, timedelta
 
@@ -30,7 +30,9 @@ class MonitorRefreshHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
         asset_full = session_attr.get("asset_full")
+        log_warning(f"Ativo vazio ou inválido. ATIVO: {asset_full}")
         if not asset_full:
+            log_warning("Fundo vazio ou inválido")
             return handler_input.response_builder.response
 
         log_info(f"[MonitorRefresh] Recarregando dados para {asset_full}")
