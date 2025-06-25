@@ -168,6 +168,7 @@
                                 "borderRadius": 25,
                                 "background": "#ffb69d",
                                 "alignSelf": "center",
+                                "left": "50",
                                 "right": "50",
                                 "items": [
                                     {
@@ -183,7 +184,7 @@
                                         "item": {
                                             "type": "Text",
                                             "fontSize": "50dp",
-                                            "text": "Excluir Ativo",
+                                            "text": "Excluir",
                                             "color": "white",
                                             "height": "90",
                                             "width": "300",
