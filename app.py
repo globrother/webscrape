@@ -739,6 +739,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
             # BLOCO QUE TRATA O MONITOR DE ATIVO
             if session_attr.get("contexto_atual") == "monitor_in_progress":
+                log_warning(f"Dentro do Bloco MONITOR {fundo_full}")
                 session_attr["monitor_loop"] = True
                 session_attr["monitor_start"] = datetime.now().isoformat()
                 

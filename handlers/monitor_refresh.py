@@ -1,6 +1,6 @@
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand
-from log_utils import log_info
+from log_utils import log_info, log_debug
 from scraper import web_scrape
 from datetime import datetime, timedelta
 
@@ -9,6 +9,7 @@ from handlers.can_handle_base import APLUserEventHandler  # <– sua base compar
 
 class MonitorRefreshHandler(APLUserEventHandler):
     comandos_validos = {"monitorRefresh"}
+    log_debug("Agora no Handler MonitorRefresh")
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
