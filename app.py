@@ -737,7 +737,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.speak("Ocorreu um erro ao recuperar as informações do ativo."
                 ).set_should_end_session(False).response
 
-            log_warning(f"Contexto da Sessão: {session_attr["contexto_atual"]}")
+            log_warning(f"Contexto da Sessão: {session_attr['contexto_atual']}")
             # BLOCO QUE TRATA O MONITOR DE ATIVO
             if session_attr.get("contexto_atual") == "monitor_in_progress":
                 log_warning(f"Dentro do Bloco MONITOR {fundo_full}")
@@ -757,7 +757,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.set_should_end_session(False).response
 
             speech = f"Mostrando o ativo {fund_name.upper()}."
-            log_warning(f"Contexto da Sessão: {session_attr["contexto_atual"]}")
+            log_warning(f"Contexto da Sessão: {session_attr['contexto_atual']}")
             handler_input.response_builder.add_directive(RenderDocumentDirective(
                 token="mainScreenToken",
                 document=apl_doc,
