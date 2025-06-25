@@ -13,6 +13,18 @@ class MonitorRefreshHandler(APLUserEventHandler):
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
 
+        # Verifica se o tempo de monitoramento excedeu
+        start_str = session_attr.get("monitor_start")
+        if start_str:
+            start = datetime.fromisoformat(start_str)
+            if datetime.now() - start > timedelta(minutes=10):
+                session_attr["monitor_loop"] = False
+                session_attr["contexto_atual"] = None
+                return handler_input.response_builder.speak(
+                    "Tempo de monitoramento encerrado."
+                ).set_should_end_session(False).response
+
+        # Caso esteja desativado, apenas retorna silenciosamente
         if not session_attr.get("monitor_loop"):
             return handler_input.response_builder.response
 
