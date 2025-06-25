@@ -17,7 +17,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
         start_str = session_attr.get("monitor_start")
         if start_str:
             start = datetime.fromisoformat(start_str)
-            if datetime.now() - start > timedelta(minutes=2):
+            if datetime.now() - start > timedelta(minutes=5):
                 session_attr["monitor_loop"] = False
                 session_attr["contexto_atual"] = None
                 return handler_input.response_builder.speak(
@@ -43,7 +43,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
 
         handler_input.response_builder.add_directive(ExecuteCommandsDirective(
             token="mainScreenToken",
-            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=60000)]
+            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=30000)]
         ))
 
         return handler_input.response_builder.set_should_end_session(False).response

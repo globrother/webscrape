@@ -761,7 +761,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.add_directive(ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[
-                        SendEventCommand(arguments=["monitorRefresh"], delay=60000)  # 60 segundos para teste
+                        SendEventCommand(arguments=["monitorRefresh"], delay=30000)  # 60 segundos para teste
                     ]
                 ))
 
