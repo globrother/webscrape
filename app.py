@@ -650,7 +650,10 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
-        session_attr["contexto_atual"] = "selecao_ativo"
+        if session_attr.get("contexto_atual") == "monitor_in_progress":
+            session_attr["contexto_atual"] = "monitor_in_progress"
+        else:
+            session_attr["contexto_atual"] = "selecao_ativo"
         session_attr["select_in_progress"] = True
         log_info(f"Intent recebido: {intent_name}")
 
