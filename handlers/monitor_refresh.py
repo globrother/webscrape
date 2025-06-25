@@ -30,7 +30,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
         asset_full = session_attr.get("asset_full")
-        if not fundo:
+        if not asset_full:
             return handler_input.response_builder.response
 
         log_info(f"[MonitorRefresh] Recarregando dados para {asset_full}")
