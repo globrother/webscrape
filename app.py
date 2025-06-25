@@ -7,7 +7,6 @@ O JSON contém as informações de atualização dos fundos imobiliários monito
 A aplicação ainda não é capaz de lidar com solicitações de eventos de usuário da Alexa com eficiencia,
 mas ao tocar em um botão, a skill é encerrada.
 """
-
 # ::== AJUDA ==::
 # ADICIONAR OS INICIALIZADORES DE HANDLERS: show_xxxxx_screen_handler = ShowXxxxxScreenHandler()
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
