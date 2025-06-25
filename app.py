@@ -761,7 +761,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 handler_input.response_builder.add_directive(ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[
-                        SendEventCommand(arguments=["monitorRefresh"], delay=10000)  # 6 segundos para teste
+                        SendEventCommand(arguments=["monitorRefresh"], delay=60000)  # 60 segundos para teste
                     ]
                 ))
 
@@ -1101,7 +1101,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             apl_document = None
 
         else:
-            speech = "Hmm, não consegui entender o que você quis dizer. Encerrando por agora, mas você pode me chamar de novo quando quiser."
+            speech = "Não consegui entender o que você quis dizer. Encerrando por agora, mas você pode me chamar de novo quando quiser."
             log_warning("🚪 Encerrando sessão por ausência de contexto.")
             return handler_input.response_builder.speak(speech).set_should_end_session(True).response
 
