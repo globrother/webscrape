@@ -731,7 +731,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 "current_asset_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False,
-                "asset_full": fundo_full
+                #"asset_full": fundo_full
             })
 
             try:
@@ -746,6 +746,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             if session_attr.get("contexto_atual") == "monitor_in_progress":
                 session_attr["monitor_loop"] = True
                 session_attr["monitor_start"] = datetime.now().isoformat()
+                log_info(f"Contexto da Sessão 2: {session_attr['contexto_atual']}")
                 
                 handler_input.response_builder.add_directive(
                     ExecuteCommandsDirective(
@@ -760,7 +761,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.set_should_end_session(False).response
 
 
-            log_info(f"Contexto da Sessão: {session_attr['contexto_atual']}")
+            log_info(f"Contexto da Sessão 3: {session_attr['contexto_atual']}")
             speech = f"Mostrando o ativo {fund_name.upper()}."
             handler_input.response_builder.add_directive(RenderDocumentDirective(
                 token="mainScreenToken",
