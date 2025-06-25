@@ -16,12 +16,12 @@ class MonitorRefreshHandler(APLUserEventHandler):
         if not session_attr.get("monitor_loop"):
             return handler_input.response_builder.response
 
-        fundo = session_attr.get("sigla_alerta")
-        if not fundo:
+        asset_full = session_attr.get("asset_full")
+        if not asset_full:
             return handler_input.response_builder.response
 
-        log_info(f"[MonitorRefresh] Recarregando dados para {fundo}")
-        dados_info, _, _, _, apl_document, _ = web_scrape("xpml11")
+        log_info(f"[MonitorRefresh] Recarregando dados para {asset_full}")
+        dados_info, _, _, _, apl_document, _ = web_scrape(asset_full)
 
         handler_input.response_builder.add_directive(RenderDocumentDirective(
             token="mainScreenToken",

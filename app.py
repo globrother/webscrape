@@ -731,7 +731,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 "current_asset_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
                 "manual_selection": False,
-                #"asset_full": fundo_full
+                "asset_full": fundo_full
             })
 
             try:
