@@ -168,8 +168,6 @@
                                 "borderRadius": 25,
                                 "background": "#ffb69d",
                                 "alignSelf": "center",
-                                "left": "50",
-                                "right": "50",
                                 "items": [
                                     {
                                         "type": "TouchWrapper",
