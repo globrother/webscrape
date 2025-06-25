@@ -757,6 +757,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.set_should_end_session(False).response
 
             speech = f"Mostrando o ativo {fund_name.upper()}."
+            log_warning(f"Contexto da Sessão: {session_attr["contexto_atual"]}")
             handler_input.response_builder.add_directive(RenderDocumentDirective(
                 token="mainScreenToken",
                 document=apl_doc,
