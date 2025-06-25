@@ -746,20 +746,28 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             if session_attr.get("contexto_atual") == "monitor_in_progress":
                 session_attr["monitor_loop"] = True
                 session_attr["monitor_start"] = datetime.now().isoformat()
-                log_info(f"Contexto da Sessão 2: {session_attr['contexto_atual']}")
-                
-                handler_input.response_builder.add_directive(
-                    ExecuteCommandsDirective(
-                        token="mainScreenToken",
-                        commands=[
-                            SendEventCommand(arguments=["monitorRefresh"], delay=6000)  # atualiza em 60s
-                        ]
-                    )
-                )
+                log_info(f"Dentro do bloco Monitor {fundo_full}")
 
+                # 1. Renderiza o documento primeiro!
+                handler_input.response_builder.add_directive(RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_doc,
+                    datasources={
+                        "dados_update": dados_info
+                    }
+                ))
+
+                # 2. Depois agenda o comando com delay (agora com tela já existente)
+                handler_input.response_builder.add_directive(ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["monitorRefresh"], delay=6000)  # 6 segundos para teste
+                    ]
+                ))
+
+                # 3. Fala algo ao usuário
                 handler_input.response_builder.speak(f"Monitorando o fundo {fund_name.upper()} com atualizações automáticas.")
                 return handler_input.response_builder.set_should_end_session(False).response
-
 
             log_info(f"Contexto da Sessão 3: {session_attr['contexto_atual']}")
             speech = f"Mostrando o ativo {fund_name.upper()}."

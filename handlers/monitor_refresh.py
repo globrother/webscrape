@@ -21,7 +21,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
         log_info(f"[MonitorRefresh] Recarregando dados para {fundo}")
-        dados_info, _, _, _, apl_document, _ = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, _ = web_scrape("xpml11")
 
         handler_input.response_builder.add_directive(RenderDocumentDirective(
             token="mainScreenToken",
