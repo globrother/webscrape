@@ -730,7 +730,8 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 "current_asset_id": fundo_state_id, # para uso em Alerta de Preço
                 "current_asset_name": fundo_full, # para uso em Alerta de Preço
                 "select_in_progress": False,
-                "manual_selection": False
+                "manual_selection": False,
+                "asset_full": fundo_full
             })
 
             try:
@@ -745,7 +746,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             if session_attr.get("contexto_atual") == "monitor_in_progress":
                 log_warning(f"Dentro do Bloco MONITOR {fundo_full}")
                 session_attr["monitor_loop"] = True
-                session_attr["asset_full"] = fundo_full
                 session_attr["monitor_start"] = datetime.now().isoformat()
                 
                 handler_input.response_builder.add_directive(
