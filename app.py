@@ -744,7 +744,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             log_info(f"Contexto da Sessão: {session_attr['contexto_atual']}")
             # BLOCO QUE TRATA O MONITOR DE ATIVO
             if session_attr.get("contexto_atual") == "monitor_in_progress":
-                log_warning(f"Dentro do Bloco MONITOR {fundo_full}")
                 session_attr["monitor_loop"] = True
                 session_attr["monitor_start"] = datetime.now().isoformat()
                 
@@ -759,6 +758,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
 
                 handler_input.response_builder.speak(f"Monitorando o fundo {fund_name.upper()} com atualizações automáticas.")
                 return handler_input.response_builder.set_should_end_session(False).response
+
 
             log_info(f"Contexto da Sessão: {session_attr['contexto_atual']}")
             speech = f"Mostrando o ativo {fund_name.upper()}."

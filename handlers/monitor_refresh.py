@@ -9,34 +9,19 @@ from handlers.can_handle_base import APLUserEventHandler  # <– sua base compar
 
 class MonitorRefreshHandler(APLUserEventHandler):
     comandos_validos = {"monitorRefresh"}
-    log_debug("Agora no Handler MonitorRefresh")
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
 
-        # Verifica se o tempo de monitoramento excedeu
-        start_str = session_attr.get("monitor_start")
-        if start_str:
-            start = datetime.fromisoformat(start_str)
-            if datetime.now() - start > timedelta(minutes=5):
-                session_attr["monitor_loop"] = False
-                session_attr["contexto_atual"] = None
-                return handler_input.response_builder.speak(
-                    "Tempo de monitoramento encerrado."
-                ).set_should_end_session(False).response
-
-        # Caso esteja desativado, apenas retorna silenciosamente
         if not session_attr.get("monitor_loop"):
             return handler_input.response_builder.response
 
-        asset_full = session_attr.get("asset_full")
-        log_warning(f"Ativo Asset Full ATIVO: {asset_full}")
-        if not asset_full:
-            log_warning("Fundo vazio ou inválido")
+        fundo = session_attr.get("sigla_alerta")
+        if not fundo:
             return handler_input.response_builder.response
 
-        log_info(f"[MonitorRefresh] Recarregando dados para {asset_full}")
-        dados_info, _, _, _, apl_document, _ = web_scrape(asset_full)
+        log_info(f"[MonitorRefresh] Recarregando dados para {fundo}")
+        dados_info, _, _, _, apl_document, _ = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(RenderDocumentDirective(
             token="mainScreenToken",
