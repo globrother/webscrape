@@ -30,7 +30,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
         asset_full = session_attr.get("asset_full")
-        log_warning(f"Ativo vazio ou inválido. ATIVO: {asset_full}")
+        log_warning(f"Ativo Asset Full ATIVO: {asset_full}")
         if not asset_full:
             log_warning("Fundo vazio ou inválido")
             return handler_input.response_builder.response
@@ -46,7 +46,7 @@ class MonitorRefreshHandler(APLUserEventHandler):
 
         handler_input.response_builder.add_directive(ExecuteCommandsDirective(
             token="mainScreenToken",
-            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=60000)]
+            commands=[SendEventCommand(arguments=["monitorRefresh"], delay=6000)]
         ))
 
         return handler_input.response_builder.set_should_end_session(False).response

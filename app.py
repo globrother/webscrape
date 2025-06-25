@@ -752,7 +752,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                     ExecuteCommandsDirective(
                         token="mainScreenToken",
                         commands=[
-                            SendEventCommand(arguments=["monitorRefresh"], delay=60000)  # atualiza em 60s
+                            SendEventCommand(arguments=["monitorRefresh"], delay=6000)  # atualiza em 60s
                         ]
                     )
                 )
