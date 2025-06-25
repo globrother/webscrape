@@ -35,13 +35,14 @@ from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model import SessionEndedRequest, IntentRequest
+from handlers import register_handlers
 # from typing import Dict, Any
 
 #from infofii import get_dadosfii
 #from logtail import LogtailHandler
 #from log_utils import LogtailSafeHandler  # se estiver num arquivo separado
 from utils import state_asset_mapping, limpar_asset_name, get_dynamic_entities_directive, _load_apl_document
-from can_handle_base import APLUserEventHandler
+from handlers.can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
 import grava_historico
@@ -206,6 +207,31 @@ class LaunchIntentHandler(AbstractRequestHandler):
         # Delegue para o mesmo fluxo que o SelectFundIntentHandler usa:
         return SelectFundIntentHandler().handle(handler_input)"""
 # ============================================================================================
+
+# EXIBIR ATIVO NO MODO MONITOR
+class MonitorIntentHandler(AbstractRequestHandler):
+
+    def can_handle(self, handler_input):
+        log_debug("Agora em MonitorIntentHandler")
+        #if not is_intent_name("MonitorIntent")(handler_input):
+        #    return False  # corta logo se não é a intent certa
+        return is_intent_name("MonitorIntent")(handler_input)
+
+    def handle(self, handler_input):
+        slots = handler_input.request_envelope.request.intent.slots
+        fund_name = slots.get("fundName").value if slots.get("fundName") else None
+        #session_attr["contexto_atual"] = "select_in_progress"
+        #session_attr["select_in_progress"] = True
+
+        if fund_name:
+            log_info(f"[MonitorIntent] fundo recebido na invocação: {fund_name}")
+            session_attr = handler_input.attributes_manager.session_attributes
+            session_attr["contexto_atual"] = "monitor_in_progress"
+            session_attr["select_in_progress"] = True
+            session_attr["sigla_alerta"] = fund_name
+            return SelectFundIntentHandler().handle(handler_input)
+
+        return LaunchRequestHandler().handle(handler_input)
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class NovoAtivoUserEventHandler(APLUserEventHandler):
@@ -524,11 +550,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
-        ativos_ids = session_attr.get(
-            "ativos_ids", sorted(self.state_asset_mapping.keys()))
+        ativos_ids = session_attr.get("ativos_ids", sorted(self.state_asset_mapping.keys()))
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
-        current_state = session_attr.get(
-            "state", ativos_ids[0])  # Estado inicial padrão é 1
+        current_state = session_attr.get("state", ativos_ids[0])  # Estado inicial padrão é 1
 
         log_info("=== DynamicScreenHandler.handle ===")
         log_info(f"ativos_ids: {ativos_ids}")
@@ -712,6 +736,23 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 log_error(f"Erro no web_scrape para {fundo_full}: {e}")
                 return handler_input.response_builder.speak("Ocorreu um erro ao recuperar as informações do ativo."
                 ).set_should_end_session(False).response
+
+            # BLOCO QUE TRATA O MONITOR DE ATIVO
+            if session_attr.get("contexto_atual") == "monitor_in_progress":
+                session_attr["monitor_loop"] = True
+                session_attr["monitor_start"] = datetime.now().isoformat()
+                
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="mainScreenToken",
+                        commands=[
+                            SendEventCommand(arguments=["monitorRefresh"], delay=60000)  # atualiza em 60s
+                        ]
+                    )
+                )
+
+                handler_input.response_builder.speak(f"Monitorando o fundo {fund_name.upper()} com atualizações automáticas.")
+                return handler_input.response_builder.set_should_end_session(False).response
 
             speech = f"Mostrando o ativo {fund_name.upper()}."
             handler_input.response_builder.add_directive(RenderDocumentDirective(
@@ -1069,6 +1110,7 @@ def webhook():
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
     launch_intent_handler = LaunchIntentHandler()
+    monitor_intent_handler = MonitorIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
     add_ativo_intent_handler = AddAtivoIntentHandler()
@@ -1086,6 +1128,8 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(launch_intent_handler)
+    sb.add_request_handler(monitor_intent_handler)
+    register_handlers(sb)
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(alerta_input_handler)
     sb.add_request_handler(add_ativo_intent_handler)
