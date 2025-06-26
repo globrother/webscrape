@@ -1,8 +1,17 @@
 {
-  "type": "APL",
-  "version": "1.7",
-  "theme": "dark",
-  "import": [],
+    "type": "APL",
+    "version": "1.7",
+    "theme": "dark",
+    "import": [
+      {
+        "name": "alexa-layouts",
+        "version": "1.7.0"
+      },
+      {
+        "name": "alexa-styles",
+        "version": "1.6.0"
+      }
+    ],
   "mainTemplate": {
     "parameters": [],
     "items": [
@@ -13,22 +22,22 @@
         "height": "100vh",
         "items": [
           {
+            "type": "AlexaBackground",
+            "backgroundImageSource": "https://lh5.googleusercontent.com/d/1-A_3cMBv-0E1o4RAzMjf8j31q2IKj3e5",
+            "backgroundScale": "best-fill"
+          },
+          {
             "type": "Text",
             "text": "⏳ Atualizando status do ativo...",
             "style": "textoCarregando"
           },
           {
             "type": "Image",
-            "source": "https://img.icons8.com/ios-filled/100/ffffff/loading.png",
-            "width": "60dp",
-            "height": "60dp",
+            "source": "https://lh5.googleusercontent.com/d/1BhhfqtUs3uj_IF9FdMR-bveoDS8l1Y--",
+            "width": "150dp",
+            "height": "150dp",
             "scale": "best-fit",
-            "opacity": 1,
-            "animateItem": {
-              "type": "FadeIn",
-              "duration": 1000,
-              "repeatCount": "infinite"
-            }
+            "opacity": 1
           }
         ]
       }
