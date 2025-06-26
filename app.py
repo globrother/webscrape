@@ -376,7 +376,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 )
             
             # Redireciona para a tela principal
-            fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))
+            fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
             handler_input.response_builder.add_directive(RenderDocumentDirective(
