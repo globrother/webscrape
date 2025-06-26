@@ -459,7 +459,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 class GerenciarAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler GerenciarAtivoIntent")
-        log_intent_event(handler_input,"Verificar")
+        #log_intent_event(handler_input,"Verificar")
         return is_intent_name("GerenciarAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
