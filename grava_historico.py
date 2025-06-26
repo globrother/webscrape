@@ -250,6 +250,7 @@ def carregar_ativos():
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
 
+
 #::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
 def adicionar_ativo(ativo_dict):
     log_debug("Agora no método adicionar_ativo")
