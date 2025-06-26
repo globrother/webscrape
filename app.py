@@ -350,10 +350,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     "Nenhum ativo selecionado para alteração de status."
                 ).set_should_end_session(False).response
 
-            handler_input.response_builder.speak(
-                    "💭 Um momento por favor!."
-                ).set_should_end_session(False).response
-
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
 
@@ -364,6 +360,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
             object_id = ativo.get("objectId")
             novo_status = True if arguments[0] == "ativarAtivo" else False
+            handler_input.response_builder.speak("💭 Um momento por favor!.")
             sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
 
             if sucesso:

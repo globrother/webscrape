@@ -212,7 +212,7 @@ def gerar_texto_historico(historico, aux):
         
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
         log_info("Histórico de ativo gerado")
-        log_info("🖥️ Mostrando Ativo")
+        log_info("🖥️ Mostrando Tela")
         #return "<br>".join(linhas)
         return linhas
 
