@@ -241,7 +241,8 @@ def carregar_ativos():
     data = response.json()
     #log_info(f"DEBUG resposta Back4App:{data}") 
     ativos = data['results']
-    state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['status']}
+    #state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['status']}
+    state_fund_mapping = {f['state_id']: f for f in ativos if f.get('status', True)}
     # Atualiza o cache
     _ativos_cache = (state_fund_mapping, ativos)
     _ativos_cache_time = agora

@@ -131,7 +131,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     log_info(f"[Service] Histórico gerado: {texto_hist}")
 
     # prepara directives de retorno (tela inicial + navegação)
-    first_asset = state_asset_mapping[1]
+    first_asset = state_asset_mapping[1]["codigo"]
     dados_info, _, _, _, apl_doc, _ = web_scrape(first_asset)
     directives = [
         RenderDocumentDirective(

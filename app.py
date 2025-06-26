@@ -124,7 +124,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
         log_info(f"state inicial: {session_attr['state']}")
-        fundo = state_asset_mapping[ativos_ids[0]]
+        fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(
@@ -277,7 +277,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_asset_mapping[1]
+            fundo = state_asset_mapping[1]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
@@ -330,7 +330,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     )
 
                 # Redireciona para APL principal
-                fundo = state_asset_mapping[1]
+                fundo = state_asset_mapping[1]["codigo"]
                 dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
                 handler_input.response_builder.add_directive(RenderDocumentDirective(
                     token="mainScreenToken",
@@ -429,7 +429,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
 
         # Feedback imediato e avanço de tela
-        fundo = state_asset_mapping[novo_state_id]
+        fundo = state_asset_mapping[novo_state_id]["codigo"]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         #log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
@@ -560,7 +560,7 @@ class AlertaInputHandler(APLUserEventHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_asset_mapping[1]
+            fundo = state_asset_mapping[1]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
@@ -690,11 +690,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_info(f"current_state: {current_state}")
         log_info(f"idx: {idx}")
         log_info(f"idx (posição do fundo atual): {idx}")
-        fundo = self.state_asset_mapping[ativos_ids[idx]]
+        fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
         log_info(f"Fundo selecionado: {fundo}")
 
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_asset_mapping[ativos_ids[idx]]
+        fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
         # Chame a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -932,7 +932,7 @@ class SelectInputHandler(APLUserEventHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_asset_mapping[1]
+            fundo = state_asset_mapping[1]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
@@ -1042,7 +1042,7 @@ class TouchHandler(APLUserEventHandler):
             current_state = 1
 
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_asset_mapping[current_state]
+        fundo = self.state_asset_mapping[current_state]["codigo"]
 
         # Verifica se é o último estado
         if current_state == 1:
