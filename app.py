@@ -218,7 +218,9 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         "nomeAtivo",
         "confirmarCadastro",
         "cancelarCadastro",
-        "excluirAtivo"
+        "excluirAtivo",
+        "ativarAtivo",
+        "desativarAtivo"
     }
     log_debug("Agora no Handler LaunchRequest")
 
@@ -226,22 +228,48 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
-
+        # -----------------------------------------------
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
             log_info(f" NOVO_ATIVO_SIGLA: {session_attr['novo_ativo_sigla']}")
-            speech_text = "Agora, digite o nome completo do ativo."
+            
+            # Carrega lista atual e tenta localizar o ativo
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
+
+            dados_update = {
+                "statusAtivo": "ATIVO" if status_ativo else "INATIVO",
+                "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
+                "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
+                "statusCor": "green" if status_ativo else "red"
+            }
+            session_attr = handler_input.attributes_manager.session_attributes
+            session_attr["manual_selection"] = True
+            apl_document = _load_apl_document("apl_gerenciar_ativo.json")
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="GerenciarAtivoToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_update
+                    }
+                )
+            ).speak("Agora, digite o nome completo do ativo.").ask("Por favor, digite o nome completo do ativo.").set_should_end_session(False)
+            return handler_input.response_builder.response
+            
+            """speech_text = "Agora, digite o nome completo do ativo."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
-
+            return handler_input.response_builder.response"""
+        # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
             session_attr["novo_ativo_nome"] = arguments[1].strip()
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar ou Excluir para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
-
+        # -----------------------------------------------
         if arguments[0] == "cancelarCadastro":
             session_attr.pop("novo_ativo_sigla", None)
             session_attr.pop("novo_ativo_nome", None)
@@ -265,7 +293,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 )
             ).set_should_end_session(False)
             return handler_input.response_builder.response
-        
+        # -----------------------------------------------
         if arguments[0] == "excluirAtivo":
             sigla = session_attr.get("novo_ativo_sigla")
             log_info(f"O valor de Sigla é: {sigla}")
@@ -310,7 +338,50 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     datasources={"dados_update": dados_info}
                 )).set_should_end_session(False)
                 return handler_input.response_builder.response
+        # -----------------------------------------------
+        if arguments[0] == "ativarAtivo" or arguments[0] == "desativarAtivo":
+            sigla = session_attr.get("novo_ativo_sigla")
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo selecionado para alteração de status."
+                ).set_should_end_session(False).response
 
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if not ativo:
+                return handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} não foi encontrado."
+                ).set_should_end_session(False).response
+
+            object_id = ativo.get("objectId")
+            novo_status = True if arguments[0] == "ativarAtivo" else False
+            sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
+
+            if sucesso:
+                grava_historico._ativos_cache = None
+                grava_historico._ativos_cache_time = 0
+                state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+                status_fala = "ativado" if novo_status else "desativado"
+                handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+                )
+            else:
+                handler_input.response_builder.speak(
+                    f"Não foi possível alterar o status do ativo {sigla.upper()}."
+                )
+            
+            # Redireciona para a tela principal
+            fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+
+            handler_input.response_builder.add_directive(RenderDocumentDirective(
+                token="mainScreenToken",
+                document=apl_document,
+                datasources={"dados_update": dados_info}
+            )).set_should_end_session(False)
+            return handler_input.response_builder.response
+        # -----------------------------------------------
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
             nome = session_attr.get("novo_ativo_nome")
@@ -360,7 +431,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # Feedback imediato e avanço de tela
         fundo = state_asset_mapping[novo_state_id]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-        log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
+        #log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
         session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
         session_attr["state"] = 1 # Estado da Sessão para primeira página

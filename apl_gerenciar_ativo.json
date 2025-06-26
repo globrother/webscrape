@@ -3,6 +3,28 @@
     "version": "2024.3",
     "description": "Documento APL para adicionar novo ativo",
     "theme": "dark",
+    "styles": {
+        "BotaoAtivar": {
+            "values": [
+            {
+                "color": "white",
+                "backgroundColor": "green",
+                "fontWeight": "bold",
+                "opacity": "${disabled ? 0.3 : 1.0}"
+            }
+            ]
+        },
+        "BotaoDesativar": {
+            "values": [
+            {
+                "color": "white",
+                "backgroundColor": "red",
+                "fontWeight": "bold",
+                "opacity": "${disabled ? 0.3 : 1.0}"
+            }
+            ]
+        }
+    },
     "import": [
         {
             "name": "alexa-layouts",
@@ -14,6 +36,9 @@
         }
     ],
     "mainTemplate": {
+        "parameters": [
+            "dados_update"
+        ],
         "items": [
             {
                 "type": "Container",
@@ -45,7 +70,7 @@
                     },
                     {
                         "type": "Text",
-                        "text": "Digite a sigla completa do novo ativo:",
+                        "text": "Digite a sigla completa do ativo:",
                         "fontSize": "30dp",
                         "textAlign": "left",
                         "spacing": "@spacing3XLarge",
@@ -101,7 +126,7 @@
                             {
                                 "type": "EditText",
                                 "id": "nomeInput",
-                                "hint": "Ex: Maxi Renda",
+                                "hint": "Ex: Maxi Renda (opcional)",
                                 "hintColor": "#547c8e",
                                 "hintWeight": "100",
                                 "fontSize": "35dp",
@@ -163,10 +188,10 @@
                                 "type": "Frame",
                                 "height": "90",
                                 "width": "300",
-                                "borderColor": "#ffb69d",
+                                "borderColor": "#F87171",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "#ffb69d",
+                                "background": "#F87171",
                                 "alignSelf": "center",
                                 "items": [
                                     {
@@ -197,10 +222,10 @@
                                 "type": "Frame",
                                 "height": "90",
                                 "width": "300",
-                                "borderColor": "#F87171",
+                                "borderColor": "#426b62",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "#F87171",
+                                "background": "#426b62",
                                 "alignSelf": "center",
                                 "left": "50",
                                 "items": [
@@ -223,6 +248,87 @@
                                             "width": "300",
                                             "textAlign": "center",
                                             "textAlignVertical": "center"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Container",
+                        "direction": "row",
+                        "spacing": 60,
+                        "alignItems": "center",
+                        "justifyContent": "center",
+                        "items": [
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#009d52",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#009d52",
+                                "alignSelf": "center",
+                                "right": "25",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "disabled": "${dados_update.ativarAtivoDisabled}",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "ativarAtivo"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Ativar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center",
+                                            "style": "BotaoDesativar"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Frame",
+                                "height": "90",
+                                "width": "300",
+                                "borderColor": "#ff692e",
+                                "borderWidth": 2,
+                                "borderRadius": 25,
+                                "background": "#ff692e",
+                                "alignSelf": "center",
+                                "left": "25",
+                                "items": [
+                                    {
+                                        "type": "TouchWrapper",
+                                        "disabled": "${dados_update.desativarAtivoDisabled}",
+                                        "onPress": [
+                                            {
+                                                "type": "SendEvent",
+                                                "arguments": [
+                                                    "desativarAtivo"
+                                                ]
+                                            }
+                                        ],
+                                        "item": {
+                                            "type": "Text",
+                                            "fontSize": "50dp",
+                                            "text": "Desativar",
+                                            "color": "white",
+                                            "height": "90",
+                                            "width": "300",
+                                            "textAlign": "center",
+                                            "textAlignVertical": "center",
+                                            "style": "BotaoDesativar"
                                         }
                                     }
                                 ]

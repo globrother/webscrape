@@ -250,7 +250,6 @@ def carregar_ativos():
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
 
-
 #::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
 def adicionar_ativo(ativo_dict):
     log_debug("Agora no método adicionar_ativo")
@@ -282,4 +281,22 @@ def excluir_ativo(object_id):
         return True
     else:
         log_error(f"❌ Erro ao excluir ativo: {response.text}")
+        return False
+
+# ::--> ATUALIZAR STATUS DO ATIVO <--::
+def atualizar_status_ativo(object_id, status: bool):
+    log_debug(f"Atualizando status do ativo {object_id} para {status}")
+    url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
+    headers = {
+        "X-Parse-Application-Id": APPLICATION_ID,
+        "X-Parse-REST-API-Key": REST_API_KEY,
+        "Content-Type": "application/json"
+    }
+    body = {"status": status}
+    response = requests.put(url, headers=headers, data=json.dumps(body))
+    if response.status_code == 200:
+        log_info(f"✔️ Status atualizado com sucesso para {status}")
+        return True
+    else:
+        log_error(f"❌ Erro ao atualizar status: {response.text}")
         return False
