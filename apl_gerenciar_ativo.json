@@ -88,8 +88,9 @@
                         "items": [
                             {
                                 "type": "EditText",
-                                "id": "fundoInput",
+                                "id": "siglaAtivoInput",
                                 "hint": "Ex: mxrf11",
+                                "text": "${dados_update.siglaAtivo}",
                                 "hintColor": "#547c8e",
                                 "hintWeight": "100",
                                 "fontSize": "35dp",
