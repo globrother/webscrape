@@ -92,7 +92,7 @@
                                 "hint": "Ex: mxrf11",
                                 "text": "${dados_update.siglaAtivo}",
                                 "hintColor": "#547c8e",
-                                "hintWeight": "100",
+                                "hintWeight": "300",
                                 "fontSize": "35dp",
                                 "submitKeyType": "next",
                                 "onSubmit": [
@@ -126,10 +126,10 @@
                         "items": [
                             {
                                 "type": "EditText",
-                                "id": "nomeInput",
+                                "id": "nomeAtivoInput",
                                 "hint": "Ex: Maxi Renda (opcional)",
                                 "hintColor": "#547c8e",
-                                "hintWeight": "100",
+                                "hintWeight": "300",
                                 "fontSize": "35dp",
                                 "submitKeyType": "done",
                                 "onSubmit": [
