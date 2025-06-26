@@ -127,7 +127,7 @@
                             {
                                 "type": "EditText",
                                 "id": "nomeAtivoInput",
-                                "hint": "Ex: Maxi Renda (opcional)",
+                                "hint": "Ex: Maxi R",
                                 "hintColor": "#547c8e",
                                 "hintWeight": "300",
                                 "fontSize": "35dp",
