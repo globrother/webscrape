@@ -328,15 +328,25 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 return handler_input.response_builder.response
 
             # Gerar novo state_id
-            state_ids = [f['state_id'] for f in lista_ativos]
-            novo_state_id = max(state_ids) + 1 if state_ids else 1
+            #state_ids = [f['state_id'] for f in lista_ativos]
+            #novo_state_id = max(state_ids) + 1 if state_ids else 1
+            
+            # Gerar um novo state id que aloca o menor id vazio da lista
+            state_ids = sorted([f['state_id'] for f in lista_ativos])
+            novo_state_id = 1
+            for id_atual in state_ids:
+                if id_atual == novo_state_id:
+                    novo_state_id += 1
+                else:
+                    break
 
             novo_ativo = {
                 "state_id": novo_state_id,
                 "codigo": sigla,
                 "nome": nome,
                 "apelido": limpar_asset_name(sigla).upper(),
-                "status": True
+                "status": True,
+                "favorite:" False  # Novo ativo não é favorito por padrão
             }
         grava_historico.adicionar_ativo(novo_ativo)
 
@@ -544,8 +554,15 @@ class AlertaInputHandler(APLUserEventHandler):
 
 # HANDLER DE NAVEGAÇÃO AUTOMÁTICA PELOS ATIVOS
 class DynamicScreenHandler(AbstractRequestHandler):
+    """def __init__(self, state_asset_mapping):
+        self.state_asset_mapping = state_asset_mapping"""
+        
     def __init__(self, state_asset_mapping):
-        self.state_asset_mapping = state_asset_mapping
+        # Filtra apenas ativos com status True (ativos visíveis)
+        self.state_asset_mapping = {
+            k: v for k, v in state_asset_mapping.items()
+            if v.get("status", True)  # se não tiver chave, assume ativo por padrão
+        }
 
     def can_handle(self, handler_input):
         log_debug("Agora no Handler DynamicScreen")

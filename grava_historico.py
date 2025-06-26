@@ -223,7 +223,6 @@ _CACHE_TTL = 60 * 10  # 10 minutos
 
 def carregar_ativos():
     log_debug("Agora no método carregar_ativos")
-    log_info("Esse é um teste do LOG")
     global _ativos_cache, _ativos_cache_time
     agora = time.time()
     # Se o cache existe e não expirou, retorna do cache
@@ -242,7 +241,7 @@ def carregar_ativos():
     data = response.json()
     #log_info(f"DEBUG resposta Back4App:{data}") 
     ativos = data['results']
-    state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['ativo']}
+    state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['status']}
     # Atualiza o cache
     _ativos_cache = (state_fund_mapping, ativos)
     _ativos_cache_time = agora
