@@ -99,7 +99,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             # adicione outros intervalos conforme desejar
         ]
 
-        # Exemplo: exibir só favoritos durante o dia
+        # Exemplo: exibir só favoritos durante o dia 1
         # hora = datetime.now().hour
         hora = int(datetime.now(brt_tz).strftime("%H"))
 
