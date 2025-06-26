@@ -218,7 +218,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         "cancelarCadastro",
         "excluirAtivo",
         "ativarAtivo",
-        "desativarAtivo"
+        "desativarAtivo",
+        "executarAtualizacao"
     }
     log_debug("Agora no Handler LaunchRequest")
 
@@ -1295,8 +1296,8 @@ def webhook():
     monitor_intent_handler = MonitorIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
-    add_ativo_intent_handler = GerenciarAtivoIntentHandler()
-    novo_ativo_usesevent_handler = GerenciarAtivoInputHandler()
+    gerenciar_ativo_intent_handler = GerenciarAtivoIntentHandler()
+    gerenciar_ativo_Input_handler = GerenciarAtivoInputHandler()
     dynamic_screen_handler = DynamicScreenHandler(state_asset_mapping)
     touch_handler = TouchHandler(state_asset_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
@@ -1314,8 +1315,8 @@ def webhook():
     register_handlers(sb)
     sb.add_request_handler(create_price_alert_intent_handler)
     sb.add_request_handler(alerta_input_handler)
-    sb.add_request_handler(add_ativo_intent_handler)
-    sb.add_request_handler(novo_ativo_usesevent_handler)
+    sb.add_request_handler(gerenciar_ativo_intent_handler)
+    sb.add_request_handler(gerenciar_ativo_Input_handler)
     sb.add_request_handler(dynamic_screen_handler)
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
