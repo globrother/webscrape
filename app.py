@@ -16,16 +16,16 @@ import time
 from datetime import datetime
 import pytz
 import os
-import json
-import requests
-from bs4 import BeautifulSoup
+#import json
+#import requests
+#from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.utils import (
     is_request_type, get_supported_interfaces, is_intent_name,  get_slot_value)
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_model import Response
+#from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
 from ask_sdk_model.slu.entityresolution import StatusCode
@@ -33,10 +33,8 @@ from ask_sdk_model import SessionEndedRequest, IntentRequest
 from handlers import register_handlers
 # from typing import Dict, Any
 
-#from infofii import get_dadosfii
-#from logtail import LogtailHandler
-#from log_utils import LogtailSafeHandler  # se estiver num arquivo separado
-from utils import state_asset_mapping, limpar_asset_name, get_dynamic_entities_directive, _load_apl_document
+from utils import (
+    state_asset_mapping, limpar_asset_name, get_dynamic_entities_directive, _load_apl_document, iniciar_processamento)
 from handlers.can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
@@ -267,6 +265,56 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 speech_text).set_should_end_session(False)
             return handler_input.response_builder.response"""
         # -----------------------------------------------
+        if arguments[0] in ["ativarAtivo", "desativarAtivo"]:
+            session_attr["acao_status"] = True if arguments[0] == "ativarAtivo" else False
+            return iniciar_processamento(handler_input, "executarAtualizacao", [])
+
+        # -----------------------------------------------
+        if arguments[0] == "executarAtualizacao":
+            sigla = session_attr.get("novo_ativo_sigla")
+            novo_status = session_attr.get("acao_status")
+
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo selecionado para alteração de status."
+                ).set_should_end_session(False).response
+
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if not ativo:
+                return handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} não foi encontrado."
+                ).set_should_end_session(False).response
+
+            object_id = ativo.get("objectId")
+            sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
+
+            if sucesso:
+                grava_historico._ativos_cache = None
+                grava_historico._ativos_cache_time = 0
+                state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+                status_fala = "ativado" if novo_status else "desativado"
+
+                handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+                )
+            else:
+                handler_input.response_builder.speak(
+                    f"Não foi possível alterar o status do ativo {sigla.upper()}."
+                )
+
+            fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))["codigo"]
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+
+            handler_input.response_builder.add_directive(RenderDocumentDirective(
+                token="mainScreenToken",
+                document=apl_document,
+                datasources={"dados_update": dados_info}
+            )).set_should_end_session(False)
+
+            return handler_input.response_builder.response
+        # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
             session_attr["novo_ativo_nome"] = arguments[1].strip()
             speech_text = "Se os dados estiverem corretos, toque em Cadastrar ou Excluir para finalizar."
@@ -343,7 +391,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 )).set_should_end_session(False)
                 return handler_input.response_builder.response
         # -----------------------------------------------
-        if arguments[0] == "ativarAtivo" or arguments[0] == "desativarAtivo":
+        """if arguments[0] == "ativarAtivo" or arguments[0] == "desativarAtivo":
             sigla = session_attr.get("novo_ativo_sigla")
             if not sigla:
                 return handler_input.response_builder.speak(
@@ -360,7 +408,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
             object_id = ativo.get("objectId")
             novo_status = True if arguments[0] == "ativarAtivo" else False
-            handler_input.response_builder.speak("💭 Um momento por favor!.")
             sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
 
             if sucesso:
@@ -385,7 +432,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 document=apl_document,
                 datasources={"dados_update": dados_info}
             )).set_should_end_session(False)
-            return handler_input.response_builder.response
+            return handler_input.response_builder.response"""
         # -----------------------------------------------
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")

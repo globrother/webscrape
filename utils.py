@@ -1,6 +1,7 @@
 # utils
 
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
+from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective
 import logging
 import time
 import json
@@ -130,6 +131,32 @@ def comparador(historico, cota_atual, voz_fundo):
         logging.info("\n Histórico está vazio ou não é uma lista válida \n")
 
     return voz_fundo
+
+# Função para iniciar o processamento de uma ação com feedback visual
+def iniciar_processamento(handler_input, acao, argumentos_final):
+    handler_input.response_builder.speak("💭 Um momento, por favor...")
+
+    handler_input.response_builder.add_directive(
+        RenderDocumentDirective(
+            token="loadingScreen",
+            document=_load_apl_document("apl_carregando.json")
+        )
+    )
+
+    handler_input.response_builder.add_directive({
+        "type": "Alexa.Presentation.APL.ExecuteCommands",
+        "token": "loadingScreen",
+        "commands": [
+            {
+                "type": "SendEvent",
+                "arguments": [acao] + argumentos_final
+            }
+        ]
+    })
+
+    handler_input.response_builder.set_should_end_session(False)
+    return handler_input.response_builder.response
+
 
 # Remove números ou sufixos da sigla de um fundo
 def remover_sufixo_numerico(sigla):

@@ -1,0 +1,50 @@
+{
+  "type": "APL",
+  "version": "1.7",
+  "theme": "dark",
+  "import": [],
+  "mainTemplate": {
+    "parameters": [],
+    "items": [
+      {
+        "type": "Container",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "height": "100vh",
+        "items": [
+          {
+            "type": "Text",
+            "text": "⏳ Atualizando status do ativo...",
+            "style": "textoCarregando"
+          },
+          {
+            "type": "Image",
+            "source": "https://img.icons8.com/ios-filled/100/ffffff/loading.png",
+            "width": "60dp",
+            "height": "60dp",
+            "scale": "best-fit",
+            "opacity": 1,
+            "animateItem": {
+              "type": "FadeIn",
+              "duration": 1000,
+              "repeatCount": "infinite"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "styles": {
+    "textoCarregando": {
+      "values": [
+        {
+          "color": "white",
+          "fontSize": "28dp",
+          "fontWeight": "bold",
+          "textAlign": "center",
+          "paddingBottom": "20dp"
+        }
+      ]
+    }
+  }
+}
