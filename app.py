@@ -234,7 +234,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             log_info(f" NOVO_ATIVO_SIGLA: {session_attr['novo_ativo_sigla']}")
             
             # Carrega lista atual e tenta localizar o ativo
+            sigla = session_attr.get("novo_ativo_sigla")
             _, lista_ativos = grava_historico.carregar_ativos()
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo selecionado."
+                ).set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
 
