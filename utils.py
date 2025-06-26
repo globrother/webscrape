@@ -143,14 +143,16 @@ def iniciar_processamento(handler_input, acao, argumentos_final):
         )
     )
 
-    handler_input.response_builder.add_directive(
-    ExecuteCommandsDirective(
-        token="loadingScreen",
-        commands=[
-            SendEventCommand(arguments=["executarAtualizacao"])
+    handler_input.response_builder.add_directive({
+        "type": "Alexa.Presentation.APL.ExecuteCommands",
+        "token": "loadingScreen",
+        "commands": [
+            {
+                "type": "SendEvent",
+                "arguments": [acao] + argumentos_final
+            }
         ]
-    )
-)
+    })
 
     handler_input.response_builder.set_should_end_session(False)
     return handler_input.response_builder.response
