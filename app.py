@@ -259,7 +259,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         "dados_update": dados_update
                     }
                 )
-            ).speak("O nome do ativo é opcional.").set_should_end_session(False)
+            ).speak("O nome do ativo é opcional. Ao finalizar toque em concluir").set_should_end_session(False)
             return handler_input.response_builder.response
             
             """speech_text = "Agora, digite o nome completo do ativo."
@@ -348,6 +348,10 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             if not sigla:
                 return handler_input.response_builder.speak(
                     "Nenhum ativo selecionado para alteração de status."
+                ).set_should_end_session(False).response
+
+            handler_input.response_builder.speak(
+                    "💭 Um momento por favor!."
                 ).set_should_end_session(False).response
 
             _, lista_ativos = grava_historico.carregar_ativos()

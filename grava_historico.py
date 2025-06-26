@@ -211,7 +211,8 @@ def gerar_texto_historico(historico, aux):
         linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
-        log_info("Histórico de fundo gerado")
+        log_info("Histórico de ativo gerado")
+        log_info("🖥️ Mostrando Ativo")
         #return "<br>".join(linhas)
         return linhas
 
