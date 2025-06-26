@@ -346,7 +346,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "nome": nome,
                 "apelido": limpar_asset_name(sigla).upper(),
                 "status": True,
-                "favorite:" False  # Novo ativo não é favorito por padrão
+                "favorite": False  # Novo ativo não é favorito por padrão
             }
         grava_historico.adicionar_ativo(novo_ativo)
 
