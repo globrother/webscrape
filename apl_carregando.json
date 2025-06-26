@@ -12,6 +12,401 @@
         "version": "1.6.0"
       }
     ],
+    "graphics": {
+          "myGraphic": {
+              "type": "AVG",
+              "version": "1.2",
+              "width": 360,
+              "height": 360,
+              "parameters": [
+                  {
+                      "name": "playbackSpeed",
+                      "default": 1
+                  },
+                  {
+                      "name": "repeatMode",
+                      "default": "restart"
+                  },
+                  {
+                      "name": "repeatCount",
+                      "default": -1
+                  },
+                  {
+                      "name": "__ELAPSED_TIME",
+                      "default": 0
+                  }
+              ],
+              "items": {
+                  "type": "group",
+                  "items": [
+                      {
+                          "items": [
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M42.796,27.029 C42.796,27.029 -42.794,27.029 -42.794,27.029 C-46.809,27.029 -50.096,23.744 -50.096,19.729 C-50.096,19.729 -50.096,-19.729 -50.096,-19.729 C-50.096,-23.744999999999997 -46.809,-27.029 -42.794,-27.029 C-42.794,-27.029 42.796,-27.029 42.796,-27.029 C46.811,-27.029 50.096,-23.744999999999997 50.096,-19.729 C50.096,-19.729 50.096,19.729 50.096,19.729 C50.096,23.744 46.811,27.029 42.796,27.029 z",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "butt",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 53.595,
+                                  "translateY": 29.709
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M7.48,-10.926 C7.48,-10.926 2.5290000000000004,-15.095 -3.663,-14.096 C-9.486,-13.157 -10.172,-9.219999999999999 -10.092,-7.249 C-10.069,-6.669 -10.242,-1.871 0.686,0.85 C11.453,3.531 7.4879999999999995,12.346 2.514,13.796 C-1.9380000000000002,15.094999999999999 -7.194,13.893 -11.452,10.089",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 56.232,
+                                  "translateY": 30.009
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M-0.249,-19.25 C-0.249,-19.25 0.249,19.25 0.249,19.25",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 54.564,
+                                  "translateY": 30.164
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M5.684,-7.013 C5.684,-7.013 7.272,4.846 -7.273,7.013",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 10.772,
+                                  "translateY": 9.653
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M-5.683,-7.013 C-5.683,-7.013 -7.272,4.8469999999999995 7.272,7.013",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 96.418,
+                                  "translateY": 9.693
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M-5.683,7.013 C-5.683,7.013 -7.272,-4.8469999999999995 7.272,-7.013",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 96.418,
+                                  "translateY": 49.435
+                              },
+                              {
+                                  "items": [
+                                      {
+                                          "type": "path",
+                                          "pathData": "M5.684,7.013 C5.684,7.013 7.272,-4.846 -7.273,-7.013",
+                                          "stroke": "rgb(230,238,243,1)",
+                                          "strokeWidth": 4,
+                                          "strokeLineCap": "round",
+                                          "strokeLineJoin": "miter"
+                                      }
+                                  ],
+                                  "type": "group",
+                                  "translateX": 10.772,
+                                  "translateY": 49.395
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": "${(@ease21(frame)-53.5)}",
+                          "translateY": "${(@ease22(frame)-30.5)}",
+                          "pivotX": 53.5,
+                          "pivotY": 30.5,
+                          "scaleX": "${(@ease24(frame)*0.01)}",
+                          "scaleY": "${(@ease24(frame)*0.01)}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-15,20 C-15,20 -102.25,20 -102.25,20",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 2,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease20(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease19(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 200.912,
+                          "translateY": 123.5,
+                          "opacity": "${frame >= 31 && frame <= 331 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-15,20 C-15,20 -102.25,20 -102.25,20",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 2,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease18(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease17(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 283.659,
+                          "translateY": 200.575,
+                          "opacity": "${frame >= 21 && frame <= 321 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-15,20 C-15,20 -102.25,20 -102.25,20",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 2,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease16(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease15(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 177.904,
+                          "translateY": 161.5,
+                          "opacity": "${frame >= 13 && frame <= 313 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-15,20 C-15,20 -102.25,20 -102.25,20",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 2,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease14(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease13(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 311.904,
+                          "translateY": 148.516,
+                          "opacity": "${frame >= 23 && frame <= 323 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-15,20 C-15,20 -102.25,20 -102.25,20",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 2,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease12(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease11(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 321.904,
+                          "translateY": 180,
+                          "opacity": "${frame >= 45 && frame <= 345 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M0,-60.0955 a60.0955,60.0955 0 0 1  0,120.191 a60.0955,60.0955 0 0 1  0,-120.191",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 4,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease10(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease9(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 179,
+                          "translateY": 183.5,
+                          "scaleX": "${(@ease7(frame)*0.01)}",
+                          "scaleY": "${(@ease7(frame)*0.01)}",
+                          "opacity": "${frame >= 75 && frame <= 375 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-44.5,-32 C-44.5,-32 -22,-10 -22,-10 C-22,-10 17.5,-47 17.5,-47",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 6,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease6(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease5(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 192.5,
+                          "translateY": 212,
+                          "pivotX": -13.5,
+                          "pivotY": -28.5,
+                          "scaleX": "${(@ease3(frame)*0.01)}",
+                          "scaleY": "${(@ease3(frame)*0.01)}",
+                          "opacity": "${frame >= 75 && frame <= 375 ? 1 : 0}"
+                      },
+                      {
+                          "items": [
+                              {
+                                  "type": "path",
+                                  "pathData": "M-3,-64.75 C-3,-64.75 -3,-81.75 -3,-81.75",
+                                  "stroke": "rgb(230,238,243,1)",
+                                  "strokeWidth": 4,
+                                  "strokeLineCap": "round",
+                                  "strokeLineJoin": "miter",
+                                  "strokeDashArray": [
+                                      "${@ease2(frame)}",
+                                      100
+                                  ],
+                                  "strokeDashOffset": "-${@ease1(frame)}",
+                                  "pathLength": 100
+                              }
+                          ],
+                          "type": "group",
+                          "translateX": 179.16,
+                          "translateY": 182.289,
+                          "opacity": "${frame >= 105 && frame <= 405 ? 1 : 0}"
+                      }
+                  ],
+                  "bind": [
+                      {
+                          "name": "frames",
+                          "value": 160
+                      },
+                      {
+                          "name": "startFrame",
+                          "value": 0
+                      },
+                      {
+                          "name": "__ELLAPSED_FRAME",
+                          "value": "${Math.abs(playbackSpeed) * ((__ELAPSED_TIME ? __ELAPSED_TIME : elapsedTime) * 0.06)}"
+                      },
+                      {
+                          "name": "__ELLAPSED_FRAME_CONSTRAINED",
+                          "value": "${repeatCount == -1 ? __ELLAPSED_FRAME : __ELLAPSED_FRAME < frames * (repeatCount + 1) ? __ELLAPSED_FRAME : frames * (repeatCount + 1) - 1}"
+                      },
+                      {
+                          "name": "__FRAME",
+                          "value": "${__ELLAPSED_FRAME_CONSTRAINED % frames}"
+                      },
+                      {
+                          "name": "__SEESAWED_FRAME",
+                          "value": "${__ELLAPSED_FRAME_CONSTRAINED % (frames * 2) > frames ? frames * 2 - __ELLAPSED_FRAME_CONSTRAINED % (frames * 2) - 1 : __ELLAPSED_FRAME_CONSTRAINED % (frames * 2)}"
+                      },
+                      {
+                          "name": "__CURRENT_FRAME",
+                          "value": "${repeatMode == 'reverse' ? __SEESAWED_FRAME : __FRAME}"
+                      },
+                      {
+                          "name": "frame",
+                          "value": "${startFrame + (playbackSpeed < 0 ? (frames - __CURRENT_FRAME - 1) : __CURRENT_FRAME)}"
+                      }
+                  ]
+              },
+              "resources": [
+                  {
+                      "easing": {
+                          "ease1": "curve(105,0,0.333,0,0.667,1) end(116,100)",
+                          "ease2": "curve(105,15,0.333,0,0.667,1) end(116,100)",
+                          "ease3": "curve(104,100,0.333,0,0.667,1) curve(108,120,0.333,0,0.667,1) end(111,100)",
+                          "ease4": "curve(104,100,0.333,0,0.667,1) curve(108,100,0.333,0,0.667,1) end(111,100)",
+                          "ease5": "curve(89,0,0.333,0,0.667,1) end(104,0)",
+                          "ease6": "curve(89,0,0.333,0,0.667,1) end(104,100)",
+                          "ease7": "curve(105,100,0.333,0,0.667,1) curve(108,92,0.333,0,0.667,1) end(111,100)",
+                          "ease8": "curve(105,100,0.333,0,0.667,1) curve(108,100,0.333,0,0.667,1) end(111,100)",
+                          "ease9": "curve(75,21,0.439,0.194,0.651,1) end(95,100)",
+                          "ease10": "curve(75,24,0.286,-0.416,0.527,1) end(95,0)",
+                          "ease11": "curve(45,0,0.167,0.167,0.833,0.833) end(63,100)",
+                          "ease12": "curve(45,42,0.167,0.167,0.833,0.833) end(63,100)",
+                          "ease13": "curve(23,0,0.167,0.167,0.833,0.833) end(41,100)",
+                          "ease14": "curve(23,42,0.167,0.167,0.833,0.833) end(41,100)",
+                          "ease15": "curve(13,0,0.167,0.167,0.833,0.833) end(31,100)",
+                          "ease16": "curve(13,42,0.167,0.167,0.833,0.833) end(31,100)",
+                          "ease17": "curve(21,0,0.167,0.167,0.833,0.833) end(39,100)",
+                          "ease18": "curve(21,42,0.167,0.167,0.833,0.833) end(39,100)",
+                          "ease19": "curve(31,0,0.167,0.167,0.833,0.833) end(49,100)",
+                          "ease20": "curve(31,42,0.167,0.167,0.833,0.833) end(49,100)",
+                          "ease21": "spatial(3,0) scurve(0,179,249.311,0,-0.016,-10.833,0,0.016,10.833,0,0.333,0,0.667,1) send(10,178.905,184.311,0)",
+                          "ease22": "spatial(3,1) scurve(0,179,249.311,0,-0.016,-10.833,0,0.016,10.833,0,0.333,0,0.667,1) send(10,178.905,184.311,0)",
+                          "ease23": "spatial(3,2) scurve(0,179,249.311,0,-0.016,-10.833,0,0.016,10.833,0,0.333,0,0.667,1) send(10,178.905,184.311,0)",
+                          "ease24": "curve(0,0,0.333,0,0.667,1) curve(10,100,0.333,0,0.667,1) curve(15,92.188,0.333,0,0.667,1) curve(20,93.375,0.333,0,0.667,1) curve(26,83,0.333,0,0.667,1) curve(35,100,0.333,0,0.667,1) curve(43,94,0.333,0,0.667,1) curve(52,100,0.333,0,0.667,1) curve(60,94,0.333,0,0.667,1) curve(66,100,0.333,0,0.667,1) end(74,0)",
+                          "ease25": "curve(0,100,0.333,0,0.667,1) curve(10,100,0.333,0,0.667,1) curve(15,100,0.333,0,0.667,1) curve(20,100,0.333,0,0.667,1) curve(26,100,0.333,0,0.667,1) curve(35,100,0.333,0,0.667,1) curve(43,100,0.333,0,0.667,1) curve(52,100,0.333,0,0.667,1) curve(60,100,0.333,0,0.667,1) curve(66,100,0.333,0,0.667,1) end(74,100)"
+                      }
+                  }
+              ]
+          }
+      },
+  
   "mainTemplate": {
     "parameters": [],
     "items": [
@@ -32,12 +427,12 @@
             "style": "textoCarregando"
           },
           {
-            "type": "Image",
-            "source": "https://lh5.googleusercontent.com/d/1BhhfqtUs3uj_IF9FdMR-bveoDS8l1Y--",
-            "width": "150dp",
-            "height": "150dp",
+            "type": "VectorGraphic",
+            "source": "myGraphic",
+            "width": "500dp",
+            "height": "500dp",
             "scale": "best-fit",
-            "opacity": 1
+            "align": "center"
           }
         ]
       }
