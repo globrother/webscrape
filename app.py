@@ -261,7 +261,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     }
                 )
             ).speak("Agora, digite o nome completo do ativo.").ask("Por favor, digite o nome completo do ativo.").set_should_end_session(False)
-            return handler_input.response_builder.response
+            return handler_input.response_builder.set_should_end_session(False)
             
             """speech_text = "Agora, digite o nome completo do ativo."
             handler_input.response_builder.speak(speech_text).ask(
