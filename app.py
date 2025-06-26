@@ -236,10 +236,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
             _, lista_ativos = grava_historico.carregar_ativos()
-            if not sigla:
-                return handler_input.response_builder.speak(
-                    "Nenhum ativo selecionado."
-                ).set_should_end_session(False).response
+            #if not sigla:
+            #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
 
@@ -247,7 +245,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "statusAtivo": "ATIVO" if status_ativo else "INATIVO",
                 "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
                 "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
-                "statusCor": "green" if status_ativo else "red"
+                "statusCor": "green" if status_ativo else "red",
+                "siglaAtivo": sigla
             }
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["manual_selection"] = True
@@ -261,7 +260,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     }
                 )
             ).speak("Agora, digite o nome completo do ativo.").ask("Por favor, digite o nome completo do ativo.").set_should_end_session(False)
-            return handler_input.response_builder.set_should_end_session(False)
+            return handler_input.response_builder.response
             
             """speech_text = "Agora, digite o nome completo do ativo."
             handler_input.response_builder.speak(speech_text).ask(
