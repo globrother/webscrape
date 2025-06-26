@@ -259,7 +259,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         "dados_update": dados_update
                     }
                 )
-            ).speak("Agora, digite o nome completo do ativo.").ask("Por favor, digite o nome completo do ativo.").set_should_end_session(False)
+            ).speak("O nome do ativo é opcional.").set_should_end_session(False)
             return handler_input.response_builder.response
             
             """speech_text = "Agora, digite o nome completo do ativo."
@@ -618,7 +618,7 @@ class AlertaInputHandler(APLUserEventHandler):
             return handler_input.response_builder.response
 
             """# Validação: sigla já existe?
-            allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+            allowed_funds = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
             sigla_normalizada = limpar_asset_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
@@ -790,7 +790,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         resolved_id = value.value.id
                         log_info(f"🎯 Resolvido como ID: {resolved_id}")
 
-        allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+        allowed_funds = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
 
         #directive = get_dynamic_entities_directive()
         #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
@@ -962,7 +962,7 @@ class SelectInputHandler(APLUserEventHandler):
                 return handler_input.response_builder.response
 
             # Validação: sigla já existe?
-            allowed_funds = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+            allowed_funds = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
             sigla_normalizada = limpar_asset_name(sigla)
 
             if sigla_normalizada not in allowed_funds:
