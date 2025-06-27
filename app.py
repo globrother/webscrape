@@ -912,7 +912,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             log_warning("Entrou no IF de verificar sigla")
             fundo_full, fundo_state_id = next(
                 ((nome, state_id) for state_id, nome in state_asset_mapping.items()
-                if limpar_asset_name(nome) == sigla_normalizada),
+                if limpar_asset_name(nome.get("codigo", "")) == sigla_normalizada),
                 (None, None)
             )
 
