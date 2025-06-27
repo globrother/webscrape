@@ -339,7 +339,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 grava_historico._ativos_cache = None
                 grava_historico._ativos_cache_time = 0
                 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-                status_fala = "ativado" if novo_status else "desativado"
 
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
