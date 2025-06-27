@@ -58,10 +58,10 @@ def testar_conexao():
 
 def gravar_historico(sufixo, valor):
     log_debug("Agora no método gravar_historico")
-    log_info("--> Iniciando Gravar Histórico\n")
+    log_info("--> Iniciando Gravar Histórico")
     
     if not testar_conexao():
-        print("Erro ao conectar com o servidor Back4App.")
+        log_error("Erro ao conectar com o servidor Back4App.")
         return
     
     nome_classe = obter_nome_classe(sufixo)
@@ -92,7 +92,7 @@ def gravar_historico(sufixo, valor):
 
     if resultado['results'] and resultado['results'][0]['valor'] == valor:
         #log_info(f"Valor zero da tabela: {resultado['results'][0]['valor']}")
-        print("\nO valor é igual ao último registrado. Não será gravado novamente.\n")
+        log_warning("O valor é igual ao último registrado. Não será gravado novamente.")
         connection.close()
         return
 
@@ -106,10 +106,10 @@ def gravar_historico(sufixo, valor):
     })
     response = connection.getresponse()
     if response.status == 201:
-        print("\n Histórico gravado com sucesso.\n")
+        log_info("Histórico gravado com sucesso.")
         connection.close()
     else:
-        print(f"\n Erro ao gravar histórico: {response.reason}\n")
+        log_error(f"Erro ao gravar histórico: {response.reason}")
 
     # Verificar o limite de registros e remover os mais antigos se necessário
     if len(sufixo) > 6:
@@ -151,7 +151,7 @@ def ler_historico(sufixo):
         log_info("--> Iniciando Ler Histórico")
         
         if not testar_conexao():
-            print("Erro ao conectar com o servidor Back4App.")
+            log_error("Erro ao conectar com o servidor Back4App.")
             return
         
         nome_classe = obter_nome_classe(sufixo)
@@ -183,7 +183,7 @@ def gerar_texto_historico(historico, aux):
     
     # Verificar se o histórico está vazio
     if not historico:
-        log_info("\n Histórico está vazio")
+        log_info("Histórico está vazio")
         return "• 00/00/0000\u2003R$ 0,00"
     
     #log_info("Iniciando condição")
@@ -212,7 +212,7 @@ def gerar_texto_historico(historico, aux):
         
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
         log_info("Histórico de ativo gerado")
-        log_info("🖥️ Mostrando Tela")
+        log_info("✅🖥️ Mostrando Tela")
         #return "<br>".join(linhas)
         return linhas
 
@@ -232,8 +232,8 @@ def carregar_ativos():
 
     # Senão, busca do Back4App
     url = "https://parseapi.back4app.com/classes/map_ativo?limit=1000"
-    print("APPLICATION_ID:", APPLICATION_ID)
-    print("REST_API_KEY:", REST_API_KEY)
+    #print("APPLICATION_ID:", APPLICATION_ID)
+    #print("REST_API_KEY:", REST_API_KEY)
     headers = {
         "X-Parse-Application-Id": APPLICATION_ID,
         "X-Parse-REST-API-Key": REST_API_KEY
