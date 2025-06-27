@@ -329,7 +329,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "toggleFavorito":
             sigla = session_attr.get("novo_ativo_sigla")
             _, lista_ativos = grava_historico.carregar_ativos()
-            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
+            log_warning(f"Valor de ativo: {ativo}")
 
             if ativo:
                 object_id = ativo["objectId"]

@@ -61,7 +61,7 @@ def web_scrape(fundo):
     # Seleciona a imagem de fundo correspondente ao índice
     background_image = background_images[(
         fundo_index - 1) % len(background_images)]
-    # logger.info(f"O link da imagem de fundo é: {background_image}")
+    log_warning(f"O link da imagem de fundo é: {background_image}")
 
     # ,_ significa que a variável variac_xpml11 não será utilizada
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
