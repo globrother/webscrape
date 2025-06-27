@@ -413,8 +413,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     grava_historico._ativos_cache_time = 0
                     session_attr["favorito_atual"] = novo_favorito # Atualiza o estado do favorito
                     log_info(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
-                    return handler_input.response_builder.speak("Tudo OK.").response
-                    #return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                    #return handler_input.response_builder.speak("Tudo OK.").response
+                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
                     return handler_input.response_builder.speak("Erro ao atualizar favorito.").response
 

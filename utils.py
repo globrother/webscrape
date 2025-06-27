@@ -154,7 +154,7 @@ def iniciar_processamento(handler_input, acao, argumentos_final):
         ExecuteCommandsDirective(
             token="loadingScreen",
             commands=[
-                SendEventCommand(arguments=["executarAtualizacao"])
+                SendEventCommand(arguments=[acao] + argumentos_final)
             ]
         )
     )
