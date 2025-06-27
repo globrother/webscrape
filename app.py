@@ -243,6 +243,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
+            
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo preenchido, digite no campo por favor"
+                ).set_should_end_session(False).response
+            
             _, lista_ativos = grava_historico.carregar_ativos()
             #if not sigla:
             #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
@@ -356,6 +362,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "toggleFavorito":
             log_warning("Entrou no toggleFavorito")
             sigla = session_attr.get("novo_ativo_sigla")
+            
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo está selecionado para favoritamento."
+                ).set_should_end_session(False).response
+            
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
             log_warning(f"Valor de ativo: {ativo}")
