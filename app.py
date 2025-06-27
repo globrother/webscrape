@@ -252,7 +252,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
                 "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
                 "statusCor": "green" if status_ativo else "red",
-                "iconeFavorito": "https://images.icon-icons.com/1077/PNG/512/star_77949.png" if favorito else "https://images.icon-icons.com/38/PNG/512/star_favorite_5754.png",
+                "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1b59szUQNXPHFy4Mr3DqqXW_LUgX6BCpo",
                 "corFavorito": "gold" if favorito else "gray",
                 "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
                 "siglaAtivo": sigla
