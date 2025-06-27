@@ -117,6 +117,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
         else:
             ativos_ids = sorted(state_asset_mapping.keys())
             session_attr["exibir_favoritos"] = False
+            
+        # Garante que IDs realmente existem no state_asset_mapping
+        ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
 
         session_attr["ativos_ids"] = ativos_ids
 
@@ -142,7 +145,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 }
             )
         )
-
         # Só fala se não for favoritos
         if not session_attr.get("exibir_favoritos"):
             handler_input.response_builder.speak(
