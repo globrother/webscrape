@@ -184,7 +184,6 @@ def get_dadosfii(fii):
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
         log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
-        log_info(f"Telegram: {fii}:{cota_fii}")
 
         arrow_fii = ""
         aux_fii = ""
