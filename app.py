@@ -329,7 +329,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     token="mainScreenToken",
                     document=apl_document,
                     datasources={"dados_update": dados_info}
-                )).set_should_end_session(False)
+                )).speak(f"O ativo {sigla.upper()} foi {status_fala} com sucesso.").set_should_end_session(False)
 
                 return handler_input.response_builder.response
                 
