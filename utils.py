@@ -88,7 +88,7 @@ def gerar_sinonimos(fundo):
     return list({contigua, separado, pontuada, pontuada_upper, pontuada_literal, extenso})
 
 def get_dynamic_entities_directive():
-    fundos = [limpar_asset_name(v) for v in state_asset_mapping.values()]
+    fundos = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
     entities = [
         {
             "id": fundo,
