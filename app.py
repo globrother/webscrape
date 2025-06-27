@@ -323,6 +323,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 status_fala = "ativado" if novo_status else "desativado"
             
             elif tipo_acao == "favorite":
+                log_info(f"🔁 Ação de favorito para {sigla.upper()}")
                 favorito_atual = ativo.get("favorite", False)
                 novo_favorito = not favorito_atual
                 sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
@@ -362,6 +363,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "toggleFavorito":
             log_warning("Entrou no toggleFavorito")
             sigla = session_attr.get("novo_ativo_sigla")
+            session_attr["tipo_acao"] = "favorite"
             
             if not sigla:
                 return handler_input.response_builder.speak(
@@ -371,7 +373,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
             log_warning(f"Valor de ativo: {ativo}")
-            session_attr["tipo_acao"] = "favorite"
 
             if ativo:
                 object_id = ativo["objectId"]
