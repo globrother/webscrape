@@ -327,6 +327,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             return handler_input.response_builder.response
         # -----------------------------------------------
         if arguments[0] == "toggleFavorito":
+            log_warning("Entrou no toggleFavorito")
             sigla = session_attr.get("novo_ativo_sigla")
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
