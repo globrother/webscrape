@@ -351,10 +351,35 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 grava_historico._ativos_cache = None
                 grava_historico._ativos_cache_time = 0
                 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+                ativo_atualizado = next((a for a in lista_ativos if a["codigo"].lower() == sigla.lower()), None)
+                
+                if ativo_atualizado:
+                    dados_update = {
+                        "statusAtivo": "ATIVO" if status_ativo else "INATIVO",
+                        "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
+                        "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
+                        "statusCor": "green" if status_ativo else "red",
+                        "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1b59szUQNXPHFy4Mr3DqqXW_LUgX6BCpo",
+                        "corFavorito": "gold" if favorito else "gray",
+                        "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
+                        "siglaAtivo": sigla
+                    }
 
-                handler_input.response_builder.speak(
-                    f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
-                )
+                log_info(f"Valor de favorito é: {favorito}")
+                session_attr = handler_input.attributes_manager.session_attributes
+                session_attr["manual_selection"] = True
+                apl_document = _load_apl_document("apl_gerenciar_ativo.json")
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="GerenciarAtivoToken",
+                        document=apl_document,
+                        datasources={
+                            "dados_update": dados_update
+                        }
+                    )
+                ).speak(f"O ativo {sigla.upper()} foi {status_fala} com sucesso.").set_should_end_session(False)
+                return handler_input.response_builder.response
+            
             else:
                 handler_input.response_builder.speak(
                     f"Não foi possível alterar o status do ativo {sigla.upper()}."
@@ -470,49 +495,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 )).set_should_end_session(False)
                 return handler_input.response_builder.response
         # -----------------------------------------------
-        """if arguments[0] == "ativarAtivo" or arguments[0] == "desativarAtivo":
-            sigla = session_attr.get("novo_ativo_sigla")
-            if not sigla:
-                return handler_input.response_builder.speak(
-                    "Nenhum ativo selecionado para alteração de status."
-                ).set_should_end_session(False).response
-
-            _, lista_ativos = grava_historico.carregar_ativos()
-            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
-
-            if not ativo:
-                return handler_input.response_builder.speak(
-                    f"O ativo {sigla.upper()} não foi encontrado."
-                ).set_should_end_session(False).response
-
-            object_id = ativo.get("objectId")
-            novo_status = True if arguments[0] == "ativarAtivo" else False
-            sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
-
-            if sucesso:
-                grava_historico._ativos_cache = None
-                grava_historico._ativos_cache_time = 0
-                state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-                status_fala = "ativado" if novo_status else "desativado"
-                handler_input.response_builder.speak(
-                    f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
-                )
-            else:
-                handler_input.response_builder.speak(
-                    f"Não foi possível alterar o status do ativo {sigla.upper()}."
-                )
-            
-            # Redireciona para a tela principal
-            fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))["codigo"]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-
-            handler_input.response_builder.add_directive(RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={"dados_update": dados_info}
-            )).set_should_end_session(False)
-            return handler_input.response_builder.response"""
-        # -----------------------------------------------
+        
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
             nome = session_attr.get("novo_ativo_nome")
