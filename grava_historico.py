@@ -302,3 +302,26 @@ def atualizar_status_ativo(object_id, status: bool):
     else:
         log_error(f"❌ Erro ao atualizar status: {response.text}")
         return False
+
+# ::--> ATUALIZAR FAVORITE DO ATIVO <--::
+def atualizar_favorito(object_id, favorito_bool):
+    try:
+        log_debug(f"Atualizando status do ativo {object_id} para {favorito_bool}")
+        url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
+        headers = {
+            "X-Parse-Application-Id": APPLICATION_ID,
+            "X-Parse-REST-API-Key": REST_API_KEY,
+            "Content-Type": "application/json"
+        }
+        body = {"favorite": favorito_bool}
+        response = requests.put(url, headers=headers, data=json.dumps(body))
+        if response.status_code == 200:
+            log_info(f"✔️ Status do favorito atualizado com sucesso para {favorito_bool}")
+            return True
+        else:
+            log_error(f"❌ Erro ao atualizar status do favorito: {response.text}")
+            return False
+    except Exception as e:
+        log_error(f"Erro ao atualizar favorito: {e}")
+        return False
+

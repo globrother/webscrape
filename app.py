@@ -34,7 +34,13 @@ from handlers import register_handlers
 # from typing import Dict, Any
 
 from utils import (
-    state_asset_mapping, limpar_asset_name, get_dynamic_entities_directive, _load_apl_document, iniciar_processamento)
+    state_asset_mapping,
+    limpar_asset_name,
+    get_dynamic_entities_directive,
+    _load_apl_document,
+    iniciar_processamento,
+    ativos_favoritos
+)
 from handlers.can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
@@ -59,7 +65,7 @@ log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 
 # log_info(f"\n A lista é: {lista_ativos}")
 
-ativos_favoritos = [1, 2, 3, 4]
+#ativos_favoritos = [1, 2, 3, 4]
 
 #voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
@@ -239,12 +245,16 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
+            favorito = ativo.get("favorite", False)
 
             dados_update = {
                 "statusAtivo": "ATIVO" if status_ativo else "INATIVO",
                 "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
                 "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
                 "statusCor": "green" if status_ativo else "red",
+                "iconeFavorito": "https://img.icons8.com/emoji/48/000000/star-emoji.png" if favorito else "https://img.icons8.com/emoji/48/000000/star.png",
+                "corFavorito": "gold" if favorito else "gray",
+                "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
                 "siglaAtivo": sigla
             }
             session_attr = handler_input.attributes_manager.session_attributes
@@ -315,6 +325,25 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             )).set_should_end_session(False)
 
             return handler_input.response_builder.response
+        # -----------------------------------------------
+        if arguments[0] == "toggleFavorito":
+            sigla = session_attr.get("novo_ativo_sigla")
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if ativo:
+                object_id = ativo["objectId"]
+                novo_favorito = not ativo.get("favorite", False)
+                sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
+
+                if sucesso:
+                    grava_historico._ativos_cache = None
+                    grava_historico._ativos_cache_time = 0
+                    log_info(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
+                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                else:
+                    return handler_input.response_builder.speak("Erro ao atualizar favorito.").response
+
         # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
             session_attr["novo_ativo_nome"] = arguments[1].strip()

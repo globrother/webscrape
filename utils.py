@@ -15,6 +15,13 @@ import grava_historico
 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
 logging.info(f"\n O Mapa é: {state_asset_mapping}")
 
+# Ativos favoritados
+ativos_favoritos = [
+  k for k, v in state_asset_mapping.items()
+  if v.get("favorite") and v.get("status", True)
+]
+
+
 # Dicionário para letras em extenso (português)
 letras_extenso = {
     "a": "a",
