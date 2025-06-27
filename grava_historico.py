@@ -308,6 +308,7 @@ def atualizar_favorito(object_id, favorito_bool):
     try:
         log_debug(f"Atualizando status do ativo {object_id} para {favorito_bool}")
         url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
+        log_warning(f"Id do OBJETO:{object_id}:{favorito_bool}")
         headers = {
             "X-Parse-Application-Id": APPLICATION_ID,
             "X-Parse-REST-API-Key": REST_API_KEY,
@@ -316,6 +317,7 @@ def atualizar_favorito(object_id, favorito_bool):
         body = {"favorite": favorito_bool}
         response = requests.put(url, headers=headers, data=json.dumps(body))
         if response.status_code == 200:
+            log_debug(f"Resposta bruta do servidor: {response.text}")
             log_info(f"✔️ Status do favorito atualizado com sucesso para {favorito_bool}")
             return True
         else:
