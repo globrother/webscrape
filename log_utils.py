@@ -50,8 +50,7 @@ else:
 # funções utilitárias
 
 def log_debug(msg):
-    if DEBUG_MODE:
-        logger.debug(f"🧪 {msg}")
+        logger.debug(f"🧪 {msg}", stacklevel=2) #stacklevel=2 para inserir localização do log
 
 def log_info(msg):
     #logger.info(f"ℹ️ {msg}")
