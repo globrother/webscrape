@@ -869,6 +869,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         log_info(f"🎯 Resolvido como ID: {resolved_id}")
 
         allowed_funds = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
+        log_warning(f"Fundos permitidos: {allowed_funds}")
 
         #directive = get_dynamic_entities_directive()
         #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
@@ -905,6 +906,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
         sigla_normalizada = limpar_asset_name(fund_name)
+        log_warning(f"Sigla Normalizada: {sigla_normalizada}")
 
         if sigla_normalizada in allowed_funds:
             fundo_full, fundo_state_id = next(
