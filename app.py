@@ -333,7 +333,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
                 return handler_input.response_builder.response
                 
-            
+            """# ESSE TRECHO NÃO ESTÁ SENDO USADNO, MAS PODE SER ÚTIL NO FUTURO
             elif tipo_acao == "favorite":
                 log_info(f"🔁 Ação de favorito para {sigla.upper()}")
                 favorito_atual = ativo.get("favorite", False)
@@ -383,7 +383,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             else:
                 handler_input.response_builder.speak(
                     f"Não foi possível alterar o status do ativo {sigla.upper()}."
-                ).set_should_end_session(False)
+                ).set_should_end_session(False)"""
         # -----------------------------------------------
         
         if arguments[0] == "toggleFavorito":
