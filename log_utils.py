@@ -61,7 +61,7 @@ def log_warning(msg):
     logger.warning(f"⚠️ {msg}")
 
 def log_error(msg):
-    logger.error(f"🛑 {msg}")
+    logger.error(f"🛑 {msg}", stacklevel=2)
 
 def log_intent_event(handler_input, detalhe=""):
     try:
