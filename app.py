@@ -225,7 +225,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         "excluirAtivo",
         "ativarAtivo",
         "desativarAtivo",
-        "executarAtualizacao"
+        "executarAtualizacao",
+        "toggleFavorito"
     }
     log_debug("Agora no Handler LaunchRequest")
 
