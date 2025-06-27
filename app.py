@@ -376,12 +376,14 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             if ativo:
                 object_id = ativo["objectId"]
                 novo_favorito = not ativo.get("favorite", False)
+                novo_favorito = not session_attr.get("favorito_atual", ativo.get("favorite", False))
                 sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
                 log_info(f"Valor de SUCESSO:{sucesso}")
 
                 if sucesso:
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
+                    session_attr["favorito_atual"] = novo_favorito # Atualiza o estado do favorito
                     log_info(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
                     return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
