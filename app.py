@@ -279,12 +279,14 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # -----------------------------------------------
         if arguments[0] in ["ativarAtivo", "desativarAtivo"]:
             session_attr["acao_status"] = True if arguments[0] == "ativarAtivo" else False
+            session_attr["tipo_acao"] = "status"
             return iniciar_processamento(handler_input, "executarAtualizacao", [])
 
         # -----------------------------------------------
         if arguments[0] == "executarAtualizacao":
             sigla = session_attr.get("novo_ativo_sigla")
-            novo_status = session_attr.get("acao_status")
+            tipo_acao = session_attr.get("tipo_acao", "status")  # status ou favorite
+            #novo_status = session_attr.get("acao_status")
 
             if not sigla:
                 return handler_input.response_builder.speak(
@@ -300,7 +302,29 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).set_should_end_session(False).response
 
             object_id = ativo.get("objectId")
-            sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
+            
+            if tipo_acao == "status":
+                novo_status = session_attr.get("acao_status")
+                if novo_status is None:
+                    log_warning("O status do ativo não foi especificado.")
+                    return handler_input.response_builder.speak(
+                        "O status do ativo não foi especificado."
+                    ).set_should_end_session(False).response
+                
+                sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
+                status_fala = "ativado" if novo_status else "desativado"
+            
+            elif tipo_acao == "favorite":
+                favorito_atual = ativo.get("favorite", False)
+                novo_favorito = not favorito_atual
+                sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
+                status_fala = (
+                    "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
+                )
+            else:
+                return handler_input.response_builder.speak(
+                    f"Ação desconhecida: {tipo_acao}"
+                ).set_should_end_session(False).response
 
             if sucesso:
                 grava_historico._ativos_cache = None
@@ -333,6 +357,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
             log_warning(f"Valor de ativo: {ativo}")
+            session_attr["tipo_acao"] = "favorite"
 
             if ativo:
                 object_id = ativo["objectId"]
