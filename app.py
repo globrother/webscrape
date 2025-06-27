@@ -377,6 +377,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 object_id = ativo["objectId"]
                 novo_favorito = not ativo.get("favorite", False)
                 novo_favorito = not session_attr.get("favorito_atual", ativo.get("favorite", False))
+                log_info(f"🔁 Estado de favorito {sigla.upper()}: {novo_favorito}")
                 sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
                 log_info(f"Valor de SUCESSO:{sucesso}")
 
