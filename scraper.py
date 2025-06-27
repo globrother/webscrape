@@ -48,7 +48,7 @@ def web_scrape(fundo):
 
     # Determina o índice do fundo atual com base no ID do estado
     fundo_index = next(
-        (key for key, value in state_asset_mapping.items() if value == fundo), None)
+        (key for key, value in state_asset_mapping.items() if value.get("codigo", "") == fundo), None)
 
     if fundo_index is not None:
         log_info(f"Índice do fundo '{fundo}': {fundo_index}")
