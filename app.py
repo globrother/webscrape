@@ -269,8 +269,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             #favorito = ativo.get("favorite", False)
             
             if tipo_acao == "excluir":
+                fala = f"Ativo {sigla.upper()} excluído com sucesso."
                 sigla = None
-                fala = "Recomeçar"
                 session_attr.pop("novo_ativo_sigla", None)
                 session_attr.pop("tipo_acao", None)
             else:
