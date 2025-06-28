@@ -256,9 +256,18 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
             if not ativo:
-                return handler_input.response_builder.speak(
+                handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="GerenciarAtivoToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_update
+                    }
+                )
+                ).speak(
                     f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
-                ).set_should_end_session(False).response
+                ).set_should_end_session(False)
+                return handler_input.response_builder.response
         
             status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             favorito = ativo.get("favorite", False)
