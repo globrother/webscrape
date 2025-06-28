@@ -543,41 +543,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
                     # Chama a tela de loading e dispara o próximo passo
-                    return iniciar_processamento(handler_input, "executaCadastro", [sigla])
+                    return iniciar_processamento(handler_input, "executarCadastro", [sigla])
                 else:
                     handler_input.response_builder.speak(
                         f"Não foi possível cadastrar o ativo {sigla.upper()}."
                 ).set_should_end_session(False)
                 return handler_input.response_builder.response
-
-            """# Limpar cache de ativos
-            grava_historico._ativos_cache = None
-            grava_historico._ativos_cache_time = 0
-
-            # Recarregue o mapeamento após adicionar o novo ativo
-            state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-
-            # Feedback imediato e avanço de tela
-            fundo = state_asset_mapping[novo_state_id]["codigo"]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-            #log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
-
-            session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
-            session_attr["state"] = 1 # Estado da Sessão para primeira página
-
-            handler_input.response_builder.speak(
-                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='1s'/>{voz}"
-            ).add_directive(
-                RenderDocumentDirective(
-                    token="mainScreenToken",  # token para exibição de fundos
-                    document=apl_document,
-                    datasources={
-                        "dados_update":
-                            dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                    }
-                )
-            ).set_should_end_session(False)
-            return handler_input.response_builder.response"""
         
         # -----------------------------------------------
         if arguments[0] == "executarCadastro":
