@@ -104,6 +104,7 @@
                                                 "type": "EditText",
                                                 "id": "nomeAtivoInput",
                                                 "hint": "Ex: Maxi Renda (opcional)",
+                                                "text": "${dados_update.nomeAtivo}",
                                                 "hintColor": "#547c8e",
                                                 "hintWeight": "800",
                                                 "fontSize": "28dp",

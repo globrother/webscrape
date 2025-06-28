@@ -254,8 +254,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).set_should_end_session(False).response
             
             _, lista_ativos = grava_historico.carregar_ativos()
-            #if not sigla:
-            #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
@@ -333,8 +331,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 fala = f"O ativo {sigla.upper()} foi {fala_status} com sucesso."
             elif tipo_acao == "favorite":
                 fala = f"O ativo {sigla.upper()} foi {fala_favorito} com sucesso."
-            elif tipo_acao == "excluir":
-                fala = f"O ativo {sigla.upper()} foi excluído com sucesso."
+            #elif tipo_acao == "excluir":
+                #fala = f"O ativo {sigla.upper()} foi excluído com sucesso."
             #else:
                 #fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
