@@ -123,14 +123,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
         session_attr["ativos_ids"] = ativos_ids
 
-        log_debug("=== LaunchRequestHandler.handle ===")
         #log_info(f"Hora: {hora}")
-        log_info(f"intervalos_favoritos: {intervalos_favoritos}")
-        log_info(f"ativos_ids definidos: {ativos_ids}")
+        log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
+        log_debug(f"ativos_ids definidos: {ativos_ids}")
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
-        log_info(f"state inicial: {session_attr['state']}")
+        log_debug(f"state inicial: {session_attr['state']}")
         fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
@@ -182,7 +181,7 @@ class LaunchIntentHandler(AbstractRequestHandler):
         #session_attr["select_in_progress"] = True
 
         if fund_name:
-            log_info(f"[LaunchIntent] fundo recebido na invocação: {fund_name}")
+            log_debug(f"[LaunchIntent] fundo recebido na invocação: {fund_name}")
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["contexto_atual"] = "select_in_progress"
             session_attr["select_in_progress"] = True
@@ -208,7 +207,7 @@ class MonitorIntentHandler(AbstractRequestHandler):
         #session_attr["select_in_progress"] = True
 
         if fund_name:
-            log_info(f"[MonitorIntent] fundo recebido na invocação: {fund_name}")
+            log_debug(f"[MonitorIntent] fundo recebido na invocação: {fund_name}")
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["contexto_atual"] = "monitor_in_progress"
             session_attr["select_in_progress"] = True
@@ -216,9 +215,11 @@ class MonitorIntentHandler(AbstractRequestHandler):
             return SelectFundIntentHandler().handle(handler_input)
 
         return LaunchRequestHandler().handle(handler_input)
+# ============================================================================================
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class GerenciarAtivoInputHandler(APLUserEventHandler):
+    log_debug("Agora no Handler LaunchRequest")
     comandos_validos = {
         "siglaAtivo",
         "nomeAtivo",
@@ -230,8 +231,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         "executarAtualizacao",
         "toggleFavorito"
     }
-    log_debug("Agora no Handler LaunchRequest")
-
+   
     def handle(self, handler_input):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
@@ -239,7 +239,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # -----------------------------------------------
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
-            log_info(f" NOVO_ATIVO_SIGLA: {session_attr['novo_ativo_sigla']}")
+            log_debug(f" Novo ativo sigla: {session_attr['novo_ativo_sigla']}")
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
@@ -277,7 +277,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             novo_status = ativo.get("status", False)
             #novo_status = True if arguments[0] == "ativarAtivo" else False
-            log_warning(f"🔁 Novo status: {novo_status}")
+            log_debug(f"🔁 Novo status: {novo_status}")
             fala_status = "ativado" if novo_status else "desativado"
             
             session_attr = handler_input.attributes_manager.session_attributes
@@ -285,8 +285,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
             tipo_acao = session_attr.get("tipo_acao", None)
-            log_warning(f"Valor de session_attr['tipo_acao']: {session_attr.get('tipo_acao')}")
-            log_warning(f"🔁 Tipo de ação: {tipo_acao}")
+            log_debug(f"Valor de session_attr['tipo_acao']: {session_attr.get('tipo_acao')}")
             # Define o texto de fala conforme o tipo de ação
             if tipo_acao == "status":
                 fala = f"O ativo {sigla.upper()} foi {fala_status} com sucesso."
@@ -308,11 +307,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 )
             ).speak(fala).set_should_end_session(False)
             return handler_input.response_builder.response
-            
-            """speech_text = "Agora, digite o nome completo do ativo."
-            handler_input.response_builder.speak(speech_text).ask(
-                speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response"""
+
         # -----------------------------------------------
         if arguments[0] in ["ativarAtivo", "desativarAtivo"]:
             session_attr["acao_status"] = True if arguments[0] == "ativarAtivo" else False
@@ -342,17 +337,17 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         "O status do ativo não foi especificado."
                     ).set_should_end_session(False).response
                     
-                log_info(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
+                log_debug(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
                 sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
-                log_info(f"Valor de SUCESSO:{sucesso}")
                 
                 if sucesso:
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
-                    log_info(f"🔁 Status de {sigla} agora é: {novo_status}")
+                    log_debug(f"🔁 Status de {sigla} agora é: {novo_status}")
                     #return handler_input.response_builder.speak("Tudo OK.").response
                     return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
+                    log_warning("Erro ao atualizar status.")
                     return handler_input.response_builder.speak("Erro ao atualizar status.").response
 
         # -----------------------------------------------
@@ -451,7 +446,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # -----------------------------------------------
         
         if arguments[0] == "toggleFavorito":
-            log_warning("Entrou no toggleFavorito")
+            log_debug("Entrou no toggleFavorito")
             sigla = session_attr.get("novo_ativo_sigla")
             session_attr["tipo_acao"] = "favorite"
             
@@ -462,24 +457,23 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
-            log_warning(f"Valor de ativo: {ativo}")
+            #log_debug(f"Valor de ativo: {ativo}")
 
             if ativo:
                 object_id = ativo["objectId"]
                 novo_favorito = not ativo.get("favorite", False)
                 novo_favorito = not session_attr.get("favorito_atual", ativo.get("favorite", False))
-                log_info(f"🔁 Estado de favorito {sigla.upper()}: {novo_favorito}")
                 sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
-                log_info(f"Valor de SUCESSO:{sucesso}")
 
                 if sucesso:
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     session_attr["favorito_atual"] = novo_favorito # Atualiza o estado do favorito
-                    log_info(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
+                    log_debug(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
                     #return handler_input.response_builder.speak("Tudo OK.").response
                     return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
+                    log_warning("Erro ao atualizar favoritos.")
                     return handler_input.response_builder.speak("Erro ao atualizar favorito.").response
 
         # -----------------------------------------------
@@ -516,7 +510,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # -----------------------------------------------
         if arguments[0] == "excluirAtivo":
             sigla = session_attr.get("novo_ativo_sigla")
-            log_info(f"O valor de Sigla é: {sigla}")
+            log_debug(f"O valor de Sigla é: {sigla}")
             if not sigla:
                 return handler_input.response_builder.speak(
                     "Nenhum ativo selecionado para exclusão."
@@ -563,6 +557,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "confirmarCadastro":
             sigla = session_attr.get("novo_ativo_sigla")
             nome = session_attr.get("novo_ativo_nome")
+            log_warning(f"Sigla e Nome: {sigla} e {nome}")
             if not sigla or not nome:
                 handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
