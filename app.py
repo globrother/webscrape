@@ -265,6 +265,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 if tipo_acao == "excluir":
                     fala = f"Ativo {sigla.upper()} excluído com sucesso."
                     sigla = None
+                    nome = None
                     session_attr.pop("novo_ativo_sigla", None)
                     session_attr.pop("novo_ativo_nome", None)
                     session_attr.pop("tipo_acao", None)
