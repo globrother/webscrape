@@ -79,10 +79,11 @@
                                 "type": "Container",
                                 "height": "130",
                                 "spacing": 10,
+                                "width": "85%",
                                 "items": [
                                     {
                                         "type": "Text",
-                                        "text": "Digite a sigla completa do ativo:",
+                                        "text": "Digite o nome completo do ativo:",
                                         "fontSize": "30dp",
                                         "textAlign": "left",
                                         "spacing": "@spacing3XLarge",
@@ -92,6 +93,7 @@
                                         "type": "Frame",
                                         "height": "65",
                                         "borderColor": "#3B82F6",
+                                        "width": "100%",
                                         "borderWidth": 2,
                                         "borderRadius": 15,
                                         "paddingLeft": 15,
@@ -105,7 +107,7 @@
                                                 "hintColor": "#547c8e",
                                                 "hintWeight": "800",
                                                 "fontSize": "28dp",
-                                                "submitKeyType": "done",
+                                                "submitKeyType": "next",
                                                 "onSubmit": [
                                                     {
                                                         "type": "SendEvent",
@@ -175,7 +177,6 @@
                     {
                         "type": "Frame",
                         "height": "65",
-                        "width": "1000",
                         "borderColor": "#3B82F6",
                         "borderWidth": 2,
                         "borderRadius": 15,
@@ -191,7 +192,7 @@
                                 "hintColor": "#547c8e",
                                 "hintWeight": "800",
                                 "fontSize": "28dp",
-                                "submitKeyType": "next",
+                                "submitKeyType": "done",
                                 "onSubmit": [
                                     {
                                         "type": "SendEvent",
