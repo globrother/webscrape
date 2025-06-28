@@ -244,6 +244,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
+            nome = session_attr.get("novo_ativo_nome")
             tipo_acao = session_attr.get("tipo_acao", None)
             log_warning(f"valor de sigla em siglaAtivo: {sigla}")
             
@@ -289,7 +290,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1VdPwoILeWcirEuvmmt-pkvkmfRqYNA0F",
                 "corFavorito": "gold" if favorito else "gray",
                 "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
-                "siglaAtivo": sigla
+                "siglaAtivo": sigla,
+                "nomeAtivo": nome
             }
             
             if not ativo and tipo_acao == "excluir":
