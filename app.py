@@ -255,7 +255,17 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             #if not sigla:
             #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
+            if ativo is None:
+                status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
+                favorito = False
+            else:
+                status_ativo = ativo.get("status", True)
+                favorito = ativo.get("favorite", False)
+            
+            #status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
+            #favorito = ativo.get("favorite", False)
             
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             dados_update = {
@@ -285,9 +295,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
                 ).set_should_end_session(False)
                 return handler_input.response_builder.response
-        
-            status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
-            favorito = ativo.get("favorite", False)
 
             favorito_atual = ativo.get("favorite", False)
             fala_favorito = (
