@@ -244,6 +244,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
+            tipo_acao = session_attr.get("tipo_acao", None)
             log_warning(f"valor de sigla em siglaAtivo: {sigla}")
             
             if not sigla:
@@ -260,13 +261,18 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             if ativo is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
-                sigla = None
             else:
                 status_ativo = ativo.get("status", True)
                 favorito = ativo.get("favorite", False)
             
             #status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             #favorito = ativo.get("favorite", False)
+            
+            if tipo_acao == "excluir":
+                sigla = None
+                fala = "Recomeçar"
+            else:
+                fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             dados_update = {
@@ -292,9 +298,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         "dados_update": dados_update
                     }
                 )
-                ).speak(
-                    f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
-                ).set_should_end_session(False)
+                ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
 
             favorito_atual = ativo.get("favorite", False)
@@ -311,7 +315,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["manual_selection"] = True
             #apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
-            tipo_acao = session_attr.get("tipo_acao", None)
             log_debug(f"Valor de session_attr['tipo_acao']: {session_attr.get('tipo_acao')}")
             # Define o texto de fala conforme o tipo de ação
             if tipo_acao == "status":
