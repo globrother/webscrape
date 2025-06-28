@@ -240,6 +240,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
             log_info(f" NOVO_ATIVO_SIGLA: {session_attr['novo_ativo_sigla']}")
+            session_attr["tipo_acao"] = None
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
