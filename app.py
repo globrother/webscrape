@@ -541,24 +541,13 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-
-                    handler_input.response_builder.speak(
-                        f"O ativo {sigla.upper()} foi excluído com sucesso. Voltando para a tela inicial."
-                    )
+                    iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                    handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi excluído com sucesso.")
+                    return handler_input.response_builder.response
                 else:
                     handler_input.response_builder.speak(
                         f"Não foi possível excluir o ativo {sigla.upper()}."
                     )
-
-                # Redireciona para APL principal
-                fundo = state_asset_mapping[1]["codigo"]
-                dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
-                handler_input.response_builder.add_directive(RenderDocumentDirective(
-                    token="mainScreenToken",
-                    document=apl_document,
-                    datasources={"dados_update": dados_info}
-                )).set_should_end_session(False)
-                return handler_input.response_builder.response
         # -----------------------------------------------
         
         if arguments[0] == "confirmarCadastro":
