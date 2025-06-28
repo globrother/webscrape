@@ -262,6 +262,7 @@ def adicionar_ativo(ativo_dict):
         "Content-Type": "application/json"
     }
     response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
+    log_debug(f"resposta de adicionar_ativo: {response.text}: {response.status_code}")
     if response.status_code == 200:
         log_info(f"Arquivo gravado: {ativo_dict}\n")
         return response.json()
