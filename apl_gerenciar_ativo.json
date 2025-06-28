@@ -190,7 +190,7 @@
                                 "hint": "Ex: Maxi Renda (opcional)",
                                 "hintColor": "#547c8e",
                                 "hintWeight": "800",
-                                "fontSize": "35dp",
+                                "fontSize": "28dp",
                                 "submitKeyType": "done",
                                 "onSubmit": [
                                     {
