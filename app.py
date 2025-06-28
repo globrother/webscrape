@@ -272,6 +272,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 sigla = None
                 fala = "Recomeçar"
                 session_attr.pop("novo_ativo_sigla", None)
+                session_attr.pop("tipo_acao", None)
             else:
                 fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             
