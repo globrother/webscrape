@@ -271,9 +271,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             }
             
             favorito_atual = ativo.get("favorite", False)
-            novo_favorito = not favorito_atual
             fala_favorito = (
-                "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
+                "adicionado aos favoritos" if favorito_atual else "removido dos favoritos"
             )
             
             novo_status = ativo.get("status", False)
