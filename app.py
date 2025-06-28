@@ -292,7 +292,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "siglaAtivo": sigla
             }
             
-            if not ativo:
+            if not ativo and tipo_acao == "excluir":
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="GerenciarAtivoToken",
