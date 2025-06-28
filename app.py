@@ -294,19 +294,21 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             if not ativo:
                 handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token="GerenciarAtivoToken",
-                    document=apl_document,
-                    datasources={
-                        "dados_update": dados_update
-                    }
-                ),
-                ExecuteCommandsDirective(
-                    token="GerenciarAtivoToken",
-                    commands=[
-                        SetFocusCommand(component_id="nomeAtivoInput")
-                    ]
+                    RenderDocumentDirective(
+                        token="GerenciarAtivoToken",
+                        document=apl_document,
+                        datasources={
+                            "dados_update": dados_update
+                        }
+                    )
                 )
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="GerenciarAtivoToken",
+                        commands=[
+                            SetFocusCommand(component_id="nomeAtivoInput")
+                        ]
+                    )
                 ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
 
