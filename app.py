@@ -515,7 +515,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
                 if sucesso:
                     # Apaga da memória também
-                    session_attr.pop("novo_ativo_sigla", None)
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
