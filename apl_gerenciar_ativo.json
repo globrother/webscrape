@@ -320,7 +320,7 @@
                                 "borderColor": "#009d52",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "#009d52",
+                                "background": "${dados_update.statusCor}",
                                 "alignSelf": "center",
                                 "right": "25",
                                 "items": [
@@ -356,7 +356,7 @@
                                 "borderColor": "#ff692e",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "#ff692e",
+                                "background": "${dados_update.statusCor}",
                                 "alignSelf": "center",
                                 "left": "25",
                                 "items": [
