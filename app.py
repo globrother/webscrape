@@ -304,20 +304,27 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     f"O ativo {sigla.upper()} não foi encontrado."
                 ).set_should_end_session(False).response
 
-            object_id = ativo.get("objectId")
-            
-            if tipo_acao == "status":
+            if ativo:
+                object_id = ativo.get("objectId")
                 novo_status = session_attr.get("acao_status")
                 if novo_status is None:
                     log_warning("O status do ativo não foi especificado.")
                     return handler_input.response_builder.speak(
                         "O status do ativo não foi especificado."
                     ).set_should_end_session(False).response
-                
+                    
+                log_info(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
                 sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
-                status_fala = "ativado" if novo_status else "desativado"
-            
-            return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                log_info(f"Valor de SUCESSO:{sucesso}")
+                
+                if sucesso:
+                    grava_historico._ativos_cache = None
+                    grava_historico._ativos_cache_time = 0
+                    log_info(f"🔁 Status de {sigla} agora é: {novo_status}")
+                    #return handler_input.response_builder.speak("Tudo OK.").response
+                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                else:
+                    return handler_input.response_builder.speak("Erro ao atualizar status.").response
 
         # -----------------------------------------------
         if arguments[0] == "executarAtualizacao":
