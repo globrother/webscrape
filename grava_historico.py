@@ -92,7 +92,7 @@ def gravar_historico(sufixo, valor):
 
     if resultado['results'] and resultado['results'][0]['valor'] == valor:
         #log_info(f"Valor zero da tabela: {resultado['results'][0]['valor']}")
-        log_warning("O valor é igual ao último registrado. Não será gravado novamente.")
+        log_warning("Valor igual ao último registrado. Abortando gravar.")
         connection.close()
         return
 
@@ -123,12 +123,12 @@ def gravar_historico(sufixo, valor):
         "X-Parse-Application-Id": APPLICATION_ID,
         "X-Parse-REST-API-Key": REST_API_KEY
     })
-    log_info(f"Verificando Contagem de registros em: {nome_classe}")
+    log_debug(f"Verificando Contagem de registros em: {nome_classe}")
     response = connection.getresponse()
-    log_info(f"Response status: {response.status}")  # Adiciona log do status da resposta
+    log_debug(f"Response status: {response.status}")  # Adiciona log do status da resposta
     data = response.read()
     total_registros = json.loads(data).get('count', 0)
-    log_info(f"Histórico Gravado. Total de registros:{total_registros}")
+    log_debug(f"Histórico Gravado. Total de registros:{total_registros}")
     
     if total_registros > limite_registros:
         connection.request('GET', f'/classes/{nome_classe}?order=-createdAt&skip={limite_registros}', '', {
@@ -155,12 +155,12 @@ def ler_historico(sufixo):
             return
         
         nome_classe = obter_nome_classe(sufixo)
-        log_info(f"Iniciando Leitura de: {nome_classe}")
+        log_debug(f"Iniciando Leitura de: {nome_classe}")
         
         # Conexão ao servidor Back4App
         connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
         connection.connect()
-        log_info(f"Conectando ao servidor para ler: {nome_classe}")
+        log_debug(f"Conectando ao servidor para ler: {nome_classe}")
 
         # Requisição GET para recuperar objetos da classe ordenados por createdAt
         connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
@@ -205,13 +205,13 @@ def gerar_texto_historico(historico, aux):
             linhas = [linhas[0]]
         #if len(linhas) > 1:
             #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-        log_info(f"Histórico de alerta gerado: {linhas}")
+        #log_info(f"Histórico de alerta gerado: {linhas}")
         return "<br>".join(linhas)
     else:
         linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
         
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
-        log_info("Histórico de ativo gerado")
+        log_debug("Histórico de ativo gerado")
         log_info("✅🖥️ Mostrando Tela")
         #return "<br>".join(linhas)
         return linhas
