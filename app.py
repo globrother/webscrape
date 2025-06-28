@@ -258,6 +258,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
+            fala = ""
             if ativo is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
