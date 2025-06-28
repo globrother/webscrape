@@ -310,7 +310,14 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             fala_favorito = (
                 "adicionado aos favoritos" if favorito_atual else "removido dos favoritos"
             )
-            
+            """handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="GerenciarAtivoToken",
+                        commands=[
+                            SetFocusCommand(component_id="nomeAtivoInput")
+                        ]
+                    )
+                )"""
             novo_status = ativo.get("status", False)
             #novo_status = True if arguments[0] == "ativarAtivo" else False
             log_debug(f"🔁 Novo status: {novo_status}")
