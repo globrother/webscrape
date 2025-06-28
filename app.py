@@ -298,6 +298,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
             session_attr.update({"tipo_acao": None})
+            session_attr["tipo_acao"] = None
 
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
