@@ -283,7 +283,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
             tipo_acao = session_attr.get("tipo_acao", "status")
-            log_warning(f"🔁 Tipo de ação: {session_attr["tipo_acao"]}")
+            log_warning(f"🔁 Tipo de ação: {session_attr['tipo_acao']}")
             # Define o texto de fala conforme o tipo de ação
             if tipo_acao == "status":
                 fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
