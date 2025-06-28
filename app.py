@@ -586,7 +586,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["state"] = 1 # Estado da Sessão para primeira página
 
             handler_input.response_builder.speak(
-                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='1s'/>{voz}"
+                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o ativo {asset_full.upper()}. <break time='1s'/>{voz}"
             ).add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",  # token para exibição de fundos
