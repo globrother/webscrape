@@ -298,6 +298,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 fala = f"O ativo {sigla.upper()} foi {fala_status} com sucesso."
             elif tipo_acao == "favorite":
                 fala = f"O ativo {sigla.upper()} foi {fala_favorito} com sucesso."
+            elif tipo_acao == "excluir":
+                fala = f"O ativo {sigla.upper()} foi excluído com sucesso."
             else:
                 fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
@@ -516,6 +518,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             return handler_input.response_builder.response
         # -----------------------------------------------
         if arguments[0] == "excluirAtivo":
+            session_attr["tipo_acao"] = "excluir"
             sigla = session_attr.get("novo_ativo_sigla")
             log_debug(f"O valor de Sigla é: {sigla}")
             if not sigla:
@@ -541,13 +544,11 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-                    iniciar_processamento(handler_input, "siglaAtivo", [sigla])
-                    handler_input.response_builder.speak(f"O ativo {sigla.upper()} foi excluído com sucesso.")
-                    return handler_input.response_builder.response
+                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
                     handler_input.response_builder.speak(
                         f"Não foi possível excluir o ativo {sigla.upper()}."
-                    )
+                )
         # -----------------------------------------------
         
         if arguments[0] == "confirmarCadastro":
