@@ -27,7 +27,7 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 #from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetValueCommand)
+    RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetFocusCommand, SetValueCommand)
 from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model import SessionEndedRequest, IntentRequest
 from handlers import register_handlers
@@ -300,6 +300,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     datasources={
                         "dados_update": dados_update
                     }
+                ),
+                ExecuteCommandsDirective(
+                    token="GerenciarAtivoToken",
+                    commands=[
+                        SetFocusCommand(component_id="campoNomeAtivo")
+                    ]
                 )
                 ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
@@ -461,8 +467,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
         # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
+            session_attr["tipo_acao"] = "nome_ativo"
             session_attr["novo_ativo_nome"] = arguments[1].strip()
-            #sigla = session_attr.get("novo_ativo_sigla")
             speech_text = "Se os dados estiverem corretos, escolha a opção desejada."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
