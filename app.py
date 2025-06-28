@@ -260,6 +260,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             if ativo is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
+                sigla = None
             else:
                 status_ativo = ativo.get("status", True)
                 favorito = ativo.get("favorite", False)
