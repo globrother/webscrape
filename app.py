@@ -317,7 +317,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             fala_status = "ativado" if novo_status else "desativado"
             
             session_attr = handler_input.attributes_manager.session_attributes
-            session_attr["manual_selection"] = True
+            #session_attr["manual_selection"] = True
             #apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
             log_debug(f"Valor de session_attr['tipo_acao']: {session_attr.get('tipo_acao')}")
