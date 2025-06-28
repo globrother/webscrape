@@ -228,7 +228,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         "excluirAtivo",
         "ativarAtivo",
         "desativarAtivo",
-        "executarAtualizacao",
+        "executarCadastro",
         "toggleFavorito"
     }
    
