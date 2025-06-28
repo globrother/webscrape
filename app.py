@@ -254,6 +254,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             #if not sigla:
             #    return handler_input.response_builder.speak("Nenhum ativo selecionado.").set_should_end_session(False).response
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
+            if not ativo:
+                return handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
+                ).set_should_end_session(False).response
+        
             status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             favorito = ativo.get("favorite", False)
 
