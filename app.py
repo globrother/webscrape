@@ -471,9 +471,9 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "nomeAtivo":
             session_attr["tipo_acao"] = "nome_ativo"
             session_attr["novo_ativo_nome"] = arguments[1].strip()
-            speech_text = "Se os dados estiverem corretos, escolha a opção desejada."
+            speech_text = "Ok!"
             handler_input.response_builder.speak(speech_text).ask(
-                speech_text).set_should_end_session(False)
+                speech_text)#.set_should_end_session(False)
             return handler_input.response_builder.response
         # -----------------------------------------------
         if arguments[0] == "cancelarCadastro":
