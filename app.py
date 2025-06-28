@@ -243,6 +243,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
+            log_warning(f"valor de sigla em siglaAtivo: {sigla}")
             
             if not sigla:
                 return handler_input.response_builder.speak(
