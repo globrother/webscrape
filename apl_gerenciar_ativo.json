@@ -320,7 +320,7 @@
                                 "borderColor": "#009d52",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "${dados_update.statusCor}",
+                                "background": "${dados_update.corBotaoAtivar}",
                                 "alignSelf": "center",
                                 "right": "25",
                                 "items": [
@@ -356,7 +356,7 @@
                                 "borderColor": "#ff692e",
                                 "borderWidth": 2,
                                 "borderRadius": 25,
-                                "background": "${dados_update.statusCor}",
+                                "background": "${dados_update.corBotaoDesativar}",
                                 "alignSelf": "center",
                                 "left": "25",
                                 "items": [
