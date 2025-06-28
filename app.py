@@ -294,7 +294,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "nomeAtivo": nome
             }
             
-            if not ativo and tipo_acao == "excluir":
+            if not ativo:
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="GerenciarAtivoToken",
@@ -302,14 +302,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         datasources={
                             "dados_update": dados_update
                         }
-                    )
-                )
-                handler_input.response_builder.add_directive(
-                    ExecuteCommandsDirective(
-                        token="GerenciarAtivoToken",
-                        commands=[
-                            SetFocusCommand(component_id="nomeAtivoInput")
-                        ]
                     )
                 ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
