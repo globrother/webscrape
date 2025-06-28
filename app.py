@@ -556,7 +556,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             nome = session_attr.get("novo_ativo_nome")
             log_warning(f"Sigla e Nome: {sigla} e {nome}")
             if not sigla or not nome:
-                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Tente novamente.").ask(
+                log_warning(f"Erro ao cadastrar Ativo: {sigla} e {nome}")
+                handler_input.response_builder.speak("Erro ao cadastrar Ativo. Preencha todos os campos.").ask(
                     "Por favor, digite novamente.").set_should_end_session(False)
                 return handler_input.response_builder.response
 
