@@ -285,7 +285,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["manual_selection"] = True
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
-            tipo_acao = session_attr.get("tipo_acao", "status")
+            tipo_acao = session_attr.get("tipo_acao", None)
             log_warning(f"Valor de session_attr['tipo_acao']: {session_attr.get('tipo_acao')}")
             log_warning(f"🔁 Tipo de ação: {tipo_acao}")
             # Define o texto de fala conforme o tipo de ação
@@ -297,7 +297,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
             session_attr.update({"tipo_acao": None})
-            session_attr["tipo_acao"] = None
+            #session_attr["tipo_acao"] = None
 
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
