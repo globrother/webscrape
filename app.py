@@ -288,13 +288,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] in ["ativarAtivo", "desativarAtivo"]:
             session_attr["acao_status"] = True if arguments[0] == "ativarAtivo" else False
             session_attr["tipo_acao"] = "status"
-            return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
-
-        # -----------------------------------------------
-        if arguments[0] == "executarAtualizacao":
+            
             sigla = session_attr.get("novo_ativo_sigla")
-            tipo_acao = session_attr.get("tipo_acao", "status")  # status ou favorite
-            #novo_status = session_attr.get("acao_status")
 
             if not sigla:
                 return handler_input.response_builder.speak(
@@ -321,17 +316,50 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 
                 sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
                 status_fala = "ativado" if novo_status else "desativado"
+            
+            return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+
+        # -----------------------------------------------
+        if arguments[0] == "executarAtualizacao":
+            sigla = session_attr.get("novo_ativo_sigla")
+            tipo_acao = session_attr.get("tipo_acao", "status")  # status ou favorite
+            #novo_status = session_attr.get("acao_status")
+
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Nenhum ativo selecionado para alteração de status."
+                ).set_should_end_session(False).response
+
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if not ativo:
+                return handler_input.response_builder.speak(
+                    f"O ativo {sigla.upper()} não foi encontrado."
+                ).set_should_end_session(False).response
+
+            if ativo:
+                object_id = ativo.get("objectId")
+                novo_status = session_attr.get("acao_status")
+                if novo_status is None:
+                    log_warning("O status do ativo não foi especificado.")
+                    return handler_input.response_builder.speak(
+                        "O status do ativo não foi especificado."
+                    ).set_should_end_session(False).response
+                    
+                log_info(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
+                sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
+                log_info(f"Valor de SUCESSO:{sucesso}")
                 
-                fundo = state_asset_mapping.get(1, next(iter(state_asset_mapping.values())))["codigo"]
-                dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
-                handler_input.response_builder.add_directive(RenderDocumentDirective(
-                    token="mainScreenToken",
-                    document=apl_document,
-                    datasources={"dados_update": dados_info}
-                )).speak(f"O ativo {sigla.upper()} foi {status_fala} com sucesso.").set_should_end_session(False)
-
-                return handler_input.response_builder.response
+                if sucesso:
+                    grava_historico._ativos_cache = None
+                    grava_historico._ativos_cache_time = 0
+                    log_info(f"🔁 Status de {sigla} agora é: {novo_status}")
+                    #return handler_input.response_builder.speak("Tudo OK.").response
+                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+                else:
+                    return handler_input.response_builder.speak("Erro ao atualizar status.").response
                 
             """# ESSE TRECHO NÃO ESTÁ SENDO USADNO, MAS PODE SER ÚTIL NO FUTURO
             elif tipo_acao == "favorite":
