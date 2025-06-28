@@ -391,48 +391,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 else:
                     log_warning("Erro ao atualizar status.")
                     return handler_input.response_builder.speak("Erro ao atualizar status.").response
-
-        # -----------------------------------------------
-        if arguments[0] == "executarAtualizacao":
-            sigla = session_attr.get("novo_ativo_sigla")
-            tipo_acao = session_attr.get("tipo_acao", "status")  # status ou favorite
-            #novo_status = session_attr.get("acao_status")
-
-            if not sigla:
-                return handler_input.response_builder.speak(
-                    "Nenhum ativo selecionado para alteração de status."
-                ).set_should_end_session(False).response
-
-            _, lista_ativos = grava_historico.carregar_ativos()
-            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
-
-            if not ativo:
-                return handler_input.response_builder.speak(
-                    f"O ativo {sigla.upper()} não foi encontrado."
-                ).set_should_end_session(False).response
-
-            if ativo:
-                object_id = ativo.get("objectId")
-                novo_status = session_attr.get("acao_status")
-                if novo_status is None:
-                    log_warning("O status do ativo não foi especificado.")
-                    return handler_input.response_builder.speak(
-                        "O status do ativo não foi especificado."
-                    ).set_should_end_session(False).response
-                    
-                log_info(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
-                sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
-                log_info(f"Valor de SUCESSO:{sucesso}")
-                
-
-                if sucesso:
-                    grava_historico._ativos_cache = None
-                    grava_historico._ativos_cache_time = 0
-                    log_info(f"🔁 Status de {sigla} agora é: {novo_status}")
-                    #return handler_input.response_builder.speak("Tudo OK.").response
-                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
-                else:
-                    return handler_input.response_builder.speak("Erro ao atualizar status.").response
         # -----------------------------------------------
         
         if arguments[0] == "toggleFavorito":
@@ -558,10 +516,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 handler_input.response_builder.speak(
                     f"O ativo {sigla.upper()} já está cadastrado!").set_should_end_session(False)
                 return handler_input.response_builder.response
-
-            # Gerar novo state_id
-            #state_ids = [f['state_id'] for f in lista_ativos]
-            #novo_state_id = max(state_ids) + 1 if state_ids else 1
             
             # Gerar um novo state id que aloca o menor id vazio da lista
             state_ids = sorted([f['state_id'] for f in lista_ativos])
@@ -580,9 +534,23 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "status": True,
                 "favorite": False  # Novo ativo não é favorito por padrão
             }
-            grava_historico.adicionar_ativo(novo_ativo)
+            
+            if novo_ativo:
+                sucesso = grava_historico.adicionar_ativo(novo_ativo)
+                if sucesso:
+                    # Limpa cache e recarrega ativos
+                    grava_historico._ativos_cache = None
+                    grava_historico._ativos_cache_time = 0
+                    state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+                    # Chama a tela de loading e dispara o próximo passo
+                    return iniciar_processamento(handler_input, "executaCadastro", [sigla])
+                else:
+                    handler_input.response_builder.speak(
+                        f"Não foi possível cadastrar o ativo {sigla.upper()}."
+                ).set_should_end_session(False)
+                return handler_input.response_builder.response
 
-            # Limpar cache de ativos
+            """# Limpar cache de ativos
             grava_historico._ativos_cache = None
             grava_historico._ativos_cache_time = 0
 
@@ -606,6 +574,54 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     datasources={
                         "dados_update":
                             dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
+                    }
+                )
+            ).set_should_end_session(False)
+            return handler_input.response_builder.response"""
+        
+        # -----------------------------------------------
+        if arguments[0] == "executarCadastro":
+            # Recupera a sigla do argumento
+            sigla = arguments[1] if len(arguments) > 1 else None
+            if not sigla:
+                return handler_input.response_builder.speak(
+                    "Erro ao finalizar cadastro. Sigla não informada."
+                ).set_should_end_session(False).response
+
+            # Recarregue o mapeamento após adicionar o novo ativo
+            state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+
+            # Busca o novo state_id pelo código
+            sigla_normalizada = limpar_asset_name(sigla) # Normaliza a sigla       
+            novo_state_id, asset_full = next(
+                (
+                    (state_id, ativo.get("codigo"))
+                    for state_id, ativo in state_asset_mapping.items()
+                    if limpar_asset_name(ativo.get("codigo", "")) == sigla_normalizada
+                ),
+                (None, None)
+            )
+            
+            if not novo_state_id:
+                return handler_input.response_builder.speak(
+                    f"Erro ao localizar o ativo {sigla.upper()} após cadastro."
+                ).set_should_end_session(False).response
+
+            # Feedback imediato e avanço de tela
+            dados_info, _, _, _, apl_document, voz = web_scrape(asset_full)
+            #log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
+
+            session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
+            session_attr["state"] = 1 # Estado da Sessão para primeira página
+
+            handler_input.response_builder.speak(
+                f"O ativo {sigla.upper()} foi cadastrado com sucesso! Agora exibindo o fundo {fundo}. <break time='1s'/>{voz}"
+            ).add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",  # token para exibição de fundos
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                     }
                 )
             ).set_should_end_session(False)
