@@ -273,8 +273,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
             )
             
-            status_atual = ativo.get("status", False)
-            novo_status = True if arguments[0] == "ativarAtivo" else False
+            novo_status = ativo.get("status", False)
+            #novo_status = True if arguments[0] == "ativarAtivo" else False
             log_warning(f"🔁 Novo status: {novo_status}")
             status_fala = "ativado" if novo_status else "desativado"
             
