@@ -237,6 +237,11 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
         log_debug(f"Argumentos recebidos: {arguments}")
+        
+        # Limpar cache de ativos
+        grava_historico._ativos_cache = None
+        grava_historico._ativos_cache_time = 0
+        
         # -----------------------------------------------
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
