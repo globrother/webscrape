@@ -266,9 +266,30 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
                 "siglaAtivo": sigla
             }
+            
+            favorito_atual = ativo.get("favorite", False)
+            novo_favorito = not favorito_atual
+            status_fala = (
+                "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
+            )
+            
+            status_atual = ativo.get("status", False)
+            novo_status = True if arguments[0] == "ativarAtivo" else False
+            status_fala = "ativado" if novo_status else "desativado"
+            
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["manual_selection"] = True
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
+            # Recupera o tipo de ação da sessão
+            tipo_acao = session_attr.get("tipo_acao", "status")
+            # Define o texto de fala conforme o tipo de ação
+            if tipo_acao == "status":
+                fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+            elif tipo_acao == "favorite":
+                fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+            else:
+                fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
+            
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="GerenciarAtivoToken",
@@ -277,7 +298,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                         "dados_update": dados_update
                     }
                 )
-            ).speak("O nome do ativo é opcional. Ao finalizar escolha uma opção").set_should_end_session(False)
+            ).speak(fala).set_should_end_session(False)
             return handler_input.response_builder.response
             
             """speech_text = "Agora, digite o nome completo do ativo."
