@@ -334,8 +334,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 fala = f"O ativo {sigla.upper()} foi {fala_favorito} com sucesso."
             #elif tipo_acao == "excluir":
                 #fala = f"O ativo {sigla.upper()} foi excluído com sucesso."
-            #else:
-                #fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
+            else:
+                fala = "Ao finalizar escolha uma opção."
             
             session_attr.update({"tipo_acao": None})
             #session_attr["tipo_acao"] = None
@@ -473,7 +473,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["novo_ativo_nome"] = arguments[1].strip()
             speech_text = "Ok!"
             handler_input.response_builder.speak(speech_text).ask(
-                speech_text)#.set_should_end_session(False)
+                speech_text).set_should_end_session(False)
             return handler_input.response_builder.response
         # -----------------------------------------------
         if arguments[0] == "cancelarCadastro":
