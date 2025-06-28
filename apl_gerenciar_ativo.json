@@ -6,22 +6,22 @@
     "styles": {
         "BotaoAtivar": {
             "values": [
-            {
-                "color": "white",
-                "backgroundColor": "green",
-                "fontWeight": "bold",
-                "opacity": "${disabled ? 0.3 : 1.0}"
-            }
+                {
+                    "color": "white",
+                    "backgroundColor": "green",
+                    "fontWeight": "bold",
+                    "opacity": "${disabled ? 0.3 : 1.0}"
+                }
             ]
         },
         "BotaoDesativar": {
             "values": [
-            {
-                "color": "white",
-                "backgroundColor": "red",
-                "fontWeight": "bold",
-                "opacity": "${disabled ? 0.3 : 1.0}"
-            }
+                {
+                    "color": "white",
+                    "backgroundColor": "red",
+                    "fontWeight": "bold",
+                    "opacity": "${disabled ? 0.3 : 1.0}"
+                }
             ]
         }
     },
@@ -119,7 +119,7 @@
                                                 ]
                                             }
                                         ]
-                                    }   
+                                    }
                                 ]
                             },
                             {
@@ -152,7 +152,16 @@
                                                     "scale": "best-fit"
                                                 }
                                             }
-                                        ] 
+                                        ]
+                                    },
+                                    {
+                                        "fontSize": "24dp",
+                                        "text": "Favoritar",
+                                        "color": "white",
+                                        "textAlign": "center",
+                                        "width": "200",
+                                        "textAlignVertical": "center",
+                                        "type": "Text"
                                     }
                                 ]
                             }
