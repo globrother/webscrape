@@ -288,7 +288,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] in ["ativarAtivo", "desativarAtivo"]:
             session_attr["acao_status"] = True if arguments[0] == "ativarAtivo" else False
             session_attr["tipo_acao"] = "status"
-            return iniciar_processamento(handler_input, "executarAtualizacao", [])
+            return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
 
         # -----------------------------------------------
         if arguments[0] == "executarAtualizacao":
