@@ -236,6 +236,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
+        log_debug(f"Argumentos recebidos: {arguments}")
         # -----------------------------------------------
         if arguments[0] == "siglaAtivo":
             session_attr["novo_ativo_sigla"] = arguments[1].strip().lower()
@@ -409,58 +410,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
                     return handler_input.response_builder.speak("Erro ao atualizar status.").response
-                
-            """# ESSE TRECHO NÃO ESTÁ SENDO USADNO, MAS PODE SER ÚTIL NO FUTURO
-            elif tipo_acao == "favorite":
-                log_info(f"🔁 Ação de favorito para {sigla.upper()}")
-                favorito_atual = ativo.get("favorite", False)
-                novo_favorito = not favorito_atual
-                sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
-                status_fala = (
-                    "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
-                )
-            else:
-                return handler_input.response_builder.speak(
-                    f"Ação desconhecida: {tipo_acao}"
-                ).set_should_end_session(False).response
-
-            if sucesso:
-                grava_historico._ativos_cache = None
-                grava_historico._ativos_cache_time = 0
-                state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-                ativo_atualizado = next((a for a in lista_ativos if a["codigo"].lower() == sigla.lower()), None)
-                
-                if ativo_atualizado:
-                    dados_update = {
-                        "statusAtivo": "ATIVO" if status_ativo else "INATIVO",
-                        "desativarAtivoDisabled": not status_ativo,   # Desativa botão se já estiver inativo
-                        "ativarAtivoDisabled": status_ativo,          # Desativa botão se já estiver ativo
-                        "statusCor": "green" if status_ativo else "red",
-                        "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1b59szUQNXPHFy4Mr3DqqXW_LUgX6BCpo",
-                        "corFavorito": "gold" if favorito else "gray",
-                        "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
-                        "siglaAtivo": sigla
-                    }
-
-                log_info(f"Valor de favorito é: {favorito}")
-                session_attr = handler_input.attributes_manager.session_attributes
-                session_attr["manual_selection"] = True
-                apl_document = _load_apl_document("apl_gerenciar_ativo.json")
-                handler_input.response_builder.add_directive(
-                    RenderDocumentDirective(
-                        token="GerenciarAtivoToken",
-                        document=apl_document,
-                        datasources={
-                            "dados_update": dados_update
-                        }
-                    )
-                ).speak(f"O ativo {sigla.upper()} foi {status_fala} com sucesso.").set_should_end_session(False)
-                return handler_input.response_builder.response
-            
-            else:
-                handler_input.response_builder.speak(
-                    f"Não foi possível alterar o status do ativo {sigla.upper()}."
-                ).set_should_end_session(False)"""
         # -----------------------------------------------
         
         if arguments[0] == "toggleFavorito":
