@@ -261,20 +261,19 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             if ativo is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
+                
+                if tipo_acao == "excluir":
+                    fala = f"Ativo {sigla.upper()} excluído com sucesso."
+                    sigla = None
+                    session_attr.pop("tipo_acao", None)
+                else:
+                    fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             else:
                 status_ativo = ativo.get("status", True)
                 favorito = ativo.get("favorite", False)
             
             #status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             #favorito = ativo.get("favorite", False)
-            
-            if tipo_acao == "excluir":
-                fala = f"Ativo {sigla.upper()} excluído com sucesso."
-                sigla = None
-                session_attr.pop("novo_ativo_sigla", None)
-                session_attr.pop("tipo_acao", None)
-            else:
-                fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             dados_update = {
@@ -515,6 +514,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
                 if sucesso:
                     # Apaga da memória também
+                    session_attr.pop("novo_ativo_sigla", None)
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
