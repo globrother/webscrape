@@ -267,7 +267,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1b59szUQNXPHFy4Mr3DqqXW_LUgX6BCpo",
                 "corFavorito": "gold" if favorito else "gray",
                 "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
-                "submitType": "done" if status_ativo else "next",
                 "siglaAtivo": sigla
             }
             
@@ -287,7 +286,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             # Recupera o tipo de ação da sessão
             tipo_acao = session_attr.get("tipo_acao", "status")
-            log_warning(f"🔁 Tipo de ação: {session_attr['tipo_acao']}")
+            #log_warning(f"🔁 Tipo de ação: {session_attr['tipo_acao']}")
             # Define o texto de fala conforme o tipo de ação
             if tipo_acao == "status":
                 fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
@@ -296,6 +295,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             else:
                 fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
+            session_attr.update({"tipo_acao": None})
+
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="GerenciarAtivoToken",
