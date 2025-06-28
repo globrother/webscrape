@@ -167,52 +167,37 @@
                     },
                     {
                         "type": "Text",
-                        "text": "Digite o nome completo do ativo:",
+                        "text": "Digite a sigla completa do ativo:",
                         "fontSize": "30dp",
                         "spacing": "@spacingMedium",
                         "style": "textStylePrimary1"
                     },
                     {
-                        "type": "Container",
-                        "height": "130",
+                        "type": "Frame",
+                        "height": "65",
+                        "width": "1000",
+                        "borderColor": "#3B82F6",
+                        "borderWidth": 2,
+                        "borderRadius": 15,
+                        "paddingLeft": 15,
+                        "paddingTop": 12,
                         "spacing": 10,
                         "items": [
                             {
-                                "type": "Text",
-                                "text": "Digite a sigla completa do ativo:",
-                                "fontSize": "30dp",
-                                "textAlign": "left",
-                                "spacing": "@spacing3XLarge",
-                                "style": "textStylePrimary1"
-                            },
-                            {
-                                "type": "Frame",
-                                "height": "65",
-                                "width": "1000",
-                                "borderColor": "#3B82F6",
-                                "borderWidth": 2,
-                                "borderRadius": 15,
-                                "paddingLeft": 15,
-                                "paddingTop": 12,
-                                "spacing": 10,
-                                "items": [
+                                "type": "EditText",
+                                "id": "siglaAtivoInput",
+                                "hint": "Ex: mxrf11",
+                                "text": "${dados_update.siglaAtivo}",
+                                "hintColor": "#547c8e",
+                                "hintWeight": "800",
+                                "fontSize": "28dp",
+                                "submitKeyType": "next",
+                                "onSubmit": [
                                     {
-                                        "type": "EditText",
-                                        "id": "siglaAtivoInput",
-                                        "hint": "Ex: mxrf11",
-                                        "text": "${dados_update.siglaAtivo}",
-                                        "hintColor": "#547c8e",
-                                        "hintWeight": "800",
-                                        "fontSize": "28dp",
-                                        "submitKeyType": "next",
-                                        "onSubmit": [
-                                            {
-                                                "type": "SendEvent",
-                                                "arguments": [
-                                                    "siglaAtivo",
-                                                    "${event.source.value}"
-                                                ]
-                                            }
+                                        "type": "SendEvent",
+                                        "arguments": [
+                                            "siglaAtivo",
+                                            "${event.source.value}"
                                         ]
                                     }
                                 ]
