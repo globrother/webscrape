@@ -443,6 +443,15 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
             #log_debug(f"Valor de ativo: {ativo}")
+            
+            # Recarrega lista e encontra o objectId
+            _, lista_ativos = grava_historico.carregar_ativos()
+            ativo_encontrado = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+
+            if not ativo:
+                return handler_input.response_builder.speak(
+                    f"Não encontrei o ativo {sigla.upper()} para incluir aos favoritos."
+                ).set_should_end_session(False).response
 
             if ativo:
                 object_id = ativo["objectId"]
