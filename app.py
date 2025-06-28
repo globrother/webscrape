@@ -456,6 +456,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
             session_attr["novo_ativo_nome"] = arguments[1].strip()
+            sigla = session_attr.get("novo_ativo_sigla")
             speech_text = "Se os dados estiverem corretos, escolha a opção desejada."
             handler_input.response_builder.speak(speech_text).ask(
                 speech_text).set_should_end_session(False)
