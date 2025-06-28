@@ -471,7 +471,6 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         if arguments[0] == "nomeAtivo":
             session_attr["tipo_acao"] = "nome_ativo"
             session_attr["novo_ativo_nome"] = arguments[1].strip()
-            speech_text = "Ok!" #remover depois se não estiver usando
             
         # -----------------------------------------------
         if arguments[0] == "cancelarCadastro":
@@ -571,7 +570,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "status": True,
                 "favorite": False  # Novo ativo não é favorito por padrão
             }
-        grava_historico.adicionar_ativo(novo_ativo)
+            grava_historico.adicionar_ativo(novo_ativo)
 
         # Limpar cache de ativos
         grava_historico._ativos_cache = None
