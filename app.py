@@ -267,6 +267,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "iconeFavorito": "https://lh5.googleusercontent.com/d/1u6F9Xo6ZmbnvB6i4HUwwRHo7PnhWF75A" if favorito else "https://lh5.googleusercontent.com/d/1b59szUQNXPHFy4Mr3DqqXW_LUgX6BCpo",
                 "corFavorito": "gold" if favorito else "gray",
                 "acaoFavorito": "removerFavorito" if favorito else "adicionarFavorito",
+                "submitType": "done" if status_ativo else "next",
                 "siglaAtivo": sigla
             }
             
