@@ -339,12 +339,12 @@
                                             "type": "Text",
                                             "fontSize": "50dp",
                                             "text": "Ativar",
-                                            "color": "white",
+                                            "color": "${dados_update.corTextoAtivar}",
                                             "height": "90",
                                             "width": "300",
                                             "textAlign": "center",
                                             "textAlignVertical": "center",
-                                            "style": "BotaoDesativar"
+                                            "style": "BotaoAtivar"
                                         }
                                     }
                                 ]
@@ -375,7 +375,7 @@
                                             "type": "Text",
                                             "fontSize": "50dp",
                                             "text": "Desativar",
-                                            "color": "white",
+                                            "color": "${dados_update.corTextoDesativar}",
                                             "height": "90",
                                             "width": "300",
                                             "textAlign": "center",
