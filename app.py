@@ -304,7 +304,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ExecuteCommandsDirective(
                     token="GerenciarAtivoToken",
                     commands=[
-                        SetFocusCommand(component_id="campoNomeAtivo")
+                        SetFocusCommand(component_id="nomeAtivoInput")
                     ]
                 )
                 ).speak(fala).set_should_end_session(False)
