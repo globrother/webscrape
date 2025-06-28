@@ -272,14 +272,14 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             favorito_atual = ativo.get("favorite", False)
             novo_favorito = not favorito_atual
-            status_fala = (
+            fala_favorito = (
                 "adicionado aos favoritos" if novo_favorito else "removido dos favoritos"
             )
             
             novo_status = ativo.get("status", False)
             #novo_status = True if arguments[0] == "ativarAtivo" else False
             log_warning(f"🔁 Novo status: {novo_status}")
-            status_fala = "ativado" if novo_status else "desativado"
+            fala_status = "ativado" if novo_status else "desativado"
             
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["manual_selection"] = True
@@ -290,9 +290,9 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             log_warning(f"🔁 Tipo de ação: {tipo_acao}")
             # Define o texto de fala conforme o tipo de ação
             if tipo_acao == "status":
-                fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+                fala = f"O ativo {sigla.upper()} foi {fala_status} com sucesso."
             elif tipo_acao == "favorite":
-                fala = f"O ativo {sigla.upper()} foi {status_fala} com sucesso."
+                fala = f"O ativo {sigla.upper()} foi {fala_favorito} com sucesso."
             else:
                 fala = "O nome do ativo é opcional. Ao finalizar escolha uma opção."
             
