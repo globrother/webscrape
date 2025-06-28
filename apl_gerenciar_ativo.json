@@ -106,7 +106,7 @@
                                                 "text": "${dados_update.siglaAtivo}",
                                                 "hintColor": "#547c8e",
                                                 "hintWeight": "800",
-                                                "fontSize": "35dp",
+                                                "fontSize": "28dp",
                                                 "submitKeyType": "next",
                                                 "onSubmit": [
                                                     {
