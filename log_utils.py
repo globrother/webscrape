@@ -55,7 +55,7 @@ class LogtailSafeHandler(logging.Handler):
             self.session.post(self.endpoint, json=payload, headers=headers, timeout=2)
             
             # Se contiver o marcador, envia para o Telegram
-            if "[GOBS_MARKER]" in msg and "BBAS" in msg:
+            if "[GOBS_MARKER]" in msg and "TGAR" in msg:
                 log_warning("⚠️ Enviando alerta financeiro para Telegram")
                 enviar_para_telegram(f"🚨 {msg}")
             
@@ -79,12 +79,13 @@ raw_handler.setFormatter(raw_formatter)
 
 logger_raw = logging.getLogger("telegram_raw")
 logger_raw.setLevel(logging.INFO)
-logger_raw.addHandler(raw_handler)
+#logger_raw.addHandler(raw_handler)
 
 if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
     logtail_handler.setFormatter(formatter)
     logger.addHandler(logtail_handler)
+    logger_raw.addHandler(logtail_handler)
     logger.info("✅ Logtail ativado com sucesso!")
 else:
     logger.warning("⚠️ LOG_LOGTAIL_KEY ausente — sem envio externo de logs.")
