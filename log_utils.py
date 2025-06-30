@@ -55,7 +55,7 @@ class LogtailSafeHandler(logging.Handler):
             self.session.post(self.endpoint, json=payload, headers=headers, timeout=2)
             
             # Se contiver o marcador, envia para o Telegram
-            if "Gobs-Finance" in msg and "BBAS" in msg:
+            if "[GOBS_MARKER]" in msg and "BBAS" in msg:
                 log_warning("⚠️ Enviando alerta financeiro para Telegram")
                 enviar_para_telegram(f"🚨 {msg}")
             
