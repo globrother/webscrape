@@ -73,6 +73,14 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.propagate = False
 
+raw_formatter = logging.Formatter("%(message)s")
+raw_handler = logging.StreamHandler()
+raw_handler.setFormatter(raw_formatter)
+
+logger_raw = logging.getLogger("telegram_raw")
+logger_raw.setLevel(logging.INFO)
+logger_raw.addHandler(raw_handler)
+
 if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
     logtail_handler.setFormatter(formatter)
@@ -98,7 +106,7 @@ def log_error(msg):
     logger.error(f"🛑 {msg}", stacklevel=2)
 
 def log_telegram(msg):
-    logger.info(f"{msg}")
+    logger_raw.info(f"{msg}")
 
 def log_intent_event(handler_input, detalhe=""):
     try:
