@@ -188,10 +188,9 @@ def get_dadosfii(fii):
         #log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
         # Escape seguro
         fii_safe = html.escape(fii.upper())
-        cota_safe = html.escape(f"R$ {cota_fii:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))  # R$ 21,72
+        cota_safe = html.escape(f"R$ {cota_fii}")  # R$ 21,72
         mensagem = (
-            "<b>Alerta de Gobs-Finance</b>:\n\n"
-            f"O Ativo <b>{fii_safe.upper()}</b> chegou a <b>{cota_safe}</b>"
+            f"<b>Alerta de Gobs-Finance</b>:<br><br>O Ativo <b>{fii_safe}</b> chegou a <b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
 
