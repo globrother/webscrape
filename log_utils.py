@@ -6,6 +6,28 @@ import os
 
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
+# Enviar Alertas de Cota para o Telegram
+def enviar_para_telegram(mensagem):
+    TELEGRAM_ALERT_KEY = os.getenv("TELEGRAM_ALERT_KEY")
+    TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
+
+    if not TELEGRAM_ALERT_KEY or not TELEGRAM_ALERT_ID:
+        print("⚠️ Telegram não configurado")
+        return
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_ALERT_KEY}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_ALERT_ID,
+        "text": mensagem,
+        "parse_mode": "Markdown"
+    }
+
+    try:
+        requests.post(url, json=payload, timeout=3)
+    except Exception as e:
+        print(f"Erro ao enviar para Telegram: {e}")
+
+
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
         super().__init__()
@@ -24,7 +46,13 @@ class LogtailSafeHandler(logging.Handler):
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.source_token}"
             }
+            # Envia log para o BetterStack (Logtail)
             self.session.post(self.endpoint, json=payload, headers=headers, timeout=2)
+            
+            # Se contiver o marcador, envia para o Telegram
+            if "Gobis-Finance: BBAS" in msg:
+                enviar_para_telegram(f"🚨 *Alerta de log*:\n\n{msg}")
+            
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
 
