@@ -25,12 +25,12 @@ def enviar_para_telegram(mensagem):
     resp = requests.post(url, json=payload, timeout=3)
     log_info(F"Status:{resp.status_code}")
     if resp.status_code != 200:
-        print(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
+        log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
 
     try:
         requests.post(url, json=payload, timeout=3)
     except Exception as e:
-        print(f"Erro ao enviar para Telegram: {e}")
+        log_error(f"Erro ao enviar para Telegram: {e}")
 
 
 class LogtailSafeHandler(logging.Handler):
