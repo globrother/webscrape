@@ -22,6 +22,9 @@ def enviar_para_telegram(mensagem):
         "text": mensagem,
         "parse_mode": "Markdown"
     }
+    resp = requests.post(url, json=payload, timeout=3)
+    if resp.status_code != 200:
+        print(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
 
     try:
         requests.post(url, json=payload, timeout=3)
