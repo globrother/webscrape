@@ -184,7 +184,12 @@ def get_dadosfii(fii):
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
         log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
-        log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
+        #log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
+        mensagem = (
+            "<b>Alerta de Gobs-Finance</b>:\n\n"
+            f"O Ativo <b>{fii.upper()}</b> chegou a <b>{cota_fii}</b>"
+        )
+        log_telegram(mensagem)
 
         arrow_fii = ""
         aux_fii = ""
