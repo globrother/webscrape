@@ -10,6 +10,7 @@ from time import time
 import grava_historico
 import app
 import json
+import html
 import os
 # import locale
 # Configurar a localidade para o formato de número correto
@@ -185,9 +186,12 @@ def get_dadosfii(fii):
 
         log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
         #log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
+        # Escape seguro
+        fii_safe = html.escape(fii.upper())
+        cota_safe = html.escape(f"R$ {cota_fii:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))  # R$ 21,72
         mensagem = (
             "<b>Alerta de Gobs-Finance</b>:\n\n"
-            f"O Ativo <b>{fii.upper()}</b> chegou a <b>{cota_fii}</b>"
+            f"O Ativo <b>{fii_safe.upper()}</b> chegou a <b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
 
