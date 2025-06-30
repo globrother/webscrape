@@ -20,7 +20,7 @@ def enviar_para_telegram(mensagem):
     payload = {
         "chat_id": TELEGRAM_ALERT_ID,
         "text": mensagem,
-        "parse_mode": "Markdown"
+        "parse_mode": "HTML"
     }
     resp = requests.post(url, json=payload, timeout=3)
     log_info(F"Status:{resp.status_code}")
@@ -57,7 +57,7 @@ class LogtailSafeHandler(logging.Handler):
             # Se contiver o marcador, envia para o Telegram
             if "Gobs-Finance:" in msg and "BBAS" in msg:
                 log_warning("⚠️ Enviando alerta financeiro para Telegram")
-                enviar_para_telegram(f"🚨 *Alerta Financeiro*:\n\n{msg}")
+                enviar_para_telegram(f"🚨 <b>Alerta</b>:\n\n{msg}")
             
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
