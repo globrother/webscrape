@@ -1,7 +1,7 @@
 {
     "type": "APL",
     "version": "2024.3",
-    "description": "Documento APL para adicionar novo ativo",
+    "description": "Documento APL para Gerenciar Ativo",
     "theme": "dark",
     "styles": {
         "BotaoAtivar": {
@@ -63,7 +63,7 @@
                     },
                     {
                         "type": "Text",
-                        "text": "Entrada de Dados do Ativo",
+                        "text": "🗃️​ Gerenciar Ativos",
                         "fontSize": "50dp",
                         "textAlign": "center",
                         "style": "textStylePrimary1"
