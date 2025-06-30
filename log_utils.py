@@ -54,11 +54,6 @@ class LogtailSafeHandler(logging.Handler):
             # Envia log para o BetterStack (Logtail)
             self.session.post(self.endpoint, json=payload, headers=headers, timeout=2)
             
-            # Se contiver o marcador, envia para o Telegram
-            if "[GOBS_MARKER]" in msg and "TGAR" in msg:
-                log_warning("⚠️ Enviando alerta financeiro para Telegram")
-                enviar_para_telegram(f"🚨 {msg}")
-            
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
 
@@ -79,13 +74,13 @@ raw_handler.setFormatter(raw_formatter)
 
 logger_raw = logging.getLogger("telegram_raw")
 logger_raw.setLevel(logging.INFO)
-#logger_raw.addHandler(raw_handler)
+logger_raw.addHandler(raw_handler)
 
 if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
     logtail_handler.setFormatter(formatter)
     logger.addHandler(logtail_handler)
-    logger_raw.addHandler(logtail_handler)
+    #logger_raw.addHandler(logtail_handler)
     logger.info("✅ Logtail ativado com sucesso!")
 else:
     logger.warning("⚠️ LOG_LOGTAIL_KEY ausente — sem envio externo de logs.")
@@ -108,6 +103,10 @@ def log_error(msg):
 
 def log_telegram(msg):
     logger_raw.info(f"{msg}")
+    # Se contiver o marcador, envia para o Telegram
+    if "Gobs-Finance" in msg and "TGAR" in msg:
+        log_warning("⚠️ Enviando alerta financeiro para Telegram")
+        enviar_para_telegram(f"🚨 {msg}")
 
 def log_intent_event(handler_input, detalhe=""):
     try:
