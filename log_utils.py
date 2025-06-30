@@ -22,13 +22,12 @@ def enviar_para_telegram(mensagem):
         "text": mensagem,
         "parse_mode": "HTML"
     }
-    resp = requests.post(url, json=payload, timeout=3)
-    log_info(F"Status:{resp.status_code}")
-    if resp.status_code != 200:
-        log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
-
+    
     try:
-        requests.post(url, json=payload, timeout=3)
+        resp = requests.post(url, json=payload, timeout=3)
+        log_info(F"Status:{resp.status_code}")
+        if resp.status_code != 200:
+            log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:
         log_error(f"Erro ao enviar para Telegram: {e}")
 
