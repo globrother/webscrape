@@ -10,7 +10,6 @@ DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 def enviar_para_telegram(mensagem):
     TELEGRAM_ALERT_KEY = os.getenv("TELEGRAM_ALERT_KEY")
     TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
-    log_info(F"CHAVE:{TELEGRAM_ALERT_KEY}")
 
     if not TELEGRAM_ALERT_KEY or not TELEGRAM_ALERT_ID:
         log_warning("⚠️ Telegram não configurado")
@@ -22,7 +21,7 @@ def enviar_para_telegram(mensagem):
         "text": mensagem,
         "parse_mode": "HTML"
     }
-    
+        
     try:
         resp = requests.post(url, json=payload, timeout=3)
         log_info(F"Status:{resp.status_code}")
@@ -30,7 +29,6 @@ def enviar_para_telegram(mensagem):
             log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:
         log_error(f"Erro ao enviar para Telegram: {e}")
-
 
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
@@ -79,13 +77,11 @@ if LOG_LOGTAIL_KEY:
     logtail_handler = LogtailSafeHandler(source_token=LOG_LOGTAIL_KEY)
     logtail_handler.setFormatter(formatter)
     logger.addHandler(logtail_handler)
-    #logger_raw.addHandler(logtail_handler)
     logger.info("✅ Logtail ativado com sucesso!")
 else:
     logger.warning("⚠️ LOG_LOGTAIL_KEY ausente — sem envio externo de logs.")
 
 # funções utilitárias
-
 def log_debug(msg):
         logger.debug(f"🧪 {msg}", stacklevel=2) #stacklevel=2 para inserir localização do log
 
@@ -103,7 +99,7 @@ def log_error(msg):
 def log_telegram(msg):
     logger_raw.info(f"{msg}")
     # Se contiver o marcador, envia para o Telegram
-    if "Gobs-Finance" in msg and "TGAR" in msg:
+    if "Gobs-Finance" in msg and "TGAR" in msg or "BBAS" in msg or "PETR" in msg or "BEES" in msg:
         log_warning("⚠️ Enviando alerta financeiro para Telegram")
         enviar_para_telegram(f"🚨 {msg}")
 
