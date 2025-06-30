@@ -13,7 +13,7 @@ def enviar_para_telegram(mensagem):
     log_info(F"CHAVE:{TELEGRAM_ALERT_KEY}")
 
     if not TELEGRAM_ALERT_KEY or not TELEGRAM_ALERT_ID:
-        print("⚠️ Telegram não configurado")
+        log_warning("⚠️ Telegram não configurado")
         return
 
     url = f"https://api.telegram.org/bot{TELEGRAM_ALERT_KEY}/sendMessage"
@@ -23,6 +23,7 @@ def enviar_para_telegram(mensagem):
         "parse_mode": "Markdown"
     }
     resp = requests.post(url, json=payload, timeout=3)
+    log_info(F"Status:{resp.status_code}")
     if resp.status_code != 200:
         print(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
 
