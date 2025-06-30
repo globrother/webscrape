@@ -22,7 +22,7 @@ import os
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
-from log_utils import log_debug, log_info, log_warning, log_error
+from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 
 # =====================================================================
 
@@ -184,7 +184,7 @@ def get_dadosfii(fii):
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
         log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
-        log_info(f"Gobs-Finance: {fii.upper()}:{cota_fii} ")
+        log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
 
         arrow_fii = ""
         aux_fii = ""

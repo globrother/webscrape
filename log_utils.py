@@ -57,7 +57,7 @@ class LogtailSafeHandler(logging.Handler):
             # Se contiver o marcador, envia para o Telegram
             if "Gobs-Finance:" in msg and "BBAS" in msg:
                 log_warning("⚠️ Enviando alerta financeiro para Telegram")
-                enviar_para_telegram(f"🚨 <b>Alerta</b>:\n\n{msg}")
+                enviar_para_telegram(f"🚨 {msg}")
             
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
@@ -96,6 +96,9 @@ def log_warning(msg):
 
 def log_error(msg):
     logger.error(f"🛑 {msg}", stacklevel=2)
+
+def log_telegram(msg):
+    logger.info(f"{msg}")
 
 def log_intent_event(handler_input, detalhe=""):
     try:
