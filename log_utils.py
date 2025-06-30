@@ -10,6 +10,7 @@ DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 def enviar_para_telegram(mensagem):
     TELEGRAM_ALERT_KEY = os.getenv("TELEGRAM_ALERT_KEY")
     TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
+    log_info(F"CHAVE:{TELEGRAM_ALERT_KEY}")
 
     if not TELEGRAM_ALERT_KEY or not TELEGRAM_ALERT_ID:
         print("⚠️ Telegram não configurado")
@@ -50,8 +51,8 @@ class LogtailSafeHandler(logging.Handler):
             self.session.post(self.endpoint, json=payload, headers=headers, timeout=2)
             
             # Se contiver o marcador, envia para o Telegram
-            if "Gobs-Finance: BBAS" in msg:
-                enviar_para_telegram(f"🚨 *Alerta de log*:\n\n{msg}")
+            if "Gobs-Finance:" in msg and "BBAS" in msg:
+                enviar_para_telegram(f"🚨 *Alerta Financeiro*:\n\n{msg}")
             
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
