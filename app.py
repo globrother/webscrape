@@ -1270,8 +1270,6 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 # ============================================================================================
 
-# ============================================================================================
-
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler FallbackIntent")
