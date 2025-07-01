@@ -1311,6 +1311,16 @@ class FallbackIntentHandler(AbstractRequestHandler):
             speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
             apl_document = None  # 🔹 Não precisa abrir um APL específico
 
+            # Adiciona comando para retomar a navegação automática após o fallback
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=2000)  # 2 segundos de delay
+                    ]
+                )
+            )
+        
         else:
             speech_text = "Não consegui entender sua solicitação. Você pode tentar novamente ou encerrar a Skill."
 
