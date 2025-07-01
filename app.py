@@ -237,6 +237,10 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         arguments = handler_input.request_envelope.request.arguments
         log_debug(f"Argumentos recebidos: {arguments}")
         
+        if is_request_type("SessionEndedRequest")(handler_input):
+            log_warning("⚠️ Ignorando SessionEndedRequest no GerenciarAtivoInputHandler.")
+            return handler_input.response_builder.set_should_end_session(True).response
+
         # Limpar cache de ativos
         grava_historico._ativos_cache = None
         grava_historico._ativos_cache_time = 0
