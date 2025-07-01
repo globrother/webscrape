@@ -235,6 +235,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
+        session_attr["contexto_atual"] = "gerenciar_ativo"
         log_debug(f"Argumentos recebidos: {arguments}")
         
         if is_request_type("SessionEndedRequest")(handler_input):
@@ -1306,7 +1307,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
         
-        elif contexto_atual == "cadastro_ativo":
+        elif contexto_atual == "gerenciar_ativo":
             log_warning("FallbackIntent: Contexto de Gerenciar Ativo")
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
@@ -1356,7 +1357,7 @@ class StopIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         contexto = session_attr.get("contexto_atual", "desconhecido")
         
-        if contexto == "cadastro_ativo":
+        if contexto == "gerenciar_ativo":
             mensagem = "Encerrando o gerenciamento de ativos. Até logo!"
         elif contexto == "selecao_ativo":
             mensagem = "Encerrando a seleção de ativos. Até logo!"
@@ -1413,7 +1414,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
 
-        elif contexto == "cadastro_ativo":
+        elif contexto == "gerenciar_ativo":
             log_warning("CatchAll: Contexto de Cadastro de Ativo.")
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
