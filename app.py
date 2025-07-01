@@ -90,7 +90,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             (13, 14),  # exemplo: das 13h às 14h
             (15, 16),
             (17, 18),
-            (19, 24),
+            (21, 24),
             (00, 8)
             # adicione outros intervalos conforme desejar
         ]
