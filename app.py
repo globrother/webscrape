@@ -95,7 +95,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         intervalos_favoritos = [
             (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
             (12, 13),  # exemplo: das 13h às 14h
-            (15, 16),
+            #(15, 16),
             (17, 18),
             (19, 21),
             (21, 24),
