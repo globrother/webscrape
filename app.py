@@ -1292,14 +1292,17 @@ class FallbackIntentHandler(AbstractRequestHandler):
         contexto_atual = session_attr.get("contexto_atual", "desconhecido")
 
         if contexto_atual == "alerta_preco":
+            log_warning("FallbackIntent: Contexto de Alerta de Preço")
             apl_document = _load_apl_document("apl_add_alerta.json")
             speech_text = "Desculpe não entendi o nome do fundo. Por favor,  digite manualmente na tela."
 
         elif contexto_atual == "selecao_ativo":
+            log_warning("FallbackIntent: Contexto de Seleção de Ativo")
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
         
         elif contexto_atual == "cadastro_ativo":
+            log_warning("FallbackIntent: Contexto de Gerenciar Ativo")
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
 
@@ -1358,14 +1361,17 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 
         # Respostas contextuais
         if contexto == "alerta_preco":
+            log_warning("CatchAll: Contexto de Alerta de Preço.")
             apl_document = _load_apl_document("apl_add_alerta.json")
             speech = "Desculpe, não entendi o nome do fundo. Por favor, digite na tela."
 
         elif contexto == "selecao_ativo":
+            log_warning("CatchAll: Contexto de Seleção de Ativo.")
             apl_document = _load_apl_document("apl_select_ativo.json")
             speech = "Não consegui entender. Você pode falar: mostrar ativo seguido do nome do ativo sem o número, ou digitar na tela."
 
         elif contexto == "cadastro_ativo":
+            log_warning("CatchAll: Contexto de Cadastro de Ativo.")
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
 
