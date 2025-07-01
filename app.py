@@ -811,6 +811,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
+        session_attr["contexto_atual"] = "auto_navegacao"
         ativos_ids = session_attr.get("ativos_ids", sorted(self.state_asset_mapping.keys()))
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get("state", ativos_ids[0])  # Estado inicial padrão é 1
