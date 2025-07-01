@@ -122,7 +122,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # Defina o delay com base em favoritos
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         if exibir_favoritos:
-            delay_ms = 7000  # Favoritos:(7s)
+            delay_ms = 10000  # Favoritos:(10s)
         else:
             delay_ms = 2000  # Regulares:(2s)
 
@@ -857,7 +857,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             
         # Defina o delay com base em favoritos
         if exibir_favoritos:
-            delay_ms = 7000  # Favoritos:(7s)
+            delay_ms = 10000  # Favoritos:(10s)
         else:
             delay_ms = 2000  # Regulares:(2s)
 
