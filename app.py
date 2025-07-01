@@ -1304,6 +1304,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
             speech_text = "Não consegui entender o nome do ativo. Digite manualmente na tela."
 
         elif contexto_atual == "auto_navegacao":
+            log_warning("FallbackIntent: Contexto de navegação automática.")
             speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
             apl_document = None  # 🔹 Não precisa abrir um APL específico
 
@@ -1369,6 +1370,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
 
         elif contexto == "auto_navegacao":
+            log_warning("CatchAll: Contexto de navegação automática.")
             speech = "Desculpe, não entendi. Diga 'próximo' para continuar ou 'favoritos' para ver sua lista."
             apl_document = None
 
