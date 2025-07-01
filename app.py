@@ -118,6 +118,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
         #log_info(f"Hora: {hora}")
         log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
         log_debug(f"ativos_ids definidos: {ativos_ids}")
+        
+        # Defina o delay com base em favoritos
+        exibir_favoritos = session_attr.get("exibir_favoritos", False)
+        if exibir_favoritos:
+            delay_ms = 7000  # Favoritos:(7s)
+        else:
+            delay_ms = 2000  # Regulares:(2s)
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
@@ -151,7 +158,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 commands=[
                     SendEventCommand(
-                        arguments=["autoNavigate"], delay=10000
+                        arguments=["autoNavigate"], delay=delay_ms
                     )
                 ]
             )
@@ -850,9 +857,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
             
         # Defina o delay com base em favoritos
         if exibir_favoritos:
-            delay_ms = 7000  # Favoritos: troca mais rápido (7s)
+            delay_ms = 7000  # Favoritos:(7s)
         else:
-            delay_ms = 2000  # Regulares: espera mais tempo (2s)
+            delay_ms = 2000  # Regulares:(2s)
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
