@@ -1347,6 +1347,34 @@ class FallbackIntentHandler(AbstractRequestHandler):
     dessa forma ao tocar sobre o botão de voltar, a skill será encerrada, pois não implementei nenhum
     método para essa solicitação.
 """
+class StopIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("AMAZON.StopIntent")(handler_input)
+
+    def handle(self, handler_input):
+        
+        session_attr = handler_input.attributes_manager.session_attributes
+        contexto = session_attr.get("contexto_atual", "desconhecido")
+        
+        if contexto == "cadastro_ativo":
+            mensagem = "Encerrando o gerenciamento de ativos. Até logo!"
+        elif contexto == "selecao_ativo":
+            mensagem = "Encerrando a seleção de ativos. Até logo!"
+        elif contexto == "alerta_preco":
+            mensagem = "Encerrando sessão de alerta de preço. Até logo!"
+        elif contexto == "auto_navegacao":
+            mensagem = "Encerrando a navegação automática. Até logo!"
+        else:
+            mensagem = "Tudo bem. Até mais!"
+            
+        log_info("🛑 AMAZON.StopIntent capturado.")
+        return (
+            handler_input.response_builder
+            .speak(mensagem)
+            .set_should_end_session(True)
+            .response
+        )
+
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler CatchAllRequest")
@@ -1432,6 +1460,7 @@ def webhook():
     select_input_handler = SelectInputHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
+    stop_intent_handler = StopIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
 
     # go_back_handler = GoBackHandler()
@@ -1451,6 +1480,7 @@ def webhook():
     sb.add_request_handler(select_input_handler)
     sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(fall_back_intent_handler)
+    sb.add_request_handler(stop_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
 
     # sb.add_request_handler(go_back_handler)
