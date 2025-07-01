@@ -193,7 +193,7 @@ def get_dadosfii(fii):
             "<b>Alerta de Gobs-Finance</b>:\n"
             f"O Ativo <b>{fii_safe}</b> chegou a <b>{cota_safe}</b>"
         )
-        #log_telegram(mensagem)
+        log_telegram(mensagem)
 
         arrow_fii = ""
         aux_fii = ""
