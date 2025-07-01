@@ -1272,8 +1272,9 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
             log_debug("🔧 Erro interno detectado. Pode ter sido uma exceção silenciosa em outro handler.")
 
         # Mantém a sessão como 'não finalizada', caso algo esteja escutando
-        handler_input.response_builder.set_should_end_session(False)
+        # handler_input.response_builder.set_should_end_session(False) # estava causando problemas com o comando "pare"
         return handler_input.response_builder.response
+
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
