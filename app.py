@@ -613,6 +613,7 @@ class GerenciarAtivoIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["manual_selection"] = True
+        session_attr["contexto_atual"] = "gerenciar_ativo"
         apl_document = _load_apl_document("apl_gerenciar_ativo.json")
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
