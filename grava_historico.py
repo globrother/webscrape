@@ -96,12 +96,12 @@ def gravar_historico(sufixo, valor):
         log_warning("Valor igual ao último registrado. Abortando gravar.")
         connection.close()
         return
-    else:
+    else: # Garante que o alerta seja enviado ao telegram apenas se o valor for diferente
         fii_safe = html.escape(sufixo.upper())
         cota_safe = html.escape(f"R$ {valor}")  # R$ 21,72
         mensagem = (
             "<b>Alerta de Gobs-Finance</b>:\n"
-            f"O Ativo <b> >> {fii_safe} << </b> chegou a <b>{cota_safe}</b>"
+            f"O Ativo <b> {fii_safe} </b> chegou a <b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
 
