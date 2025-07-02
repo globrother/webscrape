@@ -7,9 +7,10 @@ import http.client
 import json
 import requests
 import time
+import html
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
-from log_utils import log_debug, log_info, log_warning, log_error
+from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 # =====================================================================
 
 # Usar o logger para registrar mensagens
@@ -95,6 +96,14 @@ def gravar_historico(sufixo, valor):
         log_warning("Valor igual ao último registrado. Abortando gravar.")
         connection.close()
         return
+    else:
+        fii_safe = html.escape(sufixo.upper())
+        cota_safe = html.escape(f"R$ {valor}")  # R$ 21,72
+        mensagem = (
+            "<b>Alerta de Gobs-Finance</b>:\n"
+            f"O Ativo <b> >> {fii_safe} << </b> chegou a <b>{cota_safe}</b>"
+        )
+        log_telegram(mensagem)
 
     # Adiciona o novo registro no Parse
     connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
