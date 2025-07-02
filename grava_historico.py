@@ -101,7 +101,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram):
         cota_safe = html.escape(f"{valor}")  # R$ 21,72
         mensagem = (
             f"<b>Alerta de Gobs-Finance</b>: {var_fii_telegram}\n"
-            f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵​<b>{cota_safe}</b>"
+            f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
 
