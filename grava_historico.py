@@ -57,7 +57,7 @@ def testar_conexao():
         log_error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
         return False
 
-def gravar_historico(sufixo, valor):
+def gravar_historico(sufixo, valor, var_fii_telegram):
     log_debug("Agora no método gravar_historico")
     log_info("--> Iniciando Gravar Histórico")
     
@@ -100,7 +100,7 @@ def gravar_historico(sufixo, valor):
         fii_safe = html.escape(sufixo.upper())
         cota_safe = html.escape(f"{valor}")  # R$ 21,72
         mensagem = (
-            "<b>Alerta de Gobs-Finance</b>:\n"
+            f"<b>Alerta de Gobs-Finance</b>: {var_fii_telegram}\n"
             f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵​<b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
