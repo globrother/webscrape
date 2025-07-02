@@ -229,7 +229,7 @@ def get_dadosfii(fii):
         sufixo = limpar_asset_name(fii)
         valor = f"R$ {cota_fii}"
         aux = "fund"
-        var_fii_telegram = f" {aux_fii.capitalize()}:{var_fii}"
+        var_fii_telegram = f"{aux_fii.capitalize()}: {var_fii}"
         grava_historico.gravar_historico(sufixo, valor, var_fii_telegram)
         historico = grava_historico.ler_historico(sufixo)
         hist_text_fii = grava_historico.gerar_texto_historico(historico, aux)
