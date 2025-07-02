@@ -1419,12 +1419,21 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             log_warning("CatchAll: Contexto de Cadastro de Ativo.")
             apl_document = _load_apl_document("apl_gerenciar_ativo.json")
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
-
+        
         elif contexto == "auto_navegacao":
             log_warning("CatchAll: Contexto de navegação automática.")
-            speech = "Desculpe, não entendi. Diga 'próximo' para continuar ou 'favoritos' para ver sua lista."
-            apl_document = None
+            speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
+            apl_document = None  # 🔹 Não precisa abrir um APL específico
 
+            # Adiciona comando para retomar a navegação automática após o fallback
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=2000)  # 2 segundos de delay
+                    ]
+                )
+            )
         else:
             speech = "Não consegui entender o que você quis dizer. Encerrando por agora, mas você pode me chamar de novo quando quiser."
             log_warning("🚪 Encerrando sessão por ausência de contexto.")
