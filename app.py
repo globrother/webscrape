@@ -851,6 +851,26 @@ class DynamicScreenHandler(AbstractRequestHandler):
         fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
         # Chame a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        # Verificando dados_info
+        if not isinstance(dados_info, dict) or not dados_info:
+            log_error(f"❌ dados_info inválido para fundo {fundo}. Ignorando entrada.")
+            handler_input.response_builder.speak(
+                f"O fundo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
+            ).set_should_end_session(False)
+            
+            # Força o avanço automático
+            session_attr["state"] = ativos_ids[next_idx] if next_idx is not None else None
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=1500)
+                    ]
+                )
+            )
+            return handler_input.response_builder.response
+
 
         # Calcula o próximo estado
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
@@ -870,7 +890,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         log_debug(f"🧪 Renderizando fundo: {fundo}")
         #log_debug(f"Token usado: {token_apl}")
-        log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+        #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
@@ -878,9 +898,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 token="mainScreenToken",
                 document=apl_document,
                 datasources={
-                    "dados_update": {
-                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                    }
+                    "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                 }
             )
         )
@@ -891,7 +909,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
         # Se houver um próximo estado, agende a navegação automática.
         log_debug(f"🧪 Renderizando fundo: {fundo}")
-        log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+        #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
