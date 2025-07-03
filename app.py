@@ -16,7 +16,7 @@ import time
 from datetime import datetime
 import pytz
 import os
-#import json
+import json
 #import requests
 #from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
@@ -867,6 +867,10 @@ class DynamicScreenHandler(AbstractRequestHandler):
             delay_ms = 10000  # Favoritos:(10s)
         else:
             delay_ms = 2000  # Regulares:(2s)
+        
+        log_debug(f"🧪 Renderizando fundo: {fundo}")
+        #log_debug(f"Token usado: {token_apl}")
+        log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
         # Construa a resposta
         handler_input.response_builder.add_directive(
@@ -886,6 +890,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
             handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
 
         # Se houver um próximo estado, agende a navegação automática.
+        log_debug(f"🧪 Renderizando fundo: {fundo}")
+        log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
@@ -1291,11 +1297,11 @@ class ExceptionEncounteredHandler(AbstractRequestHandler):
         request = handler_input.request_envelope.request
         error = getattr(request, "error", {})
         log_warning("⚠️ System.ExceptionEncountered capturado!")
-        log_error(f"📌 Código: {getattr(error, 'code', 'sem código')}")
-        log_error(f"📄 Mensagem: {getattr(error, 'message', 'sem mensagem')}")
-        log_debug(f"📎 APL token quebrado: {getattr(request, 'current_token', '')}")
-        log_debug(f"🔍 Stack trace (se houver): {getattr(error, 'stackTrace', '')}")
-
+        log_error(f"📌 Code: {getattr(error, 'code', 'sem código')}")
+        log_error(f"📄 Message: {getattr(error, 'message', 'sem mensagem')}")
+        log_error(f"📎 Current Token: {getattr(request, 'current_token', 'sem token')}")
+        log_error(f"📌 Stack Trace: {getattr(error, 'stackTrace', '')}")
+        
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
