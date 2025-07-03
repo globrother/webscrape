@@ -75,8 +75,8 @@ def web_scrape(fundo):
     # DIVIDE O HISTÓRICO EM DUAS COLUNAS
     #log_info(f"hist_text_FII é: {hist_text_fii}")
     meio = len(hist_text_fii) // 2  # Divide a lista ao meio
-    hist_text_ativo_col1 = hist_text_fii[:meio][:20]  # Primeira metade da lista
-    hist_text_ativo_col2 = hist_text_fii[meio:][:20]   # Segunda metade da lista
+    hist_text_ativo_col1 = hist_text_fii[:meio]  # Primeira metade da lista
+    hist_text_ativo_col2 = hist_text_fii[meio:]  # Segunda metade da lista
     #log_info(f"COl2 é: {hist_text_ativo_col2}")
 
     dados_info = {
@@ -89,5 +89,18 @@ def web_scrape(fundo):
         "logo_url_atv": logo_url_atv,
         "url_grafico": url_grafico
     }
+    
+    dados_info_erro = {
+        "card_ativo": "Nenhuma informação disponível.",
+        "variac_ativo": "Sem variação.",
+        "hist_text_ativo_col1": [],
+        "hist_text_ativo_col2": [],
+        "hist_alert": "Sem alertas.",
+        "background_image": "",
+        "logo_url_atv": "",
+        "url_grafico": ""
+    }
+
+    dados_info = dados_info or dados_info_erro
 
     return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz

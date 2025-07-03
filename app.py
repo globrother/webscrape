@@ -870,15 +870,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 )
             )
             return handler_input.response_builder.response
-        
-        dados_info.setdefault("background_image", "")
-        dados_info.setdefault("logo_url_atv", "")
-        dados_info.setdefault("variac_ativo", "")
-        dados_info.setdefault("card_ativo", "")
-        dados_info.setdefault("hist_alert", "")
-        dados_info.setdefault("url_grafico", "")
-        dados_info.setdefault("hist_text_ativo_col1", [])
-        dados_info.setdefault("hist_text_ativo_col2", [])
 
         # Calcula o próximo estado
         next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
