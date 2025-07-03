@@ -1453,6 +1453,10 @@ class CatchAllRequestHandler(AbstractRequestHandler):
 @app.route('/webscrape', methods=['POST'])
 def webhook():
     data = request.get_json()
+    
+    # Verifica se é um payload da Alexa
+    if not data or "request" not in data or "type" not in data["request"]:
+        return jsonify({"error": "Payload inválido para Alexa Skills Kit"}), 400
 
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
