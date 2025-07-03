@@ -1283,6 +1283,22 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
 # ============================================================================================
 
+class ExceptionEncounteredHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return handler_input.request_envelope.request.object_type == "System.ExceptionEncountered"
+
+    def handle(self, handler_input):
+        request = handler_input.request_envelope.request
+        error = getattr(request, "error", {})
+        log_warning("⚠️ System.ExceptionEncountered capturado!")
+        log_error(f"📌 Código: {getattr(error, 'code', 'sem código')}")
+        log_error(f"📄 Mensagem: {getattr(error, 'message', 'sem mensagem')}")
+        log_debug(f"📎 APL token quebrado: {getattr(request, 'current_token', '')}")
+        log_debug(f"🔍 Stack trace (se houver): {getattr(error, 'stackTrace', '')}")
+
+        return handler_input.response_builder.set_should_end_session(True).response
+# ============================================================================================
+
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler FallbackIntent")
@@ -1392,6 +1408,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         log_warning(f"⚠️ Nenhum handler específico capturou esta requisição. Tipo: {request.object_type}")
         
         # 🔒 Tratamento especial para User Touch Event fantasma
+        speech = "Desculpe, não entendi. Pode tentar de novo?" # Fala Padrão
         if request.object_type == "Alexa.Presentation.APL.UserEvent":
             arguments = getattr(request, "arguments", [])
             if arguments and arguments[0] == "touch":
@@ -1422,7 +1439,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         
         elif contexto == "auto_navegacao":
             log_warning("CatchAll: Contexto de navegação automática.")
-            speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
+            speech = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
             apl_document = None  # 🔹 Não precisa abrir um APL específico
 
             # Adiciona comando para retomar a navegação automática após o fallback
@@ -1464,6 +1481,9 @@ def webhook():
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
     launch_intent_handler = LaunchIntentHandler()
+    stop_intent_handler = StopIntentHandler()
+    session_ended_request_handler = SessionEndedRequestHandler()
+    exception_encountered_handler = ExceptionEncounteredHandler()
     monitor_intent_handler = MonitorIntentHandler()
     create_price_alert_intent_handler = CreatePriceAlertIntentHandler()
     alerta_input_handler = AlertaInputHandler()
@@ -1473,9 +1493,7 @@ def webhook():
     touch_handler = TouchHandler(state_asset_mapping)
     select_fund_intent_handler = SelectFundIntentHandler()
     select_input_handler = SelectInputHandler()
-    session_ended_request_handler = SessionEndedRequestHandler()
     fall_back_intent_handler = FallbackIntentHandler()
-    stop_intent_handler = StopIntentHandler()
     catch_all_request_handler = CatchAllRequestHandler()
 
     # go_back_handler = GoBackHandler()
@@ -1483,6 +1501,9 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(launch_intent_handler)
+    sb.add_request_handler(stop_intent_handler)
+    sb.add_request_handler(session_ended_request_handler)
+    sb.add_request_handler(exception_encountered_handler)
     sb.add_request_handler(monitor_intent_handler)
     register_handlers(sb)
     sb.add_request_handler(create_price_alert_intent_handler)
@@ -1493,9 +1514,7 @@ def webhook():
     sb.add_request_handler(touch_handler)
     sb.add_request_handler(select_fund_intent_handler)
     sb.add_request_handler(select_input_handler)
-    sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(fall_back_intent_handler)
-    sb.add_request_handler(stop_intent_handler)
     sb.add_request_handler(catch_all_request_handler)
 
     # sb.add_request_handler(go_back_handler)
