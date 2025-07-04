@@ -887,7 +887,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         else:
             delay_ms = 2000  # Regulares:(2s)
         
-        log_debug(f"🧪 Renderizando fundo: {fundo}")
+        #log_debug(f"🧪 Renderizando fundo: {fundo}")
         #log_debug(f"Token usado: {token_apl}")
         #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
@@ -912,6 +912,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         session_attr.pop("manual_selection", None)
         if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
+            log_info("✅🖥️ Mostrando Tela")
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",

@@ -80,27 +80,14 @@ def web_scrape(fundo):
     #log_info(f"COl2 é: {hist_text_ativo_col2}")
 
     dados_info = {
-        "card_ativo": card_fii,
-        "variac_ativo": variac_fii,
-        "hist_text_ativo_col1": hist_text_ativo_col1,
-        "hist_text_ativo_col2": hist_text_ativo_col2,
-        "hist_alert": hist_alert,
-        "background_image": background_image,
-        "logo_url_atv": logo_url_atv,
-        "url_grafico": url_grafico
+        "card_ativo": card_fii or "Nenhuma informação disponível.",
+        "variac_ativo": variac_fii or "Sem variação.",
+        "hist_text_ativo_col1": hist_text_ativo_col1 or [],
+        "hist_text_ativo_col2": hist_text_ativo_col2 or [],
+        "hist_alert": hist_alert or "Sem alertas.",
+        "background_image": background_image or "",
+        "logo_url_atv": logo_url_atv or "",
+        "url_grafico": url_grafico or ""
     }
-    
-    dados_info_erro = {
-        "card_ativo": "Nenhuma informação disponível.",
-        "variac_ativo": "Sem variação.",
-        "hist_text_ativo_col1": [],
-        "hist_text_ativo_col2": [],
-        "hist_alert": "Sem alertas.",
-        "background_image": "",
-        "logo_url_atv": "",
-        "url_grafico": ""
-    }
-
-    dados_info = dados_info or dados_info_erro
 
     return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
