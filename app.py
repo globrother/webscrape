@@ -850,6 +850,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
+        session_attr['asset_full'] = fundo
         # Chame a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         
@@ -860,6 +861,15 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 f"O fundo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
             ).set_should_end_session(False)
             
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
+                    }
+                )
+            )
             # Força o avanço automático
             session_attr["state"] = ativos_ids[next_idx] if next_idx is not None else None
             handler_input.response_builder.add_directive(
@@ -978,19 +988,6 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
         #handler_input.response_builder.add_directive(directive)
 
-        if intent_name == "AMAZON.NextIntent":
-            session_attr.pop("manual_selection", None)
-            speech_text = "Continuando a navegação pelos ativos."
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token="mainScreenToken",
-                    commands=[
-                        SendEventCommand(arguments=["autoNavigate"], delay=0)
-                    ]
-                )
-            ).speak(speech_text).set_should_end_session(False)
-            return handler_input.response_builder.response
-
         # Tentativa de reconhecimento por voz
         tentativas = session_attr.get("tentativas_fundo", 0)
 
@@ -1010,6 +1007,28 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         
         sigla_normalizada = limpar_asset_name(fund_name)
         log_warning(f"Sigla Normalizada: {sigla_normalizada}")
+
+        if intent_name == "AMAZON.NextIntent":
+            session_attr.pop("manual_selection", None)
+            speech_text = "Continuando a navegação pelos ativos."
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_doc,
+                    datasources={
+                        "dados_update": dados_info
+                    }
+                )
+            )
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=2000)
+                    ]
+                )
+            ).speak(speech_text).set_should_end_session(False)
+            return handler_input.response_builder.response
 
         if sigla_normalizada in allowed_funds:
             log_warning("Entrou no IF de verificar sigla")
@@ -1355,7 +1374,15 @@ class FallbackIntentHandler(AbstractRequestHandler):
         elif contexto_atual == "auto_navegacao":
             log_warning("FallbackIntent: Contexto de navegação automática.")
             speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
-            apl_document = None  # 🔹 Não precisa abrir um APL específico
+            fundo = session_attr.get("asset_full") or session_attr.get("last_fundo") or "xpml11"
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={"dados_update": dados_info}
+                )
+            )
 
             # Adiciona comando para retomar a navegação automática após o fallback
             handler_input.response_builder.add_directive(
@@ -1461,9 +1488,17 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             speech = "Não reconheci o ativo que você mencionou. Tente digitar manualmente."
         
         elif contexto == "auto_navegacao":
-            log_warning("CatchAll: Contexto de navegação automática.")
-            speech = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
-            apl_document = None  # 🔹 Não precisa abrir um APL específico
+            log_warning("FallbackIntent: Contexto de navegação automática.")
+            speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
+            fundo = session_attr.get("asset_full") or session_attr.get("last_fundo") or "xpml11"
+            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={"dados_update": dados_info}
+                )
+            )
 
             # Adiciona comando para retomar a navegação automática após o fallback
             handler_input.response_builder.add_directive(
