@@ -794,7 +794,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_session_state(handler_input, "session_attr no início")
         request_type = handler_input.request_envelope.request.object_type
         log_warning(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
-        log_info(f"UserEvent recebido: argumentos={arguments}, contexto={session_attr.get('contexto_atual')}")
 
         # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
         if is_request_type("IntentRequest")(handler_input):
@@ -809,6 +808,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Permite apenas eventos de auto-navegação
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
             arguments = handler_input.request_envelope.request.arguments
+            log_info(f"UserEvent recebido: argumentos={arguments}, contexto={session_attr.get('contexto_atual')}")
             if arguments and arguments[0] == "autoNavigate":
                 log_warning("DynamicScreenHandler acionado para evento autoNavigate.")
                 return True
