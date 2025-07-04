@@ -99,6 +99,9 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
             }
 
         # monta AlertValue
+        if alert_value_cents:
+            alert_value_cents = alert_value_cents.zfill(2)  # Garante dois dígitos
+    
         if alert_value and alert_value_cents:
             session_attr["AlertValue"] = f"{alert_value},{alert_value_cents}"
         elif alert_value:
