@@ -72,12 +72,16 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     # -----------------------------------
     # 4) normalize e valide a sigla
-    sigla = asset_name
+    sigla_normalizada = asset_name
     ativos_permitidos = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
-    asset_full, asset_state_id = next(
-        ((n, sid)
-         for sid, n in state_asset_mapping.items()
-         if limpar_asset_name(n) == sigla),
+    log_debug(f"Ativos Permitidos: {ativos_permitidos}")
+    
+    fundo_state_id, asset_full = next(
+        (
+            (state_id, dados.get("codigo"))
+            for state_id, dados in state_asset_mapping.items()
+            if limpar_asset_name(dados.get("codigo", "")) == sigla_normalizada
+        ),
         (None, None)
     )
     log_debug(f"Sigla Completa do Ativo: {asset_full}")
@@ -106,7 +110,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     # -----------------------------------
     # 6) se sigla inválida, mostra APL
-    if sigla not in ativos_permitidos or not asset_full:
+    if sigla_normalizada not in ativos_permitidos or not asset_full:
         session_attr["alert_in_progress"] = True
         session_attr["manual_selection"]  = True
         apl = _load_apl_document("apl_add_alerta.json")
@@ -121,9 +125,9 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # -----------------------------------
     # 7) tudo OK, CRIA o alerta
     alert_value = session_attr["AlertValue"]
-    key = f"alert_value_{sigla}"
+    key = f"alert_value_{sigla_normalizada}"
     session_attr[key] = alert_value
-    log_info(f"[Service] Salvando alerta: {sigla} → {alert_value}")
+    log_info(f"[Service] Salvando alerta: {sigla_normalizada} → {alert_value}")
 
     # grava histórico
     valor_formatado = f"R$ {alert_value}"
