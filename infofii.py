@@ -232,7 +232,7 @@ def get_dadosfii(fii):
         # print(f"Texto para Histórico: {hist_text_xpml}")
 
         # log_info(f"\nVeja os valores:> {hist_text_xpml}\n")
-        return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url, var_fii_telegram
+        return cota_fii, card_fii, variac_fii, hist_text_fii, logo_url
 
     except Exception as e:
         log_error(f"Ocorreu um erro em {fii}: {e}")
