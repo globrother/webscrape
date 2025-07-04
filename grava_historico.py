@@ -57,7 +57,7 @@ def testar_conexao():
         log_error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
         return False
 
-def gravar_historico(sufixo, valor, var_fii_telegram):
+def gravar_historico(sufixo, valor, var_fii_telegram=None):
     log_debug("Agora no método gravar_historico")
     log_info("--> Iniciando Gravar Histórico")
     
