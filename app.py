@@ -896,7 +896,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 2000  # Regulares:(2s)
+            delay_ms = 3000  # Regulares:(2s)
         
         #log_debug(f"🧪 Renderizando fundo: {fundo}")
         #log_debug(f"Token usado: {token_apl}")
