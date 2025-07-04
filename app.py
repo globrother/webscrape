@@ -925,6 +925,15 @@ class DynamicScreenHandler(AbstractRequestHandler):
             log_info("Agendando próximo autoNavigate.")
             log_info("✅🖥️ Mostrando Tela")
             handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_info
+                    }
+                )
+            )
+            handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[

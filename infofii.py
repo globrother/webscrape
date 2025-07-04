@@ -184,16 +184,7 @@ def get_dadosfii(fii):
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
-        log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
-        #log_telegram(f"<b>Alerta de Gobs-Finance</b>:\n\nO Ativo {fii.upper()} chegou a <b>R$ {cota_fii}</b>")
-        # Escape seguro
-        fii_safe = html.escape(fii.upper())
-        cota_safe = html.escape(f"R$ {cota_fii}")  # R$ 21,72
-        mensagem = (
-            "<b>Alerta de Gobs-Finance</b>:\n"
-            f"O Ativo <b>{fii_safe}</b> chegou a <b>{cota_safe}</b>"
-        )
-        #log_telegram(mensagem)
+        log_info(f"⏱️​​ Processamento finalizado em ⏳​ {time() - start:.2f}s ⏳​")
 
         arrow_fii = ""
         aux_fii = ""
