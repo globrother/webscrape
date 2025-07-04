@@ -225,7 +225,7 @@
                                         "items": [
                                             {
                                                 "type": "Container",
-                                                "paddingTop": "8",
+                                                "paddingTop": "8dp",
                                                 "item": [
                                                     {
                                                         "type": "Image",
@@ -245,7 +245,7 @@
                                                 "fontWeight": "bold",
                                                 "textAlign": "center",
                                                 "paddingBottom": "2dp",
-                                                "paddingTop": "8"
+                                                "paddingTop": "8dp"
                                             },
                                             {
                                                 "type": "ScrollView",
