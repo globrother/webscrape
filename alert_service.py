@@ -73,7 +73,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # -----------------------------------
     # 4) normalize e valide a sigla
     sigla = asset_name
-    ativos_permitidos = [limpar_asset_name(n) for n in state_asset_mapping.values()]
+    ativos_permitidos = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
     asset_full, asset_state_id = next(
         ((n, sid)
          for sid, n in state_asset_mapping.items()
