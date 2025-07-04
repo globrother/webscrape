@@ -26,7 +26,7 @@ def requisitando_chart(ticker):
 
     response = requests.post(API_URL, json=data, headers=headers)
 
-    log_info(f"🔄 Processamento finalizado em {time() - start:.2f}s")
+    log_info(f"⏱️​​ Processamento finalizado em ⏳ {time() - start:.2f}s ⏳")
 
     if response.status_code == 200:
         return response.json().get("url", "")  # Retorna a url pronta - resposta da API 
