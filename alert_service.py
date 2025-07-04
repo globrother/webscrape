@@ -156,7 +156,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     session_attr["AlertValue"]       = None
     session_attr["alert_in_progress"] = False
     session_attr["manual_selection"]  = False
-    session_attr["state"]             = 2
+    session_attr["state"]             = fundo_state_id + 1
 
     speech = f"Alerta de preço de {alert_value} criado para o fundo {asset_full}. Voltando à tela inicial."
     return {
