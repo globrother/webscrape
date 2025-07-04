@@ -794,6 +794,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_session_state(handler_input, "session_attr no início")
         request_type = handler_input.request_envelope.request.object_type
         log_warning(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
+        log_info(f"UserEvent recebido: argumentos={arguments}, contexto={session_attr.get('contexto_atual')}")
 
         # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
         if is_request_type("IntentRequest")(handler_input):
@@ -1205,52 +1206,50 @@ class TouchHandler(APLUserEventHandler):
     def __init__(self, state_asset_mapping):
         self.state_asset_mapping = state_asset_mapping
 
-    """def can_handle(self, handler_input):
-
-        #request_type = handler_input.request_envelope.request.object_type
-        #log_info(f"TouchHandler: Tipo de solicitação recebido: {request_type}")
-
-        #def can_handle(self, handler_input):
-        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
-            arguments = handler_input.request_envelope.request.arguments
-            log_info(f"TouchHandler: Argumentos recebidos: {arguments}")
-            
-            # Filtrar apenas eventos de toque
-            return arguments and len(arguments) > 0 and arguments[0] == "touch"
-        
-        return False"""
-
     def handle(self, handler_input):
         log_info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
         current_state = session_attr.get("state", 1)
+        log_info(f"[TouchHandler] current_state: {current_state}")
 
         # Verifica se o estado atual está no mapeamento
         if current_state not in self.state_asset_mapping:
+            log_warning(f"[TouchHandler] current_state {current_state} não encontrado no mapeamento. Reiniciando para 1.")
             # Se o estado não for encontrado, reinicia para o primeiro estado
             current_state = 1
 
         # Obtenha o fundo atual do mapeamento
-        fundo = self.state_asset_mapping[current_state]["codigo"]
+        fundo = self.state_asset_mapping.get(current_state, {}).get("codigo")
+        if not fundo:
+            log_error(f"[TouchHandler] Fundo não encontrado para state {current_state}.")
+            handler_input.response_builder.speak("Não foi possível exibir o ativo. Reiniciando a navegação.").set_should_end_session(False)
+            session_attr["state"] = 1
+            handler_input.attributes_manager.session_attributes = session_attr
+            return handler_input.response_builder.response
 
-        # Verifica se é o último estado
+        log_info(f"[TouchHandler] Fundo selecionado: {fundo}")
+
+        """# Verifica se é o último estado
         if current_state == 1:
             voz_prefix = "Recomeçando!"
             # next_state = "firstScreen"  # Reinicia para o primeiro estado
         else:
             voz_prefix = "Próximo!"
+        """
 
         # Chama a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
 
         # Calcula o próximo estado
         next_state = current_state + 1 if current_state + 1 in state_asset_mapping else None
-
+        log_info(f"[TouchHandler] Próximo state: {next_state}")
+        
         # Atualiza o estado para o próximo
         session_attr["state"] = next_state
 
         # Constrói a resposta
+        voz_prefix = "Recomeçando!" if current_state == 1 else "Próximo!"
         handler_input.response_builder.speak(f"{voz_prefix}<break time='1s'/>\n{voz}").add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
