@@ -41,6 +41,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
 
     slot_asset = slots.get("fundName")
     slot_asset = slot_asset.value if slot_asset else None
+    log_debug(f"Valor de fudName em ALERTA: {slot_asset}")
 
     # -----------------------------------
     # 2) se slot de ativo veio, já salve
@@ -79,6 +80,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
          if limpar_asset_name(n) == sigla),
         (None, None)
     )
+    log_debug(f"Sigla Completa do Ativo: {asset_full}")
 
     # -----------------------------------
     # 5) pergunta/monte o valor
