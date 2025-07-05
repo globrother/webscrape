@@ -274,6 +274,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ),
                 (None, None)
             )
+            session_attr["state"] = asset_state_id
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
             fala = ""
@@ -459,10 +460,10 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr.pop("novo_ativo_sigla", None)
             session_attr.pop("novo_ativo_nome", None)
             session_attr["manual_selection"] = True
-            session_attr["state"] = 2  # ou o state que desejar voltar
+            state_id = session_attr.get("state", 1)
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_asset_mapping[asset_state_id]["codigo"]
+            fundo = state_asset_mapping[state_id]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
