@@ -253,6 +253,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             
             # Carrega lista atual e tenta localizar o ativo
             sigla = session_attr.get("novo_ativo_sigla")
+            sigla_normalizada = limpar_asset_name(sigla)
             nome = session_attr.get("novo_ativo_nome")
             tipo_acao = session_attr.get("tipo_acao", None)
             log_warning(f"valor de sigla em siglaAtivo: {sigla}")
@@ -263,16 +264,25 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).set_should_end_session(False).response
             
             _, lista_ativos = grava_historico.carregar_ativos()
-            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            #ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            
+            asset_state_id, asset_full = next(
+                (
+                    (state_id, dados.get("codigo"))
+                    for state_id, dados in state_asset_mapping.items()
+                    if limpar_asset_name(dados.get("codigo", "")) == sigla_normalizada
+                ),
+                (None, None)
+            )
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
             fala = ""
-            if ativo is None:
+            if asset_full is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
                 
                 if tipo_acao == "excluir":
-                    fala = f"Ativo {sigla.upper()} excluído com sucesso."
+                    fala = f"Ativo {asset_full.upper()} excluído com sucesso."
                     sigla = None
                     nome = None
                     session_attr.pop("novo_ativo_sigla", None)
@@ -281,8 +291,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 else:
                     fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             else:
-                status_ativo = ativo.get("status", True)
-                favorito = ativo.get("favorite", False)
+                status_ativo = asset_full.get("status", True)
+                favorito = asset_full.get("favorite", False)
             
             #status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             #favorito = ativo.get("favorite", False)
@@ -303,7 +313,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "nomeAtivo": nome
             }
             
-            if not ativo:
+            if not asset_full:
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="GerenciarAtivoToken",
@@ -315,12 +325,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
 
-            favorito_atual = ativo.get("favorite", False)
+            favorito_atual = asset_full.get("favorite", False)
             fala_favorito = (
                 "adicionado aos favoritos" if favorito_atual else "removido dos favoritos"
             )
             
-            novo_status = ativo.get("status", False)
+            novo_status = asset_full.get("status", False)
             #novo_status = True if arguments[0] == "ativarAtivo" else False
             log_debug(f"🔁 Novo status: {novo_status}")
             fala_status = "ativado" if novo_status else "desativado"
@@ -452,7 +462,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["state"] = 2  # ou o state que desejar voltar
 
             # Volta para o primeiro fundo, ou outro desejado
-            fundo = state_asset_mapping[1]["codigo"]
+            fundo = state_asset_mapping[asset_state_id]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
