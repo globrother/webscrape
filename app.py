@@ -266,24 +266,24 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             _, lista_ativos = grava_historico.carregar_ativos()
             #ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
             
-            asset_state_id, asset_full = next(
+            asset_state_id, asset_dict = next(
                 (
-                    (state_id, dados.get("codigo"))
+                    (state_id, dados)
                     for state_id, dados in state_asset_mapping.items()
                     if limpar_asset_name(dados.get("codigo", "")) == sigla_normalizada
                 ),
                 (None, None)
             )
-            session_attr["state"] = asset_state_id
+            session_attr['status'] = asset_state_id
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
             fala = ""
-            if asset_full is None:
+            if asset_dict is None:
                 status_ativo = False  # ou True, conforme o que faz mais sentido para o seu fluxo
                 favorito = False
                 
                 if tipo_acao == "excluir":
-                    fala = f"Ativo {asset_full.upper()} excluído com sucesso."
+                    fala = f"Ativo {sigla.upper()} excluído com sucesso."
                     sigla = None
                     nome = None
                     session_attr.pop("novo_ativo_sigla", None)
@@ -292,8 +292,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 else:
                     fala = f"O ativo {sigla.upper()} não foi encontrado. Se preferir, toque em cadastrar para incluir o ativo em sua lista."
             else:
-                status_ativo = asset_full.get("status", True)
-                favorito = asset_full.get("favorite", False)
+                status_ativo = asset_dict.get("status", True)
+                favorito = asset_dict.get("favorite", False)
             
             #status_ativo = ativo.get("status", True)  # True = ativo, False = inativo
             #favorito = ativo.get("favorite", False)
@@ -314,7 +314,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 "nomeAtivo": nome
             }
             
-            if not asset_full:
+            if not asset_dict:
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="GerenciarAtivoToken",
@@ -326,12 +326,12 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).speak(fala).set_should_end_session(False)
                 return handler_input.response_builder.response
 
-            favorito_atual = asset_full.get("favorite", False)
+            favorito_atual = asset_dict.get("favorite", False)
             fala_favorito = (
                 "adicionado aos favoritos" if favorito_atual else "removido dos favoritos"
             )
             
-            novo_status = asset_full.get("status", False)
+            novo_status = asset_dict.get("status", False)
             #novo_status = True if arguments[0] == "ativarAtivo" else False
             log_debug(f"🔁 Novo status: {novo_status}")
             fala_status = "ativado" if novo_status else "desativado"
@@ -460,7 +460,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr.pop("novo_ativo_sigla", None)
             session_attr.pop("novo_ativo_nome", None)
             session_attr["manual_selection"] = True
-            state_id = session_attr.get("state", 1)
+            state_id = session_attr.get("state")
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_asset_mapping[state_id]["codigo"]
