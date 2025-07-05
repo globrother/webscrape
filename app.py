@@ -274,7 +274,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ),
                 (None, None)
             )
-            session_attr['status'] = asset_state_id
+            session_attr['state'] = asset_state_id
             
             # Esse bloco trata quando o ativo não existe no banco de dados (no cadastro por exemplo)
             fala = ""
@@ -460,7 +460,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr.pop("novo_ativo_sigla", None)
             session_attr.pop("novo_ativo_nome", None)
             session_attr["manual_selection"] = True
-            state_id = session_attr.get("state")
+            state_id = session_attr.get("state", 1)
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_asset_mapping[state_id]["codigo"]
