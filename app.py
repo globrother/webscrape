@@ -466,15 +466,13 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             fundo = state_asset_mapping[state_id]["codigo"]
             dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
             handler_input.response_builder.speak(
-                "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>" + voz
+                "Cadastro cancelado. Mostrando ativo. <break time='700ms'/>" + voz
             ).add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",
                     document=apl_document,
                     datasources={
-                        "dados_update": {
-                            **dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
-                        }
+                        "dados_update": dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
                     }
                 )
             ).set_should_end_session(False)
