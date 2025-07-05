@@ -66,7 +66,6 @@
                         "text": "🗃️​ Gerenciar Ativos",
                         "fontSize": "50dp",
                         "textAlign": "center",
-                        "spacing": "@spacingMedium",
                         "style": "textStylePrimary1"
                     },
                     {
@@ -74,7 +73,7 @@
                         "height": "auto",
                         "direction": "row",
                         "alignItems": "center",
-                        "spacing": 10,
+                        "spacing": 20,
                         "items": [
                             {
                                 "type": "Container",
