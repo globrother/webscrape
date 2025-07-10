@@ -77,9 +77,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
     log_info("Iniciando a skill")
     log_debug("Agora no Handler LaunchRequest")
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
 
@@ -171,9 +175,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
 class LaunchIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug("Agora no Handler LaunchIntent")
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         return is_intent_name("LaunchIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         slots = handler_input.request_envelope.request.intent.slots
         fund_name = slots.get("fundName").value if slots.get("fundName") else None
         #session_attr["contexto_atual"] = "select_in_progress"
@@ -194,12 +202,16 @@ class LaunchIntentHandler(AbstractRequestHandler):
 class MonitorIntentHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora em MonitorIntentHandler")
         #if not is_intent_name("MonitorIntent")(handler_input):
         #    return False  # corta logo se não é a intent certa
         return is_intent_name("MonitorIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         slots = handler_input.request_envelope.request.intent.slots
         fund_name = slots.get("fundName").value if slots.get("fundName") else None
         #session_attr["contexto_atual"] = "select_in_progress"
@@ -232,6 +244,8 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
     }
    
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         global state_asset_mapping, lista_ativos
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
@@ -615,11 +629,15 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 # HANDLER PARA ADICIONAR NOVO ATIVO (carregando página de entrata de dados)
 class GerenciarAtivoIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler GerenciarAtivoIntent")
         #log_intent_event(handler_input,"Verificar")
         return is_intent_name("GerenciarAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["manual_selection"] = True
         session_attr["contexto_atual"] = "gerenciar_ativo"
@@ -636,6 +654,8 @@ class GerenciarAtivoIntentHandler(AbstractRequestHandler):
 # HANDLER PARA CRIAR UM ALERTA DE PREÇO.
 class CreatePriceAlertIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler CreatePriceAlertIntent")
         if not is_intent_name("CreatePriceAlertIntent")(handler_input):
             return False  # corta logo se não é a intent certa
@@ -653,6 +673,8 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         return is_intent_name("CreatePriceAlertIntent")(handler_input)
     
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["contexto_atual"] = "alerta_preco"
         slots = handler_input.request_envelope.request.intent.slots
@@ -695,6 +717,8 @@ class AlertaInputHandler(APLUserEventHandler):
     log_debug("Agora no Handler AlertaInput")
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
 
@@ -798,6 +822,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
         }
 
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler DynamicScreen")
         session_attr = handler_input.attributes_manager.session_attributes
         log_session_state(handler_input, "session_attr no início")
@@ -826,6 +852,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
         return False
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["contexto_atual"] = "auto_navegacao"
         ativos_ids = session_attr.get("ativos_ids", sorted(self.state_asset_mapping.keys()))
@@ -935,7 +963,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_debug(f"🧪 Renderizando fundo: {fundo}")
         #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
         session_attr.pop("manual_selection", None)
-        if next_idx is not None:
+        """if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
             #log_info("✅🖥️ Mostrando Tela")
             handler_input.response_builder.add_directive(
@@ -959,6 +987,30 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 )
             )
 
+            return handler_input.response_builder.set_should_end_session(False).response"""
+        
+        if next_idx is not None:
+            log_info("Agendando próximo autoNavigate.")
+            # Reenvie o documento APL antes do comando automático
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_info
+                    }
+                )
+            )
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(
+                            arguments=["autoNavigate"], delay=delay_ms
+                        )
+                    ]
+                )
+            )
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável após 10 segundos
@@ -974,11 +1026,15 @@ class DynamicScreenHandler(AbstractRequestHandler):
 # HANDLER PARA MOSTRAR FUNDO SOLICITADO
 class SelectFundIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler SelectFundInput")
         return is_intent_name("SelectFundIntent")(handler_input) or \
                is_intent_name("AMAZON.NextIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
         session_attr = handler_input.attributes_manager.session_attributes
         intent_name = handler_input.request_envelope.request.intent.name
@@ -1148,6 +1204,8 @@ class SelectInputHandler(APLUserEventHandler):
     log_debug("Agora no Handler SelectInput")
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
         arguments = handler_input.request_envelope.request.arguments
 
@@ -1249,6 +1307,8 @@ class TouchHandler(APLUserEventHandler):
         self.state_asset_mapping = state_asset_mapping
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_info("TouchHandler: handle chamado.")
         # Recupera os atributos de sessão
         session_attr = handler_input.attributes_manager.session_attributes
@@ -1312,10 +1372,14 @@ class TouchHandler(APLUserEventHandler):
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler SessionEndedRequest")
         return is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
 
@@ -1350,9 +1414,13 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
 
 class ExceptionEncounteredHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         return handler_input.request_envelope.request.object_type == "System.ExceptionEncountered"
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         request = handler_input.request_envelope.request
         error = getattr(request, "error", {})
         log_warning("⚠️ System.ExceptionEncountered capturado!")
@@ -1368,10 +1436,14 @@ class ExceptionEncounteredHandler(AbstractRequestHandler):
 
 class FallbackIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler FallbackIntent")
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_warning("FallbackIntent acionado. Redirecionando conforme o contexto.")
 
         if isinstance(request, SessionEndedRequest):
@@ -1442,9 +1514,13 @@ class FallbackIntentHandler(AbstractRequestHandler):
 """
 class StopIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         return is_intent_name("AMAZON.StopIntent")(handler_input)
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         
         session_attr = handler_input.attributes_manager.session_attributes
         contexto = session_attr.get("contexto_atual", "desconhecido")
@@ -1470,11 +1546,15 @@ class StopIntentHandler(AbstractRequestHandler):
 
 class CatchAllRequestHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler CatchAllRequest")
         log_info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
         return True  # aceita qualquer solicitação que não casou com outros handlers
 
     def handle(self, handler_input):
+        log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+        log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
         contexto = session_attr.get("contexto_atual")
