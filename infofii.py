@@ -184,7 +184,7 @@ def get_dadosfii(fii):
             raise ConnectionError(
                 f"Erro ao acessar o site: Status Code {response.status_code}")
 
-        log_info(f"⏱️​​ Processamento finalizado em ⏳​ {time() - start:.2f}s ⏳​")
+        log_info(f"⏱️​​ Processado em ⏳​ {time() - start:.2f}s ⏳​")
 
         arrow_fii = ""
         aux_fii = ""
