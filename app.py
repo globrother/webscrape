@@ -861,7 +861,12 @@ class DynamicScreenHandler(AbstractRequestHandler):
         fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
         session_attr['asset_full'] = fundo
         # Chame a função web_scrape para obter os dados do fundo
+        
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        import json
+        log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+        log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
         
         # Verificando dados_info
         if not isinstance(dados_info, dict) or not dados_info:
