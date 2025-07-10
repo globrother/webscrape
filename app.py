@@ -472,7 +472,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     token="mainScreenToken",
                     document=apl_document,
                     datasources={
-                        "dados_update": dados_info  # 🔹 Agora o APL pode acessar esse valor (** expande o dicionário)
+                        "dados_update": dados_info  # 🔹 Agora o APL acessa esse valor (** expande o dicionário)
                     }
                 )
             ).set_should_end_session(False)
