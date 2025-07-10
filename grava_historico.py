@@ -248,7 +248,17 @@ def carregar_ativos():
         "X-Parse-REST-API-Key": REST_API_KEY
     }
     response = requests.get(url, headers=headers)
-    data = response.json()
+
+    if response.status_code == 200:
+        try:
+            data = response.json()
+        except Exception as e:
+            log_error(f"❌ Erro ao decodificar JSON: {e}")
+            data = {"results": []}
+    else:
+        log_error(f"❌ Requisição falhou. Status code: {response.status_code}")
+        data = {"results": []}
+
     #log_info(f"DEBUG resposta Back4App:{data}") 
     ativos = data['results']
     #state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['status']}
@@ -327,7 +337,7 @@ def atualizar_favorito(object_id, favorito_bool):
         body = {"favorite": favorito_bool}
         response = requests.put(url, headers=headers, data=json.dumps(body))
         if response.status_code == 200:
-            log_debug(f"Resposta bruta do servidor: {response.text}")
+            log_debug(f"Resposta bruta do servidor: {response.text[:300]}")
             log_info(f"✔️ Status do favorito atualizado com sucesso para {favorito_bool}")
             return True
         else:
