@@ -124,7 +124,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 2000  # Regulares:(2s)
+            delay_ms = 3500  # Regulares:(3,5s)
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
@@ -905,7 +905,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 3500  # Regulares:(2s)
+            delay_ms = 4000  # Regulares:(2s)
         
         #log_debug(f"🧪 Renderizando fundo: {fundo}")
         #log_debug(f"Token usado: {token_apl}")
