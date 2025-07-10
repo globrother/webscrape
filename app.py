@@ -124,7 +124,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 3500  # Regulares:(3,5s)
+            delay_ms = 2000  # Regulares:(3,5s)
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
