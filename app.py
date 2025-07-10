@@ -1355,7 +1355,9 @@ class ExceptionEncounteredHandler(AbstractRequestHandler):
         log_error(f"📄 Message: {getattr(error, 'message', 'sem mensagem')}")
         log_error(f"📎 Current Token: {getattr(request, 'current_token', 'sem token')}")
         log_error(f"📌 Stack Trace: {getattr(error, 'stackTrace', '')}")
-        
+        log_error(f"🔎 Tipo da requisição: {getattr(request, 'object_type', 'sem tipo')}")
+        log_error(f"🔎 Arguments: {getattr(request, 'arguments', 'sem argumentos')}")
+        log_error(f"🔎 Session Attributes: {handler_input.attributes_manager.session_attributes}")
         return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
