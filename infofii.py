@@ -46,7 +46,7 @@ def get_dadosfii(fii):
         tipo_ativo = "acao"
         tipo_ativo_str = "da Ação"
 
-    log_info(f"TIPO DE ATIVO:> {tipo_ativo}")
+    log_info(f"TIPO DE ATIVO: {tipo_ativo}")
 
     try:
         # fii = "xpml11" # apagar depois
@@ -73,8 +73,6 @@ def get_dadosfii(fii):
         log_info(f"Status Code: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
-
-            log_info(f"TIPO DE ATIVO 1:> {tipo_ativo}")
 
             if tipo_ativo == "fii":
                 container_divs = soup.find_all('div', class_='container pb-7')

@@ -2,18 +2,23 @@
 
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand
-import logging
 import time
+import html
 import json
 import re # Regex para trabalhar com expressões regulares
 import grava_historico
 
+# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+import logging
+from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
+
+# =====================================================================
 
 # VARIÁVEIS: 
 
 # Mapeamento de Estados e Fundos
 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-logging.info(f"\n O Mapa é: {state_asset_mapping}")
+log_info(f"\n O Mapa é: {state_asset_mapping}")
 
 # Ativos favoritados
 ativos_favoritos = [
@@ -114,7 +119,7 @@ def get_dynamic_entities_directive():
     )
 
 # Faz a comparação do valor da cota com o valor para o alerta de preço.
-def comparador(historico, cota_atual, voz_fundo):
+def comparador(historico, cota_atual, voz_fundo, fii):
     # Verificar se o histórico é válido e contém pelo menos um registro
     if historico and isinstance(historico, list) and len(historico) >= 1:
         alert_value = historico[0].get("valor", "").replace("R$ ", "")
@@ -132,6 +137,13 @@ def comparador(historico, cota_atual, voz_fundo):
                 # Comparar os valores e adicionar aviso de fala se necessário
                 if cota_atual_float <= alert_value_float:
                     voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
+                    fii_safe = html.escape(fii.upper())
+                    cota_safe = html.escape(f"{cota_atual}")  # R$ 21,72
+                    mensagem = (
+                    f"🔥🔥<b>Alerta ATINGIDO</b>🔥🔥: R$ {cota_safe} 💲🏁​\n"
+                    f"para o Ativo 🔸<b> {fii_safe} </b>"
+                    )
+                    log_telegram(mensagem)
             except ValueError as e:
                 logging.error(f"Erro ao converter valores para float: {e}")
     else:

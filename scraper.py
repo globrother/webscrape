@@ -70,7 +70,7 @@ def web_scrape(fundo):
 
     cota_atual = cota_fii
     voz_fundo = voz
-    voz = comparador(historico, cota_atual, voz_fundo)
+    voz = comparador(historico, cota_atual, voz_fundo, fii)
 
     # DIVIDE O HISTÓRICO EM DUAS COLUNAS
     #log_info(f"hist_text_FII é: {hist_text_fii}")
