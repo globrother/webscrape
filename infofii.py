@@ -112,7 +112,7 @@ def get_dadosfii(fii):
                     data = json.loads(script_image_fii[2].string)
                     # Acesse o campo da logo
                     logo_url = data.get('image', {}).get('url')
-                    log_info(f"LOGO DO ATIVO: {logo_url}")
+                    #log_info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):
