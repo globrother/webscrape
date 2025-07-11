@@ -76,9 +76,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
     # ::::: 1 :::::
     log_info("Iniciando a skill")
     log_debug("Agora no Handler LaunchRequest")
+    
     def can_handle(self, handler_input):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False
+        
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
@@ -177,6 +182,10 @@ class LaunchIntentHandler(AbstractRequestHandler):
         log_debug("Agora no Handler LaunchIntent")
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False
+        
         return is_intent_name("LaunchIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -207,6 +216,10 @@ class MonitorIntentHandler(AbstractRequestHandler):
         log_debug("Agora em MonitorIntentHandler")
         #if not is_intent_name("MonitorIntent")(handler_input):
         #    return False  # corta logo se não é a intent certa
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False
+        
         return is_intent_name("MonitorIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -633,6 +646,10 @@ class GerenciarAtivoIntentHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler GerenciarAtivoIntent")
         #log_intent_event(handler_input,"Verificar")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False
+        
         return is_intent_name("GerenciarAtivoIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -657,8 +674,13 @@ class CreatePriceAlertIntentHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler CreatePriceAlertIntent")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False # Proteção para quando for APL.UserEvent
+        
         if not is_intent_name("CreatePriceAlertIntent")(handler_input):
             return False  # corta logo se não é a intent certa
+        
         session_attr = handler_input.attributes_manager.session_attributes
         request = handler_input.request_envelope.request
         log_intent_event(handler_input, "Criando alerta")
@@ -1016,6 +1038,10 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler SelectFundInput")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False # Proteção para quando for APL.UserEvent
+        
         return is_intent_name("SelectFundIntent")(handler_input) or \
                is_intent_name("AMAZON.NextIntent")(handler_input)
 
@@ -1362,6 +1388,10 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler SessionEndedRequest")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False # Proteção para quando for APL.UserEvent
+        
         return is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
@@ -1426,6 +1456,10 @@ class FallbackIntentHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler FallbackIntent")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False # Proteção para quando for APL.UserEvent
+        
         return is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -1503,6 +1537,10 @@ class StopIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
+        
+        if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
+            return False # Proteção para quando for APL.UserEvent
+        
         return is_intent_name("AMAZON.StopIntent")(handler_input)
 
     def handle(self, handler_input):
@@ -1537,6 +1575,12 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         log_debug("Agora no Handler CatchAllRequest")
         log_info("🔍 CatchAllRequestHandler: Verificando requisição não tratada.")
+        
+        request = handler_input.request_envelope.request
+        if request.object_type == "Alexa.Presentation.APL.UserEvent":
+            log_warning("[CatchAll] Ignorando UserEvent não tratado.")
+            return False
+        
         return True  # aceita qualquer solicitação que não casou com outros handlers
 
     def handle(self, handler_input):
