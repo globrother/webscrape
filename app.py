@@ -945,6 +945,8 @@ class DynamicScreenHandler(AbstractRequestHandler):
         #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
         # Construa a resposta
+        token_apl = "mainScreenToken"
+        log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
                 token="mainScreenToken",
@@ -992,18 +994,22 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
             # Reenvie o documento APL antes do comando automático
+            token_apl = "mainScreenToken"
+            log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
-                    token="mainScreenToken",
+                    token=token_apl,
                     document=apl_document,
                     datasources={
                         "dados_update": dados_info
                     }
                 )
             )
+            
+            log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
-                    token="mainScreenToken",
+                    token=token_apl,
                     commands=[
                         SendEventCommand(
                             arguments=["autoNavigate"], delay=delay_ms
