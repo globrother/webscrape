@@ -945,7 +945,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
         # Construa a resposta
-        token_apl = "mainScreenToken"
+        """token_apl = "mainScreenToken"
         log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
@@ -955,7 +955,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                 }
             )
-        )
+        )"""
 
         # Só fala se não for favoritos
         if not exibir_favoritos:
