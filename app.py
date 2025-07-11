@@ -839,6 +839,11 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if session_attr.get("alert_in_progress") or session_attr.get("manual_selection"):
             log_info("DynamicScreenHandler: Alertas ativos. Pausando navegação automática.")
             return False
+        
+        # Protege contra UserEvent após encerramento
+        if handler_input.request_envelope.request.object_type == "Alexa.Presentation.APL.UserEvent" and session_attr.get("state") is None:
+            log_warning("UserEvent recebido após encerramento. Ignorando.")
+            return handler_input.response_builder.response
 
         # Permite apenas eventos de auto-navegação
         if is_request_type("Alexa.Presentation.APL.UserEvent")(handler_input):
