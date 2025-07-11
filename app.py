@@ -1001,6 +1001,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         else:
             # Último ativo: encerre a skill de forma amigável após 10 segundos
             log_info("Encerrando skill após o último ativo.")
+            session_attr["state"] = None
             if not exibir_favoritos:
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
