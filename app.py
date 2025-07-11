@@ -886,6 +886,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         ativos_ids = session_attr.get("ativos_ids", sorted(self.state_asset_mapping.keys()))
         exibir_favoritos = session_attr.get("exibir_favoritos", False)
         current_state = session_attr.get("state", ativos_ids[0])  # Estado inicial padrão é 1
+        token_apl = "mainScreenToken"
 
         log_info("=== DynamicScreenHandler.handle ===")
         log_info(f"ativos_ids: {ativos_ids}")
@@ -943,7 +944,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             session_attr["state"] = ativos_ids[next_idx] if next_idx is not None else None
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
-                    token="mainScreenToken",
+                    token=token_apl,
                     commands=[
                         SendEventCommand(arguments=["autoNavigate"], delay=1500)
                     ]
@@ -996,7 +997,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if next_idx is not None:
             log_info("Agendando próximo autoNavigate.")
             # Reenvie o documento APL antes do comando automático
-            token_apl = "mainScreenToken"
+            #token_apl = "mainScreenToken"
             log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
@@ -1025,7 +1026,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             log_info("Encerrando skill após o último ativo.")
             session_attr["state"] = None
             
-            token_apl = "mainScreenToken"
+            #token_apl = "mainScreenToken"
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token=token_apl,
