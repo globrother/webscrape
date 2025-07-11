@@ -1024,6 +1024,18 @@ class DynamicScreenHandler(AbstractRequestHandler):
             # Último ativo: encerre a skill de forma amigável após 10 segundos
             log_info("Encerrando skill após o último ativo.")
             session_attr["state"] = None
+            
+            token_apl = "mainScreenToken"
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token=token_apl,
+                    document=apl_document,
+                    datasources={
+                        "dados_update": dados_info
+                    }
+                )
+            )
+            
             if not exibir_favoritos:
                 handler_input.response_builder.speak(
                     f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
