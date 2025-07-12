@@ -920,9 +920,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
         
-        import json
-        log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
-        log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
+        #import json
+        #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+        #log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
         
         # Verificando dados_info
         if not isinstance(dados_info, dict) or not dados_info:
@@ -967,10 +967,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
             delay_ms = 10000  # Favoritos:(10s)
         else:
             delay_ms = 2500  # Regulares:(2s)
-        
-        #log_debug(f"🧪 Renderizando fundo: {fundo}")
-        #log_debug(f"Token usado: {token_apl}")
-        #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
 
         # Construa a resposta
         """token_apl = "mainScreenToken"
