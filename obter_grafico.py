@@ -24,14 +24,19 @@ def requisitando_chart(ticker):
     }
     data = {"ticker": ticker}
 
-    response = requests.post(API_URL, json=data, headers=headers)
+    try:
+        response = requests.post(API_URL, json=data, headers=headers)
 
-    log_info(f"⏱️​​ Processado em ⏳ {time() - start:.2f}s ⏳")
+        log_info(f"⏱️​​ Processado em ⏳ {time() - start:.2f}s ⏳")
 
-    if response.status_code == 200:
-        return response.json().get("url", "")  # Retorna a url pronta - resposta da API 
-    else:
-        return {"error": f"Erro {response.status_code}: {response.text}"}
+        if response.status_code == 200:
+            return response.json().get("url", "")  # Retorna a url pronta - resposta da API 
+        else:
+            log_warning(f"Erro ao obter gráfico: {response.status_code} - {response.text}")
+            return {"error": f"Erro {response.status_code}: {response.text}"}
+    except requests.exceptions.RequestException as e:
+        log_error(f"Erro de conexão ao obter gráfico: {e}")
+        return {"error": "Servidor de gráficos indisponível no momento."}
     
 
 # 🔹 Exemplo de chamada

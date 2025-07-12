@@ -1415,7 +1415,7 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         reason = getattr(request, "reason", "Motivo não informado")
         error = getattr(request, "error", None)
         if error:
-            log_error(f"💥 Detalhes do erro: {error}")
+            log_error(f"💥 Detalhes: {error}")
             # Tenta acessar campos específicos com segurança
             if hasattr(error, "type"):
                 log_error(f"🔎 Tipo: {error.type}")
