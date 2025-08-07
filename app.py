@@ -1460,7 +1460,48 @@ class ExceptionEncounteredHandler(AbstractRequestHandler):
         log_error(f"🔎 Tipo da requisição: {getattr(request, 'object_type', 'sem tipo')}")
         log_error(f"🔎 Arguments: {getattr(request, 'arguments', 'sem argumentos')}")
         log_error(f"🔎 Session Attributes: {handler_input.attributes_manager.session_attributes}")
-        return handler_input.response_builder.set_should_end_session(True).response
+        
+        # Tenta retomar a navegação automática
+        session_attr = handler_input.attributes_manager.session_attributes
+        ativos_ids = session_attr.get("ativos_ids")
+        state = session_attr.get("state")
+        fundo = session_attr.get("asset_full") or session_attr.get("last_fundo") or "xpml11"
+
+        # Só tenta retomar se ainda há ativos para exibir
+        if ativos_ids and state is not None:
+            try:
+                from utils import _load_apl_document
+                from scraper import web_scrape
+                dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="mainScreenToken",
+                        document=apl_document,
+                        datasources={"dados_update": dados_info}
+                    )
+                )
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="mainScreenToken",
+                        commands=[
+                            SendEventCommand(arguments=["autoNavigate"], delay=3000)
+                        ]
+                    )
+                )
+                handler_input.response_builder.speak(
+                    "Houve uma falha, mas estou retomando a navegação automática."
+                )
+                return handler_input.response_builder.set_should_end_session(False).response
+            except Exception as e:
+                log_error(f"Erro ao tentar retomar navegação automática: {e}")
+
+        # Se não for possível retomar, encerra a sessão normalmente
+        return handler_input.response_builder.speak(
+            "Ocorreu um erro inesperado. Encerrando a skill."
+        ).set_should_end_session(True).response
+        
+        #return handler_input.response_builder.set_should_end_session(True).response
+
 # ============================================================================================
 
 class FallbackIntentHandler(AbstractRequestHandler):
