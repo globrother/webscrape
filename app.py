@@ -879,6 +879,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         return False
 
     def handle(self, handler_input):
+        start_time = time.time()
         #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         session_attr = handler_input.attributes_manager.session_attributes
@@ -967,7 +968,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 2500  # Regulares:(2s)
+            delay_ms = 3500  # Regulares:(2s)
 
         # Construa a resposta
         """token_apl = "mainScreenToken"
@@ -1017,6 +1018,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     ]
                 )
             )
+            log_info(f"Tempo total para fundo {fundo}: {time.time() - start_time:.2f}s")
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável após 10 segundos
