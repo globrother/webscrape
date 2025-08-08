@@ -924,7 +924,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         #import json
         #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
         #log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
-        log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info, ensure_ascii=False))} bytes")
+        log_debug(f"[APL] Tamanho datasource: {len(json.dumps(dados_info, ensure_ascii=False))} bytes")
         
         # Verificando dados_info
         if not isinstance(dados_info, dict) or not dados_info:
@@ -1018,7 +1018,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                     ]
                 )
             )
-            log_info(f"Tempo total para fundo {fundo}: {time.time() - start_time:.2f}s")
+            log_info(f"Tempo total Processamento:{fundo}: {time.time() - start_time:.2f}s")
             return handler_input.response_builder.set_should_end_session(False).response
         else:
             # Último ativo: encerre a skill de forma amigável após 10 segundos
