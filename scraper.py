@@ -51,7 +51,7 @@ def web_scrape(fundo):
         (key for key, value in state_asset_mapping.items() if value.get("codigo", "") == fundo), None)
 
     if fundo_index is not None:
-        log_info(f"Índice do fundo '{fundo}': {fundo_index}")
+        log_debug(f"Índice do fundo '{fundo}': {fundo_index}")
     else:
         log_error(f"Fundo '{fundo}' não encontrado no mapeamento de estados.")
         # Define um índice padrão (primeiro fundo) ou tome outra ação apropriada
