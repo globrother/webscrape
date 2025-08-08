@@ -924,10 +924,23 @@ class DynamicScreenHandler(AbstractRequestHandler):
         tempo_processamento = time.time() - start_time
         log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
         
-        # Limite de segurança (ex: 6 segundos)
+        # Limite de segurança (ex: 7.5 segundos)
         LIMITE_TIMEOUT = 7.5
         
+        # Recupera ou inicializa o contador de tentativas
+        tentativas = session_attr.get("tentativas_timeout", 0)
+        
         if tempo_processamento > LIMITE_TIMEOUT:
+            tentativas += 1
+            session_attr["tentativas_timeout"] = tentativas
+            
+            if tentativas >= 5:
+                log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+                handler_input.response_builder.speak(
+                    "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                )
+                return handler_input.response_builder.set_should_end_session(True).response
+            
             # Resposta rápida para evitar timeout
             handler_input.response_builder.speak(
                 f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
@@ -942,6 +955,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 )
             )
             return handler_input.response_builder.set_should_end_session(False).response
+        else:
+            # Zera o contador se processamento foi rápido
+            session_attr["tentativas_timeout"] = 0
         
         #import json
         #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
