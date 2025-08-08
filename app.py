@@ -925,7 +925,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
         
         # Limite de segurança (ex: 6 segundos)
-        LIMITE_TIMEOUT = 7.0
+        LIMITE_TIMEOUT = 7.5
         
         if tempo_processamento > LIMITE_TIMEOUT:
             # Resposta rápida para evitar timeout
