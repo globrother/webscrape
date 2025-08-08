@@ -59,7 +59,7 @@ def testar_conexao():
 
 def gravar_historico(sufixo, valor, var_fii_telegram=None):
     log_debug("Agora no método gravar_historico")
-    log_info("--> Iniciando Gravar Histórico")
+    #log_info("--> Iniciando Gravar Histórico")
     
     if not testar_conexao():
         log_error("Erro ao conectar com o servidor Back4App.")
@@ -100,7 +100,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
         fii_safe = html.escape(sufixo.upper())
         cota_safe = html.escape(f"{valor}")  # R$ 21,72
         mensagem = (
-            f"<b>Alerta Gobs-Finance</b>: {var_fii_telegram}\n"
+            f"<b>Gobs-Finance</b>: {var_fii_telegram}\n"
             f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>"
         )
         log_telegram(mensagem)
@@ -132,7 +132,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
         "X-Parse-Application-Id": APPLICATION_ID,
         "X-Parse-REST-API-Key": REST_API_KEY
     })
-    log_debug(f"Verificando Contagem de registros em: {nome_classe}")
+    #log_debug(f"Verificando Contagem de registros em: {nome_classe}")
     response = connection.getresponse()
     log_debug(f"Response status: {response.status}")  # Adiciona log do status da resposta
     data = response.read()
@@ -157,7 +157,7 @@ def ler_historico(sufixo):
     log_debug("Agora no método ler_historico")
 
     try:
-        log_info("--> Iniciando Ler Histórico")
+        #log_info("--> Iniciando Ler Histórico")
         
         if not testar_conexao():
             log_error("Erro ao conectar com o servidor Back4App.")
@@ -188,7 +188,7 @@ def ler_historico(sufixo):
  
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
-    log_info("--> Iniciando Gerar Histórico")
+    #log_info("--> Iniciando Gerar Histórico")
     
     # Verificar se o histórico está vazio
     if not historico:

@@ -117,7 +117,7 @@ def get_dadosfii(fii):
                     raise ValueError(
                         "Não foi possível extrair todos os dados necessários para o ativo.")
 
-                log_info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
+                #log_info(f"\nTIPO DE ATIVO:> {tipo_ativo}\n")
 
             elif tipo_ativo == "acao":
                 containers = soup.find_all('div', class_='container')
@@ -133,7 +133,7 @@ def get_dadosfii(fii):
                     'div', {'title': 'Valor atual do ativo'})
                 cota_fii = valor_atual_tag.find(
                     'strong', class_='value').text.strip() if valor_atual_tag else None
-                log_info(f"VALOR COTA:{cota_fii}")
+                #log_info(f"VALOR COTA:{cota_fii}")
 
                 # Variação do dia
                 variacao_tag = container.find(
@@ -160,7 +160,7 @@ def get_dadosfii(fii):
                     'div', {'title': 'Soma total dos proventos provisionados'})
                 divpc_fii = divpc_tag.find(
                     'strong', class_='value').text.strip() if divpc_tag else None
-                log_info(f"VALOR DIV POR COTA:{divpc_fii}")
+                #log_info(f"VALOR DIV POR COTA:{divpc_fii}")
                 divpc_fii = str(
                     round((float((divpc_fii).replace(',', '.'))), 2)).replace('.', ',')
 
@@ -172,7 +172,7 @@ def get_dadosfii(fii):
                     data = json.loads(script_image[2].string)
                     # Acessa o campo da logo
                     logo_url = data.get('image', {}).get('url')
-                    log_info(f"LOGO DO ATIVO: {logo_url}")
+                    #log_info(f"LOGO DO ATIVO: {logo_url}")
 
                 # Verificação defensiva
                 if not all([cota_fii, var_fii, dy_fii, pvp_fii, divpc_fii, logo_url]):
