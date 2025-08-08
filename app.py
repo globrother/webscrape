@@ -917,9 +917,31 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
         session_attr['asset_full'] = fundo
-        # Chame a função web_scrape para obter os dados do fundo
         
+        # Chame a função web_scrape para obter os dados do fundo
         dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        
+        tempo_processamento = time.time() - start_time
+        log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
+        
+        # Limite de segurança (ex: 6 segundos)
+        LIMITE_TIMEOUT = 6.0
+        
+        if tempo_processamento > LIMITE_TIMEOUT:
+            # Resposta rápida para evitar timeout
+            handler_input.response_builder.speak(
+                f"Estou buscando as informações do fundo {fundo.upper()}, aguarde um momento..."
+            )
+            # Agende o próximo fundo para manter a navegação automática
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=3500)
+                    ]
+                )
+            )
+            return handler_input.response_builder.set_should_end_session(False).response
         
         #import json
         #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
