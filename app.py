@@ -139,7 +139,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         session_attr["state"] = ativos_ids[0]
         log_debug(f"state inicial: {session_attr['state']}")
         fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
@@ -491,7 +491,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_asset_mapping[state_id]["codigo"]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Mostrando ativo. <break time='700ms'/>" + voz
             ).add_directive(
@@ -619,7 +619,7 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 ).set_should_end_session(False).response
 
             # Feedback imediato e avanço de tela
-            dados_info, _, _, _, apl_document, voz = web_scrape(asset_full)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(asset_full)
             #log_info(json.dumps(apl_document, indent=2, ensure_ascii=False))
 
             session_attr["manual_selection"] = True # Desativa a navegaçaõ automática
@@ -769,7 +769,7 @@ class AlertaInputHandler(APLUserEventHandler):
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_asset_mapping[1]["codigo"]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
             ).add_directive(
@@ -1201,7 +1201,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
             })
 
             try:
-                dados_info, _, _, _, apl_doc, voz = web_scrape(fundo_full)
+                dados_info, _, _, _, apl_doc, voz, _ = web_scrape(fundo_full)
             except Exception as e:
                 log_error(f"Erro no web_scrape para {fundo_full}: {e}")
                 return handler_input.response_builder.speak("Ocorreu um erro ao recuperar as informações do ativo."
@@ -1287,7 +1287,7 @@ class SelectInputHandler(APLUserEventHandler):
 
             # Volta para o primeiro fundo, ou outro desejado
             fundo = state_asset_mapping[1]["codigo"]
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
             handler_input.response_builder.speak(
                 "Cadastro cancelado. Voltando para a tela inicial. <break time='700ms'/>"
             ).add_directive(
@@ -1346,7 +1346,7 @@ class SelectInputHandler(APLUserEventHandler):
                 "manual_selection": False
             })
 
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo_full)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo_full)
             speech_text = f"Mostrando o ativo {sigla.upper()}."
 
             handler_input.response_builder.add_directive(
@@ -1404,7 +1404,7 @@ class TouchHandler(APLUserEventHandler):
         """
 
         # Chama a função web_scrape para obter os dados do fundo
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
 
         # Calcula o próximo estado
         next_state = current_state + 1 if current_state + 1 in state_asset_mapping else None
@@ -1513,7 +1513,7 @@ class ExceptionEncounteredHandler(AbstractRequestHandler):
             try:
                 from utils import _load_apl_document
                 from scraper import web_scrape
-                dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+                dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token="mainScreenToken",
@@ -1587,7 +1587,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
             log_warning("FallbackIntent: Contexto de navegação automática.")
             speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
             fundo = session_attr.get("asset_full") or session_attr.get("last_fundo") or "xpml11"
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",
@@ -1721,7 +1721,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
             log_warning("FallbackIntent: Contexto de navegação automática.")
             speech_text = "Desculpe, não entendi. Diga 'próximo' para avançar ou 'favoritos' para ver seus ativos favoritos."
             fundo = session_attr.get("asset_full") or session_attr.get("last_fundo") or "xpml11"
-            dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+            dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",

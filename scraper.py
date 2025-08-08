@@ -43,7 +43,7 @@ def web_scrape(fundo):
     if time.time() - start > limite_timeout:
         timeout = True
         # Retorne dados parciais ou vazios
-        return {}, None, None, None, None, None, None, timeout
+        return {}, None, None, None, None, None, timeout
 
     # Lista de links de imagens de planos de fundo
     background_images = [
