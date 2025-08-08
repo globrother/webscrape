@@ -930,7 +930,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if tempo_processamento > LIMITE_TIMEOUT:
             # Resposta rápida para evitar timeout
             handler_input.response_builder.speak(
-                f"Estou buscando as informações do fundo {fundo.upper()}, aguarde um momento..."
+                f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
             )
             # Agende o próximo fundo para manter a navegação automática
             handler_input.response_builder.add_directive(
