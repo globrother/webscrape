@@ -919,7 +919,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         session_attr['asset_full'] = fundo
         
         # Chame a função web_scrape para obter os dados do fundo
-        dados_info, _, _, _, apl_document, voz = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
         
         tempo_processamento = time.time() - start_time
         log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
@@ -930,7 +930,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         # Recupera ou inicializa o contador de tentativas
         tentativas = session_attr.get("tentativas_timeout", 0)
         
-        if tempo_processamento > LIMITE_TIMEOUT:
+        if (timeout or tempo_processamento > LIMITE_TIMEOUT):
             tentativas += 1
             session_attr["tentativas_timeout"] = tentativas
             

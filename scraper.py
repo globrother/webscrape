@@ -15,6 +15,8 @@ from log_utils import log_debug, log_info, log_warning, log_error
 
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
+    start = time.time()
+    timeout = False
     # extrai os caracteres numéricos de fundo
     fundo_fii = limpar_asset_name(fundo)
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
@@ -35,6 +37,13 @@ def web_scrape(fundo):
     timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
     url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
     #log_info(f"URL do Gráfico: {url_grafico}")
+    
+    limite_timeout = 3.5
+    
+    if time.time() - start > limite_timeout:
+        timeout = True
+        # Retorne dados parciais ou vazios
+        return {}, None, None, None, None, None, timeout
 
     # Lista de links de imagens de planos de fundo
     background_images = [
@@ -90,4 +99,4 @@ def web_scrape(fundo):
         "url_grafico": url_grafico or ""
     }
 
-    return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz
+    return dados_info, card_fii, variac_fii, hist_text_fii, apl_document, voz, timeout
