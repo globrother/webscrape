@@ -951,7 +951,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[
-                        SendEventCommand(arguments=["autoNavigate"], delay=3500)
+                        SendEventCommand(arguments=["autoNavigate"], delay=1000)
                     ]
                 )
             )
@@ -1006,7 +1006,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 3500  # Regulares:(2s)
+            delay_ms = 1000  # Regulares:(2s)
 
         # Construa a resposta
         """token_apl = "mainScreenToken"
