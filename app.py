@@ -927,7 +927,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
             
             # Limite de segurança (ex: 7.5 segundos)
-            LIMITE_TIMEOUT = 7.5
+            LIMITE_TIMEOUT = 8.5
             
             # Recupera ou inicializa o contador de tentativas
             tentativas = session_attr.get("tentativas_timeout", 0)
