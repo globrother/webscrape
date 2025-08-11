@@ -908,70 +908,110 @@ class DynamicScreenHandler(AbstractRequestHandler):
         except ValueError:
             idx = 0
 
-        log_info(f"ativos_ids: {ativos_ids}")
-        log_info(f"current_state: {current_state}")
-        log_info(f"idx: {idx}")
-        log_info(f"idx (posição do fundo atual): {idx}")
-        fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
-        log_info(f"Fundo selecionado: {fundo}")
+        try:
+            log_info(f"ativos_ids: {ativos_ids}")
+            log_info(f"current_state: {current_state}")
+            log_info(f"idx: {idx}")
+            log_info(f"idx (posição do fundo atual): {idx}")
+            fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
+            log_info(f"Fundo selecionado: {fundo}")
 
-        # Obtenha o fundo atual do mapeamento
-        fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
-        session_attr['asset_full'] = fundo
-        
-        # Chame a função web_scrape para obter os dados do fundo
-        dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
-        
-        tempo_processamento = time.time() - start_time
-        log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
-        
-        # Limite de segurança (ex: 7.5 segundos)
-        LIMITE_TIMEOUT = 7.5
-        
-        # Recupera ou inicializa o contador de tentativas
-        tentativas = session_attr.get("tentativas_timeout", 0)
-        
-        if (timeout or tempo_processamento > LIMITE_TIMEOUT):
-            tentativas += 1
-            session_attr["tentativas_timeout"] = tentativas
+            # Obtenha o fundo atual do mapeamento
+            fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
+            session_attr['asset_full'] = fundo
             
-            if tentativas >= 5:
-                log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+            # Chame a função web_scrape para obter os dados do fundo
+            dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
+            
+            tempo_processamento = time.time() - start_time
+            log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
+            
+            # Limite de segurança (ex: 7.5 segundos)
+            LIMITE_TIMEOUT = 7.5
+            
+            # Recupera ou inicializa o contador de tentativas
+            tentativas = session_attr.get("tentativas_timeout", 0)
+            
+            if (timeout or tempo_processamento > LIMITE_TIMEOUT):
+                tentativas += 1
+                session_attr["tentativas_timeout"] = tentativas
+                
+                if tentativas >= 5:
+                    log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+                    handler_input.response_builder.speak(
+                        "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                    )
+                    return handler_input.response_builder.set_should_end_session(True).response
+                
+                # Resposta rápida para evitar timeout
                 handler_input.response_builder.speak(
-                    "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                    f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
                 )
-                return handler_input.response_builder.set_should_end_session(True).response
-            
-            # Resposta rápida para evitar timeout
-            handler_input.response_builder.speak(
-                f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
-            )
-            # Agende o próximo fundo para manter a navegação automática
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token="mainScreenToken",
-                    commands=[
-                        SendEventCommand(arguments=["autoNavigate"], delay=1000)
-                    ]
+                # Agende o próximo fundo para manter a navegação automática
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="mainScreenToken",
+                        commands=[
+                            SendEventCommand(arguments=["autoNavigate"], delay=1000)
+                        ]
+                    )
                 )
-            )
-            return handler_input.response_builder.set_should_end_session(False).response
-        else:
-            # Zera o contador se processamento foi rápido
-            session_attr["tentativas_timeout"] = 0
-        
-        #import json
-        #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
-        #log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
-        log_debug(f"[APL] Tamanho datasource: {len(json.dumps(dados_info, ensure_ascii=False))} bytes")
-        
-        # Verificando dados_info
-        if not isinstance(dados_info, dict) or not dados_info:
-            log_error(f"❌ dados_info inválido para fundo {fundo}. Ignorando entrada.")
-            handler_input.response_builder.speak(
-                f"O fundo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
-            ).set_should_end_session(False)
+                return handler_input.response_builder.set_should_end_session(False).response
+            else:
+                # Zera o contador se processamento foi rápido
+                session_attr["tentativas_timeout"] = 0
             
+            #import json
+            #log_debug(f"[APL] Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+            #log_debug(f"[APL] Tamanho do datasource: {len(json.dumps(dados_info))} bytes")
+            log_debug(f"[APL] Tamanho datasource: {len(json.dumps(dados_info, ensure_ascii=False))} bytes")
+            
+            # Verificando dados_info
+            if not isinstance(dados_info, dict) or not dados_info:
+                log_error(f"❌ dados_info inválido para fundo {fundo}. Ignorando entrada.")
+                handler_input.response_builder.speak(
+                    f"O fundo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
+                ).set_should_end_session(False)
+                
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token="mainScreenToken",
+                        document=apl_document,
+                        datasources={
+                            "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
+                        }
+                    )
+                )
+                # Força o avanço automático
+                session_attr["state"] = ativos_ids[next_idx] if next_idx is not None else None
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token=token_apl,
+                        commands=[
+                            SendEventCommand(arguments=["autoNavigate"], delay=1500)
+                        ]
+                    )
+                )
+                return handler_input.response_builder.response
+
+            # Calcula o próximo estado
+            if next_idx is not None:
+                session_attr["state"] = ativos_ids[next_idx]
+                log_info(f"Avançando para o próximo state: {session_attr['state']}")
+            else:
+                session_attr["state"] = None
+                log_info("Último ativo exibido, encerrando ciclo.")
+                log_info(f"Novo state definido: {session_attr['state']}")
+                
+            # Defina o delay com base em favoritos
+            if exibir_favoritos:
+                delay_ms = 10000  # Favoritos:(10s)
+            else:
+                delay_ms = 1000  # Regulares:(2s)
+
+            # Construa a resposta
+            """token_apl = "mainScreenToken"
+            log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
             handler_input.response_builder.add_directive(
                 RenderDocumentDirective(
                     token="mainScreenToken",
@@ -980,105 +1020,73 @@ class DynamicScreenHandler(AbstractRequestHandler):
                         "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
                     }
                 )
-            )
-            # Força o avanço automático
-            session_attr["state"] = ativos_ids[next_idx] if next_idx is not None else None
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token=token_apl,
-                    commands=[
-                        SendEventCommand(arguments=["autoNavigate"], delay=1500)
-                    ]
-                )
-            )
-            return handler_input.response_builder.response
+            )"""
 
-        # Calcula o próximo estado
-        if next_idx is not None:
-            session_attr["state"] = ativos_ids[next_idx]
-            log_info(f"Avançando para o próximo state: {session_attr['state']}")
-        else:
-            session_attr["state"] = None
-            log_info("Último ativo exibido, encerrando ciclo.")
-            log_info(f"Novo state definido: {session_attr['state']}")
-            
-        # Defina o delay com base em favoritos
-        if exibir_favoritos:
-            delay_ms = 10000  # Favoritos:(10s)
-        else:
-            delay_ms = 1000  # Regulares:(2s)
-
-        # Construa a resposta
-        """token_apl = "mainScreenToken"
-        log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={
-                    "dados_update": dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                }
-            )
-        )"""
-
-        # Só fala se não for favoritos
-        if not exibir_favoritos:
-            handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
-
-        # Se houver um próximo estado, agende a navegação automática.
-        log_debug(f"🧪 Renderizando fundo: {fundo}")
-        #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
-        session_attr.pop("manual_selection", None)
-        
-        if next_idx is not None:
-            log_info("Agendando próximo autoNavigate.")
-            # Reenvie o documento APL antes do comando automático
-            #token_apl = "mainScreenToken"
-            #log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token=token_apl,
-                    document=apl_document,
-                    datasources={
-                        "dados_update": dados_info
-                    }
-                )
-            )
-            
-            #log_debug(f"[APL] Adicionando ExecuteCommandsDirective com token: {token_apl}")
-            handler_input.response_builder.add_directive(
-                ExecuteCommandsDirective(
-                    token=token_apl,
-                    commands=[
-                        SendEventCommand(
-                            arguments=["autoNavigate"], delay=delay_ms
-                        )
-                    ]
-                )
-            )
-            log_info(f"Tempo total Processamento:{fundo}: {time.time() - start_time:.2f}s")
-            return handler_input.response_builder.set_should_end_session(False).response
-        else:
-            # Último ativo: encerre a skill de forma amigável após 10 segundos
-            log_info("Encerrando skill após o último ativo.")
-            session_attr["state"] = None
-            
-            #token_apl = "mainScreenToken"
-            handler_input.response_builder.add_directive(
-                RenderDocumentDirective(
-                    token=token_apl,
-                    document=apl_document,
-                    datasources={
-                        "dados_update": dados_info
-                    }
-                )
-            )
-            
+            # Só fala se não for favoritos
             if not exibir_favoritos:
-                handler_input.response_builder.speak(
-                    f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+                handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
+
+            # Se houver um próximo estado, agende a navegação automática.
+            log_debug(f"🧪 Renderizando fundo: {fundo}")
+            #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
+            session_attr.pop("manual_selection", None)
+            
+            if next_idx is not None:
+                log_info("Agendando próximo autoNavigate.")
+                # Reenvie o documento APL antes do comando automático
+                #token_apl = "mainScreenToken"
+                #log_debug(f"[APL] Adicionando RenderDocumentDirective com token: {token_apl}")
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token=token_apl,
+                        document=apl_document,
+                        datasources={
+                            "dados_update": dados_info
+                        }
+                    )
                 )
-            # Se for favoritos, não fala nada!
+                
+                #log_debug(f"[APL] Adicionando ExecuteCommandsDirective com token: {token_apl}")
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token=token_apl,
+                        commands=[
+                            SendEventCommand(
+                                arguments=["autoNavigate"], delay=delay_ms
+                            )
+                        ]
+                    )
+                )
+                log_info(f"Tempo total Processamento:{fundo}: {time.time() - start_time:.2f}s")
+                return handler_input.response_builder.set_should_end_session(False).response
+            else:
+                # Último ativo: encerre a skill de forma amigável após 10 segundos
+                log_info("Encerrando skill após o último ativo.")
+                session_attr["state"] = None
+                
+                #token_apl = "mainScreenToken"
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token=token_apl,
+                        document=apl_document,
+                        datasources={
+                            "dados_update": dados_info
+                        }
+                    )
+                )
+                
+                if not exibir_favoritos:
+                    handler_input.response_builder.speak(
+                        f"<break time='1s'/>{voz}<break time='10s'/>Encerrando a skill. Até a próxima!"
+                    )
+                # Se for favoritos, não fala nada!
+                return handler_input.response_builder.set_should_end_session(True).response
+        
+        except Exception as e:
+            log_error(f"Erro inesperado no handler: {e}")
+            handler_input.response_builder.speak(
+                "Ocorreu um erro interno. Encerrando a skill."
+            )
             return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
