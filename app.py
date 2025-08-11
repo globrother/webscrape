@@ -99,7 +99,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             (13, 14),  # exemplo: das 13h às 14h
             (15, 16),
             (17, 18),
-            (24, 24),
+            (21, 24),
             (00, 8)
             # adicione outros intervalos conforme desejar
         ]
@@ -904,6 +904,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
 
         try:
             idx = ativos_ids.index(current_state)
+            next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         except ValueError:
             idx = 0
 
@@ -993,7 +994,6 @@ class DynamicScreenHandler(AbstractRequestHandler):
             return handler_input.response_builder.response
 
         # Calcula o próximo estado
-        next_idx = idx + 1 if idx + 1 < len(ativos_ids) else None
         if next_idx is not None:
             session_attr["state"] = ativos_ids[next_idx]
             log_info(f"Avançando para o próximo state: {session_attr['state']}")
