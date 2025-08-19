@@ -206,7 +206,28 @@ class LaunchIntentHandler(AbstractRequestHandler):
 
         return LaunchRequestHandler().handle(handler_input)
 # ============================================================================================
+class WakeUpIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return is_intent_name("WakeUpIntent")(handler_input)
 
+    def handle(self, handler_input):
+        # Lógica para acordar o servidor ou atualizar o tempo para a próxima hibernação
+        session_attr = handler_input.attributes_manager.session_attributes
+        session_attr["server_status"] = True
+        
+        # Verifica se o servidor está hibernado
+        if session_attr.get("server_status"):
+            session_attr["server_status"] = "awake"
+            # Aqui você pode adicionar lógica para acordar o servidor, se necessário
+            speech_text = "O servidor já estava acordado."
+            log_info("O servidor já estava acordado. O tempo para a próxima hibernação foi atualizado")
+        else:
+            # Atualiza o tempo para a próxima hibernação
+            speech_text = "O servidor foi acordado."
+
+        return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
+# ============================================================================================
+    
 # EXIBIR ATIVO NO MODO MONITOR
 class MonitorIntentHandler(AbstractRequestHandler):
 
@@ -1777,6 +1798,7 @@ def webhook():
     # Inicialize os handlers com card_fii
     launch_request_handler = LaunchRequestHandler()
     launch_intent_handler = LaunchIntentHandler()
+    wakeup_intent_handler = WakeUpIntentHandler()
     stop_intent_handler = StopIntentHandler()
     session_ended_request_handler = SessionEndedRequestHandler()
     exception_encountered_handler = ExceptionEncounteredHandler()
@@ -1797,6 +1819,7 @@ def webhook():
     # Adicione os handlers ao SkillBuilder
     sb.add_request_handler(launch_request_handler)
     sb.add_request_handler(launch_intent_handler)
+    sb.add_request_handler(wakeup_intent_handler)
     sb.add_request_handler(stop_intent_handler)
     sb.add_request_handler(session_ended_request_handler)
     sb.add_request_handler(exception_encountered_handler)
