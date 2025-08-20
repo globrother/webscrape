@@ -87,6 +87,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
+        start_time = time.time()
         #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
         #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
         handler_input.response_builder.add_directive(get_dynamic_entities_directive())
@@ -133,13 +134,52 @@ class LaunchRequestHandler(AbstractRequestHandler):
         if exibir_favoritos:
             delay_ms = 10000  # Favoritos:(10s)
         else:
-            delay_ms = 2000  # Regulares:(2s)
+            delay_ms = 1000  # Regulares:(2s)
 
         # Exibe o primeiro ativo
         session_attr["state"] = ativos_ids[0]
         log_debug(f"state inicial: {session_attr['state']}")
         fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
-        dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo)
+        dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
+        
+        # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
+        tempo_processamento = time.time() - start_time
+        log_info(f"Tempo de processamento do ativo {fundo}: {tempo_processamento:.2f}s")
+        
+        # Limite de segurança (ex: 7.5 segundos)
+        LIMITE_TIMEOUT = 8.5
+        
+        # Recupera ou inicializa o contador de tentativas
+        tentativas = session_attr.get("tentativas_timeout", 0)
+        
+        if (timeout or tempo_processamento > LIMITE_TIMEOUT):
+            tentativas += 1
+            session_attr["tentativas_timeout"] = tentativas
+            
+            if tentativas >= 5:
+                log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+                handler_input.response_builder.speak(
+                    "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                )
+                return handler_input.response_builder.set_should_end_session(True).response
+            
+            # Resposta rápida para evitar timeout
+            handler_input.response_builder.speak(
+                f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
+            )
+            # Agende o próximo fundo para manter a navegação automática
+            handler_input.response_builder.add_directive(
+                ExecuteCommandsDirective(
+                    token="mainScreenToken",
+                    commands=[
+                        SendEventCommand(arguments=["autoNavigate"], delay=1000)
+                    ]
+                )
+            )
+            return handler_input.response_builder.set_should_end_session(False).response
+        else:
+            # Zera o contador se processamento foi rápido
+            session_attr["tentativas_timeout"] = 0
 
         handler_input.response_builder.add_directive(
             RenderDocumentDirective(
@@ -945,7 +985,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
             
             tempo_processamento = time.time() - start_time
-            log_info(f"Tempo de processamento do fundo {fundo}: {tempo_processamento:.2f}s")
+            log_info(f"Tempo de processamento do ativo {fundo}: {tempo_processamento:.2f}s")
             
             # Limite de segurança (ex: 7.5 segundos)
             LIMITE_TIMEOUT = 8.5
