@@ -219,7 +219,7 @@ class WakeUpIntentHandler(AbstractRequestHandler):
         if session_attr.get("server_status"):
             session_attr["server_status"] = "awake"
             # Aqui você pode adicionar lógica para acordar o servidor, se necessário
-            speech_text = "<speak><prosody volume='sx-soft'>O servidor já estava acordado.</prosody></speak>"
+            speech_text = "<speak><prosody volume='x-soft'>O servidor já estava acordado.</prosody></speak>"
             log_info("O servidor já estava acordado. O tempo para a próxima hibernação foi atualizado")
         else:
             # Atualiza o tempo para a próxima hibernação
