@@ -223,7 +223,7 @@ class WakeUpIntentHandler(AbstractRequestHandler):
             log_info("O servidor já estava acordado. O tempo para a próxima hibernação foi atualizado")
         else:
             # Atualiza o tempo para a próxima hibernação
-            speech_text = "O servidor foi acordado."
+            speech_text = "<speak><prosody volume='soft'>O servidor foi acordado.</prosody></speak>"
 
         return handler_input.response_builder.speak(speech_text).set_should_end_session(True).response
 # ============================================================================================
