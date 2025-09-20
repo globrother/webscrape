@@ -4,8 +4,7 @@
 Essa é a aplicação principal (app.py) que integra os fundos imobiliários monitorados pela skill Finance_Gobis da Alexa.
 A aplicação é um servidor Flask que recebe uma solicitação POST de um webhook e responde com um JSON.
 O JSON contém as informações de atualização dos fundos imobiliários monitorados pela skill.
-A aplicação ainda não é capaz de lidar com solicitações de eventos de usuário da Alexa com eficiencia,
-mas ao tocar em um botão, a skill é encerrada. teste
+A aplicação ainda não é capaz de lidar com solicitações de eventos de usuário da Alexa com eficiencia.
 """
 # ::== AJUDA ==::
 # ADICIONAR OS INICIALIZADORES DE HANDLERS: show_xxxxx_screen_handler = ShowXxxxxScreenHandler()
@@ -1830,8 +1829,11 @@ def webhook():
     
     # Verifica se é um payload da Alexa
     if not data or "request" not in data or "type" not in data["request"]:
+        log_warning("❌ Payload inválido recebido no webhook.")
         return jsonify({"error": "Payload inválido para Alexa Skills Kit"}), 400
 
+    log_info("📡 Requisição recebida da Alexa. Inicializando SkillBuilder...")
+    
     # Inicialize o SkillBuilder
     sb = SkillBuilder()
 
@@ -1880,8 +1882,9 @@ def webhook():
 
     # Gere a resposta
     response = sb.lambda_handler()(data, None)
+    log_info("✅ Resposta gerada com sucesso para a Alexa.")
     return jsonify(response)
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True, host='0.0.0.0', port=5000)
