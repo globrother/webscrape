@@ -5,7 +5,7 @@ Essa é a aplicação principal (app.py) que integra os fundos imobiliários mon
 A aplicação é um servidor Flask que recebe uma solicitação POST de um webhook e responde com um JSON.
 O JSON contém as informações de atualização dos fundos imobiliários monitorados pela skill.
 A aplicação ainda não é capaz de lidar com solicitações de eventos de usuário da Alexa com eficiencia,
-mas ao tocar em um botão, a skill é encerrada. Teste
+mas ao tocar em um botão, a skill é encerrada.
 """
 # ::== AJUDA ==::
 # ADICIONAR OS INICIALIZADORES DE HANDLERS: show_xxxxx_screen_handler = ShowXxxxxScreenHandler()
