@@ -1902,4 +1902,4 @@ def webhook():
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True, ssl_context=('/home/ubuntu/fullchain.pem', '/home/ubuntu/privkey.pem'))  #use_reloader=False para evitar reinicializações duplicadas)
+    app.run(host='0.0.0.0', port=443, debug=True, use_reloader=True, ssl_context=('/home/ubuntu/fullchain.pem', '/home/ubuntu/privkey.pem'))  #use_reloader=False para evitar reinicializações duplicadas)
