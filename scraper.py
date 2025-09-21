@@ -15,6 +15,7 @@ from log_utils import log_debug, log_info, log_warning, log_error
 
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
+    log_info("Agora em web_scrape()")
     start = time.time()
     timeout = False
     # extrai os caracteres numéricos de fundo
