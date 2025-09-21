@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, jsonify
+#from flask import Flask, request, send_from_directory, jsonify
 #from flask_sslify import SSLify
 #from playwright.sync_api import sync_playwright
 from datetime import datetime, timedelta
@@ -7,13 +7,13 @@ import plotly.graph_objects as go
 import pandas as pd
 import requests
 import time
-import json
+#import json
 import os
 
-app = Flask(__name__, static_folder=None)
+
 # sslify = SSLify(app)
 OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
-SECRET_TOKEN = "SK95-AL25-WS33"
+#SECRET_TOKEN = "SK95-AL25-WS33"
 # 🔹 Definições da API
 API_KEY = "KY23IP0KJZYSOU3Y"  # Colocar em uma variável de ambiente
 SYMBOL = "BBAS3"
@@ -52,44 +52,26 @@ def get_cached_image(ticker):
     return None  # 🔹 Força geração de nova imagem se cache expirou
 
 
-@app.route('/chart', methods=['POST'])
-def gerar_grafico():    
-    # 🔹 Verifica autenticação no header
-    token = request.headers.get('x-api-key')
-    if token != SECRET_TOKEN:
-        return jsonify({"error": "Não autorizado! Autenticação falhou"}), 401
-    
-    # 🔹 Abrindo e carregando o JSON salvo
-    #with open("BBAS3.SA.json", "r") as arquivo:
-        #data = json.load(arquivo)
-    
-    data = request.get_json()
-    ticker = data.get('ticker', SYMBOL)  # Usa BBAS3 como padrão
-    if isinstance(ticker, str):
-        ticker = ticker.upper() + ".SA"  # Adiciona sufixo da B3 para Yahoo Finance
-        
-    output_filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png" # Nome do arquivo de saída e caminho do cache
-    
+def gerar_grafico(ticker):
+    ticker = ticker.upper() + ".SA"
+    output_filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png"
     # 🔹 Verifica se já há imagem recente no cache
     cached_image = get_cached_image(ticker)
     if cached_image:
         print(">> Usando imagem em cache.")
-        return jsonify({"url": f"https://graficoapi.duckdns.org:5000/static/{output_filename}"}), 200 # usando dominio do DuckDNS
-    
+        return cached_image
+
     # 🔹 Obtendo dados do yfinance
     try:
         print("requisitando Yahoo Finance ...")
         ativo = yf.Ticker(ticker)
-        historico = ativo.history(period="100d")  # Obtém dados dos últimos 100 dias
+        historico = ativo.history(period="100d")
         print("requisição finalizada para um peíriodo de 100 dias.")
-        
         if historico.empty:
-            return jsonify({"error": "Ticker não encontrado ou sem dados"}), 404
-
+            raise ValueError("Ticker não encontrado ou sem dados")
     except Exception as e:
-        print("Erro ao obter dados do yfinance:", e)
-        return jsonify({"error": "Erro ao obter dados do yfinance"}), 500
-
+        raise RuntimeError(f"Erro ao obter dados do yfinance: {e}")
+    
     # 🔹 Extraindo dados relevantes
     historico.reset_index(inplace=True)
     dados_extraidos = historico[["Date", "High", "Low", "Volume"]].copy()
@@ -259,7 +241,7 @@ def gerar_grafico():
             tickfont=dict(color="rgba(255, 255, 255, 1)", size=14),
             tickformat="%b %d",  # Exibe apenas o mês e o dia
             rangebreaks=[dict(bounds=["sat", "mon"])] # Ignora fins de semana
-            ),
+        ),
         
         xaxis2=dict(
             #title="Data (Topo)",
@@ -297,58 +279,6 @@ def gerar_grafico():
     # 🔹 Salvar o gráfico como PNG
     fig.write_image(output_filename, format="png")
     #fig.show()
-    
-    # Uso de timestamp para evitar cache das imagens
-    #timestamp = int(time.time() * 1000)  # Tempo atual em milissegundos
-    
-    #return jsonify({"url": f"http://204.216.158.137:5000/static/{output_filename}"}), 200
-    return jsonify({"url": f"https://graficoapi.duckdns.org:5000/static/{output_filename}"}), 200 # usando dominio do DuckDNS
+    return output_filename
 
-@app.route("/betterstack-webhook", methods=["POST"])
-def betterstack_webhook():
-    token = request.args.get("token")
-    if token != os.environ.get("WEBHOOK_TOKEN"):  # Proteção opcional
-        return jsonify({"error": "Token inválido"}), 403
-
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Payload ausente"}), 400
-
-    message = data.get("message", "")
-    if "Telegram:BBAS" in message:
-        telegram_text = f"🚨 *Alerta do Better Stack*\n\n{message}"
-        enviar_para_telegram(telegram_text)
-
-    return jsonify({"status": "ok"}), 200
-
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    full_path = os.path.join(OUTPUT_DIR, filename)
-    print(f"Tentando servir: {full_path}")
-    
-     # 🔹 Verifica se o arquivo existe antes de tentar servir
-    if not os.path.exists(full_path):
-        return jsonify({"error": "Arquivo não encontrado"}), 404
-
-    return send_from_directory(OUTPUT_DIR, filename, mimetype="image/png")
-
-@app.route('/')
-def ping():
-    return 'online', 200
-
-if __name__ == '__main__':
-    #cert_path = "/etc/letsencrypt/live/graficoapi.duckdns.org/fullchain.pem" # Arquivos do certificado LLS https
-    #key_path = "/etc/letsencrypt/live/graficoapi.duckdns.org/privkey.pem"
-    # Use esse abaixo se as chaves estiverem na pasta principal:
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True, ssl_context=('fullchain.pem', 'privkey.pem'))  #use_reloader=False para evitar reinicializações duplicadas
-    #app.run(
-    #    host='0.0.0.0',
-    #    port=5000,
-    #    debug=True,
-    #    use_reloader=True,
-    #    ssl_context=(
-    #        '/etc/letsencrypt/live/graficoapi.duckdns.org/fullchain.pem',
-    #        '/etc/letsencrypt/live/graficoapi.duckdns.org/privkey.pem'
-    #    )
-    #)
     
