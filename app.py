@@ -87,134 +87,141 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
-        log_info("PASSOU AQUI")
-        start_time = time.time()
-        #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
-        #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
-        handler_input.response_builder.add_directive(get_dynamic_entities_directive())
-        session_attr = handler_input.attributes_manager.session_attributes
+        try:    
+            log_info("PASSOU AQUI")
+            start_time = time.time()
+            #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
+            #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
+            handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+            session_attr = handler_input.attributes_manager.session_attributes
 
-        # Defina os intervalos em que os favoritos devem ser exibidos
-        intervalos_favoritos = [
-            (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
-            (11, 12),  # exemplo: das 11h às 12h
-            (13, 14),  # exemplo: das 13h às 14h
-            (15, 16),
-            (17, 18),
-            (21, 24),
-            (00, 8)
-            # adicione outros intervalos conforme desejar
-        ]
+            # Defina os intervalos em que os favoritos devem ser exibidos
+            intervalos_favoritos = [
+                (8, 10),   # das 9h às 10h (inclusive 9, exclusivo 10)
+                (11, 12),  # exemplo: das 11h às 12h
+                (13, 14),  # exemplo: das 13h às 14h
+                (15, 16),
+                (17, 18),
+                (21, 24),
+                (00, 8)
+                # adicione outros intervalos conforme desejar
+            ]
 
-        # Exemplo: exibir só favoritos durante o dia 1
-        # hora = datetime.now().hour
-        hora = int(datetime.now(brt_tz).strftime("%H"))
+            # Exemplo: exibir só favoritos durante o dia 1
+            # hora = datetime.now().hour
+            hora = int(datetime.now(brt_tz).strftime("%H"))
 
-        # Função para verificar se a hora está em algum intervalo
-        def intervalos_exibe(hora, intervalos):
-            return any(inicio <= hora < fim for inicio, fim in intervalos)
+            # Função para verificar se a hora está em algum intervalo
+            def intervalos_exibe(hora, intervalos):
+                return any(inicio <= hora < fim for inicio, fim in intervalos)
 
-        if intervalos_exibe(hora, intervalos_favoritos):
-            ativos_ids = ativos_favoritos[:]
-            session_attr["exibir_favoritos"] = True
-        else:
-            ativos_ids = sorted(state_asset_mapping.keys())
-            session_attr["exibir_favoritos"] = False
+            if intervalos_exibe(hora, intervalos_favoritos):
+                ativos_ids = ativos_favoritos[:]
+                session_attr["exibir_favoritos"] = True
+            else:
+                ativos_ids = sorted(state_asset_mapping.keys())
+                session_attr["exibir_favoritos"] = False
+                
+            # Garante que IDs realmente existem no state_asset_mapping
+            ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
+
+            session_attr["ativos_ids"] = ativos_ids
+
+            #log_info(f"Hora: {hora}")
+            log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
+            log_debug(f"ativos_ids definidos: {ativos_ids}")
             
-        # Garante que IDs realmente existem no state_asset_mapping
-        ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
+            # Defina o delay com base em favoritos
+            exibir_favoritos = session_attr.get("exibir_favoritos", False)
+            if exibir_favoritos:
+                delay_ms = 10000  # Favoritos:(10s)
+            else:
+                delay_ms = 1000  # Regulares:(2s)
 
-        session_attr["ativos_ids"] = ativos_ids
-
-        #log_info(f"Hora: {hora}")
-        log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
-        log_debug(f"ativos_ids definidos: {ativos_ids}")
-        
-        # Defina o delay com base em favoritos
-        exibir_favoritos = session_attr.get("exibir_favoritos", False)
-        if exibir_favoritos:
-            delay_ms = 10000  # Favoritos:(10s)
-        else:
-            delay_ms = 1000  # Regulares:(2s)
-
-        # Exibe o primeiro ativo
-        session_attr["state"] = ativos_ids[0]
-        log_debug(f"state inicial: {session_attr['state']}")
-        fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
-        dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
-        
-        # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
-        tempo_processamento = time.time() - start_time
-        log_info(f"Tempo de processamento do ativo {fundo}: {tempo_processamento:.2f}s")
-        
-        # Limite de segurança (ex: 7.5 segundos)
-        LIMITE_TIMEOUT = 8.5
-        
-        # Recupera ou inicializa o contador de tentativas
-        tentativas = session_attr.get("tentativas_timeout", 0)
-        
-        if (timeout or tempo_processamento > LIMITE_TIMEOUT):
-            tentativas += 1
-            session_attr["tentativas_timeout"] = tentativas
+            # Exibe o primeiro ativo
+            session_attr["state"] = ativos_ids[0]
+            log_debug(f"state inicial: {session_attr['state']}")
+            fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
+            dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
             
-            if tentativas >= 5:
-                log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+            # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
+            tempo_processamento = time.time() - start_time
+            log_info(f"Tempo de processamento do ativo {fundo}: {tempo_processamento:.2f}s")
+            
+            # Limite de segurança (ex: 7.5 segundos)
+            LIMITE_TIMEOUT = 8.5
+            
+            # Recupera ou inicializa o contador de tentativas
+            tentativas = session_attr.get("tentativas_timeout", 0)
+            
+            if (timeout or tempo_processamento > LIMITE_TIMEOUT):
+                tentativas += 1
+                session_attr["tentativas_timeout"] = tentativas
+                
+                if tentativas >= 5:
+                    log_warning("Limite de tentativas de timeout atingido. Encerrando skill.")
+                    handler_input.response_builder.speak(
+                        "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                    )
+                    return handler_input.response_builder.set_should_end_session(True).response
+                
+                # Resposta rápida para evitar timeout
                 handler_input.response_builder.speak(
-                    "Ocorreu um atraso repetido na atualização dos ativos. Encerrando a skill por agora. Tente novamente mais tarde."
+                    f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
                 )
-                return handler_input.response_builder.set_should_end_session(True).response
-            
-            # Resposta rápida para evitar timeout
-            handler_input.response_builder.speak(
-                f"Estou buscando as informações do ativo {fundo.upper()}, aguarde um momento..."
+                # Agende o próximo fundo para manter a navegação automática
+                handler_input.response_builder.add_directive(
+                    ExecuteCommandsDirective(
+                        token="mainScreenToken",
+                        commands=[
+                            SendEventCommand(arguments=["autoNavigate"], delay=1000)
+                        ]
+                    )
+                )
+                return handler_input.response_builder.set_should_end_session(False).response
+            else:
+                # Zera o contador se processamento foi rápido
+                session_attr["tentativas_timeout"] = 0
+
+            handler_input.response_builder.add_directive(
+                RenderDocumentDirective(
+                    token="mainScreenToken",
+                    document=apl_document,
+                    datasources={
+                        "dados_update": {
+                            **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
+                        }
+                    }
+                )
             )
-            # Agende o próximo fundo para manter a navegação automática
+            # Só fala se não for favoritos
+            if not session_attr.get("exibir_favoritos"):
+                handler_input.response_builder.speak(
+                    f"<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}"
+                )
+
+            # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
+            session_attr["state"] = ativos_ids[1] if len(ativos_ids) > 1 else None
+
+            # Agende navegação automática
             handler_input.response_builder.add_directive(
                 ExecuteCommandsDirective(
                     token="mainScreenToken",
                     commands=[
-                        SendEventCommand(arguments=["autoNavigate"], delay=1000)
+                        SendEventCommand(
+                            arguments=["autoNavigate"], delay=delay_ms
+                        )
                     ]
                 )
             )
+
             return handler_input.response_builder.set_should_end_session(False).response
-        else:
-            # Zera o contador se processamento foi rápido
-            session_attr["tentativas_timeout"] = 0
-
-        handler_input.response_builder.add_directive(
-            RenderDocumentDirective(
-                token="mainScreenToken",
-                document=apl_document,
-                datasources={
-                    "dados_update": {
-                        **dados_info  # Agora o APL acessa esse valor (** expande o dicionário)
-                    }
-                }
-            )
-        )
-        # Só fala se não for favoritos
-        if not session_attr.get("exibir_favoritos"):
+        except Exception as e:
+            log_error(f"Erro inesperado no LaunchRequestHandler: {e}")
             handler_input.response_builder.speak(
-                f"<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}"
+                "Ocorreu um erro interno. Encerrando a skill."
             )
-
-        # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
-        session_attr["state"] = ativos_ids[1] if len(ativos_ids) > 1 else None
-
-        # Agende navegação automática
-        handler_input.response_builder.add_directive(
-            ExecuteCommandsDirective(
-                token="mainScreenToken",
-                commands=[
-                    SendEventCommand(
-                        arguments=["autoNavigate"], delay=delay_ms
-                    )
-                ]
-            )
-        )
-
-        return handler_input.response_builder.set_should_end_session(False).response
+            return handler_input.response_builder.set_should_end_session(True).response
 # ============================================================================================
 
 # HANDLER PARA ABRIR SKILL DIRETAMENTE EM ALGUM ATIVO
