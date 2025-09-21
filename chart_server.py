@@ -21,6 +21,16 @@ SYMBOL = "BBAS3"
 CACHE_DIR = "./cache"
 CACHE_TIME_LIMIT = 60 * 60  # 🔹 Tempo de cache: 1 hora
 
+# 🔹 Configuração do proxy Tor
+tor_proxies = {
+    'http': 'socks5h://127.0.0.1:9050',
+    'https': 'socks5h://127.0.0.1:9050'
+}
+
+# 🔹 Sessão com proxy Tor
+tor_session = requests.Session()
+tor_session.proxies.update(tor_proxies)
+
 """
 def enviar_para_telegram(mensagem):
     TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -67,7 +77,7 @@ def gerar_grafico(ticker):
     # 🔹 Obtendo dados do yfinance
     try:
         print (f"requisitando Yahoo Finance para {ticker}")
-        ativo = yf.Ticker(ticker)
+        ativo = yf.Ticker(ticker, session=tor_session)
         historico = ativo.history(period="100d")
         print("requisição finalizada para um peíriodo de 100 dias.")
         if historico.empty:
