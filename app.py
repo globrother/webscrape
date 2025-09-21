@@ -217,7 +217,9 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
             return handler_input.response_builder.set_should_end_session(False).response
         except Exception as e:
+            import traceback
             log_error(f"Erro inesperado no LaunchRequestHandler: {e}")
+            print(traceback.format_exc())
             handler_input.response_builder.speak(
                 "Ocorreu um erro interno. Encerrando a skill."
             )
