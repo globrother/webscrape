@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from time import time
 import requests
 import os
