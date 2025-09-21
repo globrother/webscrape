@@ -90,6 +90,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
         try:    
             log_info("PASSOU AQUI")
             start_time = time.time()
+            
+            # Verifica se a sessão está ativa antes de acessar session_attributes
+            if not handler_input.request_envelope.session or not handler_input.request_envelope.session.session_id:
+                log_warning("Requisição sem sessão ativa! Retornando mensagem amigável.")
+                return handler_input.response_builder.speak(
+                    "A sessão não está mais ativa. Por favor, inicie novamente."
+                ).set_should_end_session(True).response
+            
             #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
             #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
             handler_input.response_builder.add_directive(get_dynamic_entities_directive())
