@@ -6,6 +6,7 @@ import os
 import http.client
 import json
 import requests
+import sqlite3
 import time
 import html
 
@@ -19,24 +20,30 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 #log_info('--> Preparando para gerenciar o hitórico ...')
 
 # Configurar a conexão com o Back4App
-APPLICATION_ID = os.getenv("APPLICATION_ID")
-REST_API_KEY = os.getenv("REST_API_KEY")
+#APPLICATION_ID = os.getenv("APPLICATION_ID")
+#REST_API_KEY = os.getenv("REST_API_KEY")
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
 
-# Função para criar uma nova classe dinamicamente
-def create_dynamic_class(class_name):
-    return class_name
+#criando conexão com o banco SQLite
+def conectar_sqlite():
+    return sqlite3.connect("finance.db")
 
+"""# Função para criar uma nova classe dinamicamente
+def create_dynamic_class(class_name):
+    return class_name"""
+
+"""
 def obter_nome_classe(sufixo):
     # Função para gerar o nome da classe
     if len(sufixo) > 6:
         return sufixo
     else:
         return f"historico_{sufixo}"
+"""
 
-def testar_conexao():
+"""def testar_conexao():
     try:
         connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
         connection.connect()
@@ -55,8 +62,42 @@ def testar_conexao():
             return False
     except Exception as e:
         log_error(f"\nErro ao conectar com o servidor Back4App: {e}\n")
-        return False
+        return False"""
 
+def gravar_historico(sufixo, valor, var_fii_telegram=None):
+    log_debug("Agora no método gravar_historico")
+    conn = conectar_sqlite()
+    cursor = conn.cursor()
+
+    data_atual = datetime.datetime.now(brt_tz).strftime("%d/%m/%Y")
+    tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
+
+    # Verifica se o valor já existe
+    cursor.execute("SELECT valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC LIMIT 1", (sufixo,))
+    resultado = cursor.fetchone()
+    if resultado and resultado[0] == valor:
+        log_warning("Valor igual ao último registrado. Abortando gravar.")
+        conn.close()
+        return
+
+    # Envia alerta Telegram
+    fii_safe = html.escape(sufixo.upper())
+    cota_safe = html.escape(f"{valor}")
+    mensagem = (
+        f"<b>Gobs-Finance</b>: {var_fii_telegram}\n"
+        f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>"
+    )
+    log_telegram(mensagem)
+
+    # Insere novo registro
+    cursor.execute("INSERT INTO historico (data, tempo, valor, ativo) VALUES (?, ?, ?, ?)",
+                   (data_atual, tempo_atual, valor, sufixo))
+    conn.commit()
+    conn.close()
+    log_info("Histórico gravado com sucesso.")
+
+
+"""
 def gravar_historico(sufixo, valor, var_fii_telegram=None):
     log_debug("Agora no método gravar_historico")
     #log_info("--> Iniciando Gravar Histórico")
@@ -152,7 +193,22 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
             })
             connection.getresponse()
             connection.close()
+"""
 
+def ler_historico(sufixo):
+    log_debug("Agora no método ler_historico")
+    try:
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+        cursor.execute("SELECT data, tempo, valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC", (sufixo,))
+        historico = [{"data": row[0], "tempo": row[1], "valor": row[2]} for row in cursor.fetchall()]
+        conn.close()
+        return historico
+    except Exception as e:
+        log_error(f"Erro ao ler histórico: {e}")
+        return []
+
+"""
 def ler_historico(sufixo):
     log_debug("Agora no método ler_historico")
 
@@ -185,6 +241,7 @@ def ler_historico(sufixo):
     except Exception as e:
         log_error(f"Erro ao ler histórico: {e}")
         return []  # Retorna uma lista vazia em caso de erro
+"""
  
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
@@ -231,6 +288,49 @@ _ativos_cache = None
 _ativos_cache_time = 0
 _CACHE_TTL = 60 * 10  # 10 minutos
 
+
+def carregar_ativos():
+    log_debug("Agora no método carregar_ativos")
+    global _ativos_cache, _ativos_cache_time
+    agora = time.time()
+
+    # Se o cache existe e não expirou, retorna do cache
+    if _ativos_cache and (agora - _ativos_cache_time) < _CACHE_TTL:
+        return _ativos_cache
+
+    try:
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+        cursor.execute("SELECT state_id, status, codigo, nome, favorite, apelido FROM ativos")
+        ativos_raw = cursor.fetchall()
+        conn.close()
+
+        # Converte para lista de dicionários
+        ativos = [
+            {
+                "state_id": row[0],
+                "status": row[1],
+                "codigo": row[2],
+                "nome": row[3],
+                "favorite": row[4],
+                "apelido": row[5]
+            }
+            for row in ativos_raw
+        ]
+
+        # Cria o mapeamento por state_id
+        state_fund_mapping = {f["state_id"]: f for f in ativos if f["status"]}
+
+        # Atualiza o cache
+        _ativos_cache = (state_fund_mapping, ativos)
+        _ativos_cache_time = agora
+        return _ativos_cache
+
+    except Exception as e:
+        log_error(f"❌ Erro ao carregar ativos do SQLite: {e}")
+        return ({}, [])
+
+"""
 def carregar_ativos():
     log_debug("Agora no método carregar_ativos")
     global _ativos_cache, _ativos_cache_time
@@ -270,8 +370,49 @@ def carregar_ativos():
 
 # Exemplo de uso:
 #state_fund_mapping, lista_ativos = carregar_ativos()
+"""
 
 #::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
+def adicionar_ativo(ativo_dict):
+    log_debug("Agora no método adicionar_ativo")
+
+    try:
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+
+        # Extrai os campos esperados do dicionário
+        state_id = ativo_dict.get("state_id")
+        status = ativo_dict.get("status", 1)
+        codigo = ativo_dict.get("codigo")
+        nome = ativo_dict.get("nome", "")
+        favorite = ativo_dict.get("favorite", 0)
+        apelido = ativo_dict.get("apelido", "")
+
+        # Verifica se o ativo já existe
+        cursor.execute("SELECT COUNT(*) FROM ativos WHERE state_id = ?", (state_id,))
+        existe = cursor.fetchone()[0]
+
+        if existe:
+            log_warning(f"⚠️ Ativo com state_id {state_id} já existe. Abortando inserção.")
+            conn.close()
+            return False
+
+        # Insere novo ativo
+        cursor.execute("""
+            INSERT INTO ativos (state_id, status, codigo, nome, favorite, apelido)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (state_id, status, codigo, nome, favorite, apelido))
+
+        conn.commit()
+        conn.close()
+        log_info(f"✅ Ativo cadastrado com sucesso: {ativo_dict}")
+        return True
+
+    except Exception as e:
+        log_error(f"❌ Erro ao cadastrar ativo no SQLite: {e}")
+        return False
+
+"""
 def adicionar_ativo(ativo_dict):
     log_debug("Agora no método adicionar_ativo")
     url = "https://parseapi.back4app.com/classes/map_ativo"
@@ -288,8 +429,38 @@ def adicionar_ativo(ativo_dict):
     else:
         log_error(f"❌ Erro ao cadastrar ativo: {response.text}")
         return False
-
+"""
 #::--> EXCLUIR ATIVO AO BANCO DE DADOS <--::
+def excluir_ativo(state_id):
+    log_debug(f"🗑️ Agora no método excluir_ativo: {state_id}")
+
+    try:
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+
+        # Verifica se o ativo existe
+        cursor.execute("SELECT COUNT(*) FROM ativos WHERE state_id = ?", (state_id,))
+        existe = cursor.fetchone()[0]
+
+        if not existe:
+            log_warning(f"⚠️ Ativo com state_id {state_id} não encontrado. Nada foi excluído.")
+            conn.close()
+            return False
+
+        # Exclui o ativo
+        cursor.execute("DELETE FROM ativos WHERE state_id = ?", (state_id,))
+        conn.commit()
+        conn.close()
+
+        log_info(f"✅ Ativo excluído com sucesso: {state_id}")
+        return True
+
+    except Exception as e:
+        log_error(f"❌ Erro ao excluir ativo no SQLite: {e}")
+        return False
+
+
+"""
 def excluir_ativo(object_id):
     log_debug(f"🗑️ Agora no método excluir_ativo: {object_id}")
     url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
@@ -303,9 +474,39 @@ def excluir_ativo(object_id):
         return True
     else:
         log_error(f"❌ Erro ao excluir ativo: {response.text}")
-        return False
+        return False"""
 
 # ::--> ATUALIZAR STATUS DO ATIVO <--::
+def atualizar_status_ativo(state_id, status: bool):
+    log_debug(f"Atualizando status do ativo {state_id} para {status}")
+
+    try:
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+
+        # Verifica se o ativo existe
+        cursor.execute("SELECT COUNT(*) FROM ativos WHERE state_id = ?", (state_id,))
+        existe = cursor.fetchone()[0]
+
+        if not existe:
+            log_warning(f"⚠️ Ativo com state_id {state_id} não encontrado. Nada foi atualizado.")
+            conn.close()
+            return False
+
+        # Atualiza o status
+        cursor.execute("UPDATE ativos SET status = ? WHERE state_id = ?", (int(status), state_id))
+        conn.commit()
+        conn.close()
+
+        log_info(f"✔️ Status atualizado com sucesso para {status}")
+        return True
+
+    except Exception as e:
+        log_error(f"❌ Erro ao atualizar status no SQLite: {e}")
+        return False
+
+
+"""
 def atualizar_status_ativo(object_id, status: bool):
     log_debug(f"Atualizando status do ativo {object_id} para {status}")
     url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
@@ -322,8 +523,37 @@ def atualizar_status_ativo(object_id, status: bool):
     else:
         log_error(f"❌ Erro ao atualizar status: {response.text}")
         return False
+"""
 
 # ::--> ATUALIZAR FAVORITE DO ATIVO <--::
+def atualizar_favorito(state_id, favorito_bool):
+    try:
+        log_debug(f"Atualizando favorito do ativo {state_id} para {favorito_bool}")
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+
+        # Verifica se o ativo existe
+        cursor.execute("SELECT COUNT(*) FROM ativos WHERE state_id = ?", (state_id,))
+        existe = cursor.fetchone()[0]
+
+        if not existe:
+            log_warning(f"⚠️ Ativo com state_id {state_id} não encontrado. Nada foi atualizado.")
+            conn.close()
+            return False
+
+        # Atualiza o campo favorite
+        cursor.execute("UPDATE ativos SET favorite = ? WHERE state_id = ?", (int(favorito_bool), state_id))
+        conn.commit()
+        conn.close()
+
+        log_info(f"✔️ Favorito atualizado com sucesso para {favorito_bool}")
+        return True
+
+    except Exception as e:
+        log_error(f"❌ Erro ao atualizar favorito no SQLite: {e}")
+        return False
+
+"""
 def atualizar_favorito(object_id, favorito_bool):
     try:
         log_debug(f"Atualizando status do ativo {object_id} para {favorito_bool}")
@@ -346,4 +576,4 @@ def atualizar_favorito(object_id, favorito_bool):
     except Exception as e:
         log_error(f"Erro ao atualizar favorito: {e}")
         return False
-
+"""

@@ -472,29 +472,28 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     f"O ativo {sigla.upper()} não foi encontrado."
                 ).set_should_end_session(False).response
 
-            if ativo:
-                object_id = ativo.get("objectId")
-                novo_status = session_attr.get("acao_status")
-                if novo_status is None:
-                    log_warning("O status do ativo não foi especificado.")
-                    return handler_input.response_builder.speak(
-                        "O status do ativo não foi especificado."
-                    ).set_should_end_session(False).response
-                    
-                log_debug(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
-                sucesso = grava_historico.atualizar_status_ativo(object_id, novo_status)
-                
-                if sucesso:
-                    grava_historico._ativos_cache = None
-                    grava_historico._ativos_cache_time = 0
-                    log_debug(f"🔁 Status de {sigla} agora é: {novo_status}")
-                    #return handler_input.response_builder.speak("Tudo OK.").response
-                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
-                else:
-                    log_warning("Erro ao atualizar status.")
-                    return handler_input.response_builder.speak("Erro ao atualizar status.").response
+            state_id = ativo.get("state_id")
+            novo_status = session_attr.get("acao_status")
+
+            if novo_status is None:
+                log_warning("O status do ativo não foi especificado.")
+                return handler_input.response_builder.speak(
+                    "O status do ativo não foi especificado."
+                ).set_should_end_session(False).response
+
+            log_debug(f"🔁 Estado de Status: {sigla.upper()}: {novo_status}")
+            sucesso = grava_historico.atualizar_status_ativo(state_id, novo_status)
+
+            if sucesso:
+                grava_historico._ativos_cache = None
+                grava_historico._ativos_cache_time = 0
+                log_debug(f"🔁 Status de {sigla} agora é: {novo_status}")
+                return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+            else:
+                log_warning("Erro ao atualizar status.")
+                return handler_input.response_builder.speak("Erro ao atualizar status.").response
+
         # -----------------------------------------------
-        
         if arguments[0] == "toggleFavorito":
             log_debug("Entrou no toggleFavorito")
             sigla = session_attr.get("novo_ativo_sigla")
@@ -504,36 +503,31 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                 return handler_input.response_builder.speak(
                     "Nenhum ativo está selecionado para favoritamento."
                 ).set_should_end_session(False).response
-            
+
             _, lista_ativos = grava_historico.carregar_ativos()
-            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None) # retorna EX: "xpml11"
-            #log_debug(f"Valor de ativo: {ativo}")
-            
-            # Recarrega lista e encontra o objectId
-            _, lista_ativos = grava_historico.carregar_ativos()
-            ativo_encontrado = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
+            ativo = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
 
             if not ativo:
                 return handler_input.response_builder.speak(
                     f"Não encontrei o ativo {sigla.upper()} para incluir aos favoritos."
                 ).set_should_end_session(False).response
 
-            if ativo:
-                object_id = ativo["objectId"]
-                novo_favorito = not ativo.get("favorite", False)
-                novo_favorito = not session_attr.get("favorito_atual", ativo.get("favorite", False))
-                sucesso = grava_historico.atualizar_favorito(object_id, novo_favorito)
+            state_id = ativo.get("state_id")
+            favorito_atual = ativo.get("favorite", 0)
+            novo_favorito = not session_attr.get("favorito_atual", bool(favorito_atual))
 
-                if sucesso:
-                    grava_historico._ativos_cache = None
-                    grava_historico._ativos_cache_time = 0
-                    session_attr["favorito_atual"] = novo_favorito # Atualiza o estado do favorito
-                    log_debug(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
-                    #return handler_input.response_builder.speak("Tudo OK.").response
-                    return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
-                else:
-                    log_warning("Erro ao atualizar favoritos.")
-                    return handler_input.response_builder.speak("Erro ao atualizar favorito.").response
+            sucesso = grava_historico.atualizar_favorito(state_id, novo_favorito)
+
+            if sucesso:
+                grava_historico._ativos_cache = None
+                grava_historico._ativos_cache_time = 0
+                session_attr["favorito_atual"] = novo_favorito
+                log_debug(f"🔁 Favorite de {sigla} agora é: {novo_favorito}")
+                return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
+            else:
+                log_warning("Erro ao atualizar favoritos.")
+                return handler_input.response_builder.speak("Erro ao atualizar favorito.").response
+
 
         # -----------------------------------------------
         if arguments[0] == "nomeAtivo":
@@ -569,12 +563,13 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
             session_attr["tipo_acao"] = "excluir"
             sigla = session_attr.get("novo_ativo_sigla")
             log_debug(f"O valor de Sigla é: {sigla}")
+
             if not sigla:
                 return handler_input.response_builder.speak(
                     "Nenhum ativo selecionado para exclusão."
                 ).set_should_end_session(False).response
 
-            # Recarrega lista e encontra o objectId
+            # Recarrega lista e encontra o ativo pelo código
             _, lista_ativos = grava_historico.carregar_ativos()
             ativo_encontrado = next((a for a in lista_ativos if a['codigo'].lower() == sigla), None)
 
@@ -583,20 +578,21 @@ class GerenciarAtivoInputHandler(APLUserEventHandler):
                     f"Não encontrei o ativo {sigla.upper()} para excluir."
                 ).set_should_end_session(False).response
 
-            object_id = ativo_encontrado.get("objectId")
-            if object_id:
-                sucesso = grava_historico.excluir_ativo(object_id)
+            # Usa state_id em vez de objectId
+            state_id = ativo_encontrado.get("state_id")
+            if state_id:
+                sucesso = grava_historico.excluir_ativo(state_id)
 
                 if sucesso:
-                    # Apaga da memória também
+                    # Limpa o cache
                     grava_historico._ativos_cache = None
                     grava_historico._ativos_cache_time = 0
                     state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
                     return iniciar_processamento(handler_input, "siglaAtivo", [sigla])
                 else:
-                    handler_input.response_builder.speak(
+                    return handler_input.response_builder.speak(
                         f"Não foi possível excluir o ativo {sigla.upper()}."
-                )
+                    ).set_should_end_session(False).response
         # -----------------------------------------------
         
         if arguments[0] == "confirmarCadastro":
