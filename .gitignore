@@ -30,3 +30,6 @@ __pycache__/
 
 # Ignorar arquivos de dependências
 node_modules/
+
+# ignorar arquivos de banco de dados
+Back4App_data/*.csv
