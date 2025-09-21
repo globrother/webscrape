@@ -28,4 +28,4 @@ for arquivo in os.listdir("Back4App_data"):
         df.to_sql("alertas", conn, if_exists="append", index=False)
 
 conn.close()
-print("FIM")
+print("FINALIZADO")
