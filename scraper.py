@@ -36,6 +36,10 @@ def web_scrape(fundo):
     # 🔹 Obtendo Url do Gráfico
     url_grafico = obter_grafico.requisitando_chart(fii)
     timestamp = int(time.time() // 3600)  # 🔹 Atualiza a cada hora
+    
+    if url_grafico is None:
+        raise ValueError("url_grafico está None. Verifique a origem dos dados.")
+    
     url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
     #log_info(f"URL do Gráfico: {url_grafico}")
     

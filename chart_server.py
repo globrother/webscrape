@@ -21,6 +21,7 @@ SYMBOL = "BBAS3"
 CACHE_DIR = "./cache"
 CACHE_TIME_LIMIT = 60 * 60  # 🔹 Tempo de cache: 1 hora
 
+"""
 def enviar_para_telegram(mensagem):
     TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
     CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
@@ -39,7 +40,8 @@ def enviar_para_telegram(mensagem):
         requests.post(url, json=payload)
     except Exception as e:
         print(f"Erro ao enviar para Telegram: {e}")
-
+"""
+print("Iniciando Rederização do Gráfico")
 # 🔹 Função para verificar se o gráfico já existe no cache
 def get_cached_image(ticker):
     filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png"
@@ -53,8 +55,9 @@ def get_cached_image(ticker):
 
 
 def gerar_grafico(ticker):
+    print("Gerando Gráfico")
     ticker = ticker.upper() + ".SA"
-    output_filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png"
+    output_filename = f"{CACHE_DIR}/grafico-{ticker}-100dias.png"
     # 🔹 Verifica se já há imagem recente no cache
     cached_image = get_cached_image(ticker)
     if cached_image:
@@ -278,6 +281,7 @@ def gerar_grafico(ticker):
 
     # 🔹 Salvar o gráfico como PNG
     fig.write_image(output_filename, format="png")
+    print("Gráfico Gerado com Sucesso")
     #fig.show()
     return output_filename
 
