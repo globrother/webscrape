@@ -77,7 +77,7 @@ def gerar_grafico(ticker):
     # 🔹 Obtendo dados do yfinance
     try:
         print (f"requisitando Yahoo Finance para {ticker}")
-        ativo = yf.Ticker(ticker, session=tor_session)
+        ativo = yf.Ticker(ticker) #, session=tor_session)
         historico = ativo.history(period="100d")
         print("requisição finalizada para um peíriodo de 100 dias.")
         if historico.empty:
