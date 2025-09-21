@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup
 from utils import limpar_asset_name
 from time import time
 import grava_historico
-import app
+#import app
 import json
-import html
-import os
+#import html
+#import os
 # import locale
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
