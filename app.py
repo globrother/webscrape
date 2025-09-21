@@ -12,6 +12,7 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 
 # import locale
 from dotenv import load_dotenv
+load_dotenv()
 import time
 from datetime import datetime
 import pytz
@@ -59,8 +60,6 @@ time.sleep(1)
 app = Flask(__name__)
 
 log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
-
-load_dotenv()
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
