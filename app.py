@@ -11,6 +11,7 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
 # import locale
+from dotenv import load_dotenv
 import time
 from datetime import datetime
 import pytz
@@ -59,6 +60,7 @@ app = Flask(__name__)
 
 log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 
+load_dotenv()
 # Configurar a localidade para o formato de número correto
 # locale.setlocale(locale.LC_NUMERIC, 'pt_BR.UTF-8')
 
