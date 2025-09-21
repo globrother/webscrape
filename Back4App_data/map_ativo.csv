@@ -1,0 +1,14 @@
+state_id,status,codigo,nome,favorite,apelido
+7,True,kncr11,Kinea Rendimentos,False,KNCR
+4,True,mxrf11,Maxi Renda,False,MXRF
+10,True,knri11,Kinea Renda Imobiliária,False,KNRI
+5,True,xplg11,XP Log,False,XPLG
+2,True,xpml11,XP Malls,True,XPML
+11,True,rztr11,Riza Terrax,False,RZTR
+3,True,tgar11,TG Ativo Real,True,TGAR
+6,True,btlg11,BTG Logística,False,BTLG
+1,True,bbas3,Banco do Brasil,True,BBAS
+8,True,bees3,Banestes,False,BEES
+12,True,petr4,Petrobras,True,PETR
+15,True,kore11,Kinea Oportunidades,False,KORE
+9,True,hglg11,hglg,False,HGLG
