@@ -8,11 +8,11 @@ from infofii import get_dadosfii
 import grava_historico
 import obter_grafico
 import time
-log_info("Agora em web_scrape()")
+
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error
 # =====================================================================
-
+log_info("Agora em web_scrape()")
 # ===============::::: SESSÃO WEBSCRAPE :::::===============
 def web_scrape(fundo):
     log_info("Agora em web_scrape()")
