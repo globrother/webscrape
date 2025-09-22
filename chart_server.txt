@@ -21,9 +21,6 @@ SYMBOL = "BBAS3"
 CACHE_DIR = "./cache"
 CACHE_TIME_LIMIT = 60 * 60  # 🔹 Tempo de cache: 1 hora
 
-if not os.path.exists(CACHE_DIR):
-    os.makedirs(CACHE_DIR)
-
 """
 def enviar_para_telegram(mensagem):
     TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
@@ -75,22 +72,16 @@ def gerar_grafico(ticker):
         print("requisição finalizada para um peíriodo de 100 dias.")
         if historico.empty:
             raise ValueError("Ticker não encontrado ou sem dados")
-    except ValueError as e:
-        raise ValueError(f"Ticker inválido ou sem dados: {e}")
-    except ConnectionError as e:
-        raise ConnectionError(f"Falha de rede ao consultar o Yahoo Finance: {e}")
     except Exception as e:
-        raise RuntimeError(f"Erro inesperado ao consultar o Yahoo Finance: {e}")
+        raise RuntimeError(f"Erro ao obter dados do yfinance: {e}")
     
     # 🔹 Extraindo dados relevantes
     try:
         historico.reset_index(inplace=True)
         dados_extraidos = historico[["Date", "High", "Low", "Volume"]].copy()
         dados_extraidos.columns = ["data", "maximo", "minimo", "volume"]
-    except KeyError as e:
-        raise KeyError(f"Coluna esperada não encontrada: {e}")
     except Exception as e:
-        raise RuntimeError(f"Erro ao processar dados históricos: {e}")
+        raise RuntimeError(f"Erro ao extrair dados relevantes: {e}")
 
     # 🔹 Criando DataFrame
     try:
@@ -291,27 +282,16 @@ def gerar_grafico(ticker):
             margin=dict(l=30, r=40, t=40, b=40),
             uniformtext=dict(minsize=14, mode="show")
         )
-    except ValueError as e:
-        raise ValueError(f"Erro nos dados do gráfico: {e}")
-    except TypeError as e:
-        raise TypeError(f"Tipo de dado incompatível para gráfico: {e}")
     except Exception as e:
-        raise RuntimeError(f"Erro inesperado ao gerar gráfico: {e}")
+        raise RuntimeError(f"Erro ao extrair dados: {e}")
     
     # 🔹 Salvar o gráfico como PNG
     try:
         fig.write_image(output_filename, format="png")
-        if not os.path.exists(output_filename):
-            raise RuntimeError("Arquivo não foi gerado.")
         print("Gráfico Gerado com Sucesso")
-        return output_filename 
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"Falha ao salvar gráfico: {e}")
-    except OSError as e:
-        raise OSError(f"Erro de sistema ao salvar gráfico: {e}")
-    except ValueError as e:
-        raise ValueError(f"Erro de configuração do Plotly/Kaleido: {e}")
+        #fig.show()
+        return output_filename
     except Exception as e:
-        raise RuntimeError(f"Erro inesperado ao salvar gráfico: {e}")
+        raise RuntimeError(f"Erro ao salvar gráfico (png):{e}")
 
     
