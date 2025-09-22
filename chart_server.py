@@ -303,7 +303,7 @@ def gerar_grafico(ticker):
         print("chamando write_image para salvar gráfico")
         img_bytes = fig.to_image(format="png")
         with open(output_filename, "wb") as f:
-            f.write_image(img_bytes)
+            f.write(img_bytes)  # grava os bytes no arquivo
         if not os.path.exists(output_filename):
             raise FileNotFoundError("Gráfico não foi salvo. Verifique Kaleido ou permissões.")
         if not os.path.exists(output_filename):
