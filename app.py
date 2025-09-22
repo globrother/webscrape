@@ -1906,6 +1906,7 @@ def webhook():
 
 OUTPUT_DIR = "/home/ubuntu/webscrape/cache"
 
+@app.route('/static/<path:filename>')
 def static_files(filename):
     full_path = os.path.join(OUTPUT_DIR, filename)
     print(f"Tentando servir: {full_path}")
