@@ -61,7 +61,7 @@ brt_tz = pytz.timezone("America/Sao_Paulo")
 
 time.sleep(1)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 
 log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 # Configurar a localidade para o formato de número correto
