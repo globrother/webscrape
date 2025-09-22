@@ -4,7 +4,7 @@ import os
 try:
     fig = px.line(x=[1, 2, 3], y=[10, 20, 30])
     print("chamando fig.write_image")
-    fig.write_image("teste.png")
+    fig.write_image("teste1.png")
     if not os.path.exists("teste.png"):
         raise FileNotFoundError("Gráfico não foi salvo. Verifique Kaleido ou permissões.")
     print("finalizando")
