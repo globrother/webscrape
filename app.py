@@ -1905,6 +1905,11 @@ def webhook():
     return jsonify(response)
 
 @app.route('/static/<path:filename>')
+def test():
+    test_path = os.path.join(OUTPUT_DIR, "grafico-BBAS3.SA-100dias.png")
+    exists = os.path.exists(test_path)
+    return f"Path: {test_path} — Exists: {exists}"
+
 def static_files(filename):
     full_path = os.path.join(OUTPUT_DIR, filename)
     print(f"Tentando servir: {full_path}")
