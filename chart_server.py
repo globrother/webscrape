@@ -300,7 +300,10 @@ def gerar_grafico(ticker):
     
     # 🔹 Salvar o gráfico como PNG
     try:
+        print("chamando write_image para salavar gráfico")
         fig.write_image(output_filename, format="png")
+        if not os.path.exists(output_filename):
+            raise FileNotFoundError("Gráfico não foi salvo. Verifique Kaleido ou permissões.")
         if not os.path.exists(output_filename):
             raise RuntimeError("Arquivo não foi gerado.")
         print("Gráfico Gerado com Sucesso")
