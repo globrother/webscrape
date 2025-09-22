@@ -1917,6 +1917,13 @@ def static_files(filename):
 
     return send_from_directory(OUTPUT_DIR, filename, mimetype="image/png")
 
+@app.route('/test')
+def test():
+    filename = "grafico-BBAS3.SA-100dias.png"
+    full_path = os.path.join(OUTPUT_DIR, filename)
+    exists = os.path.exists(full_path)
+    return f"Path: {full_path} — Exists: {exists}"
+
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
     app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=False)  #use_reloader=False para evitar reinicializações duplicadas)
