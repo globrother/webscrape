@@ -41,7 +41,7 @@ def web_scrape(fundo):
         raise ValueError("url_grafico está None. Verifique a origem dos dados.")
     
     #url_grafico = f"{url_grafico}&v={timestamp}" if "?" in url_grafico else f"{url_grafico}?v={timestamp}" # verifica se já tem ? e atribui
-    url_grafico = f"/home/ubuntu{url_grafico}"
+    url_grafico = f"/home/ubuntu/webscrape/{url_grafico}"
     log_info(f"URL do Gráfico: {url_grafico}")
     
     limite_timeout = 3.5
