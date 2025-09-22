@@ -53,7 +53,8 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_intent_ev
 # ============================================================================
 
 # Diretório para servir imagem do gráfico
-OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
+OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "cache")
+
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
