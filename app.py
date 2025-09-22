@@ -20,7 +20,7 @@ import os
 import json
 #import requests
 #from bs4 import BeautifulSoup
-from flask import Flask, request, jsonify
+from flask import Flask, request, send_from_directory, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.utils import (
     is_request_type, get_supported_interfaces, is_intent_name,  get_slot_value)
@@ -51,6 +51,9 @@ import grava_historico
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
 # ============================================================================
+
+# Diretório para servir imagem do gráfico
+OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
@@ -1899,6 +1902,17 @@ def webhook():
     response = sb.lambda_handler()(data, None)
     log_info("✅ Resposta gerada com sucesso para a Alexa.")
     return jsonify(response)
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    full_path = os.path.join(OUTPUT_DIR, filename)
+    print(f"Tentando servir: {full_path}")
+    
+     # 🔹 Verifica se o arquivo existe antes de tentar servir
+    if not os.path.exists(full_path):
+        return jsonify({"error": "Arquivo não encontrado"}), 404
+
+    return send_from_directory(OUTPUT_DIR, filename, mimetype="image/png")
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
