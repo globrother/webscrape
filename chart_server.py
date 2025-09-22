@@ -10,6 +10,9 @@ import time
 #import json
 import os
 
+import sys
+ticker = sys.argv[1]
+
 
 # sslify = SSLify(app)
 OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
