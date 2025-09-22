@@ -50,6 +50,7 @@ def enviar_para_telegram(mensagem):
 print("Iniciando Rederização do Gráfico")
 # 🔹 Função para verificar se o gráfico já existe no cache
 def get_cached_image(ticker):
+    print("CACHE")
     filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png"
     
     if os.path.exists(filename):
@@ -302,9 +303,15 @@ def gerar_grafico(ticker):
         raise RuntimeError(f"Erro inesperado ao gerar gráfico: {e}")
     
     # 🔹 Salvar o gráfico como PNG
+    img_bytes = fig.to_image(format="png")
+
+    f.write(img_bytes)
+
     try:
         print("chamando write_image para salvar gráfico")
-        fig.write_image(output_filename, format="png")
+        img_bytes = fig.to_image(format="png")
+        with open(output_filename, "wb") as f:
+            f.write_image(img_bytes)
         if not os.path.exists(output_filename):
             raise FileNotFoundError("Gráfico não foi salvo. Verifique Kaleido ou permissões.")
         if not os.path.exists(output_filename):
