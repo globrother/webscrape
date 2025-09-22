@@ -299,10 +299,6 @@ def gerar_grafico(ticker):
         raise RuntimeError(f"Erro inesperado ao gerar gráfico: {e}")
     
     # 🔹 Salvar o gráfico como PNG
-    img_bytes = fig.to_image(format="png")
-
-    f.write(img_bytes)
-
     try:
         print("chamando write_image para salvar gráfico")
         img_bytes = fig.to_image(format="png")
