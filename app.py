@@ -289,7 +289,7 @@ class WakeUpIntentHandler(AbstractRequestHandler):
         # 🔹 Consulta os ativos do banco
         conn = conectar_sqlite()
         cursor = conn.cursor()
-        cursor.execute("SELECT ticker FROM ativos WHERE status = True")
+        cursor.execute("SELECT codigo FROM ativos WHERE status = True")
         ativos = [row[0] for row in cursor.fetchall()]
         conn.close()
         
