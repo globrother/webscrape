@@ -19,6 +19,7 @@ import pytz
 import os
 import json
 import sqlite3
+import threading
 #import requests
 #from bs4 import BeautifulSoup
 from flask import Flask, request, send_from_directory, jsonify
@@ -81,6 +82,29 @@ log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 #voz_xpml11 = voz_mxrf11 = voz_xplg11 = voz_btlg11 = voz_kncr11 = voz_knri11 = None
 
 # ====================::::: CLASSES E INTENTS DA SKILL ALEXA :::::====================
+
+def gerar_todos_os_graficos():
+    log_info("🔄 Iniciando geração de gráficos em segundo plano...")
+    try:
+        # 🔹 Consulta os ativos do banco
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+        cursor.execute("SELECT codigo FROM ativos WHERE status = True")
+        ativos = [row[0] for row in cursor.fetchall()]
+        conn.close()
+
+        # 🔹 Gera os gráficos
+        graficos_gerados = []
+        for ticker in ativos:
+            url = requisitando_chart(ticker)
+            if url:
+                graficos_gerados.append((ticker, url))
+                
+            log_info(f"✅ Gráfico gerado para {ticker}")
+    except Exception as e:
+        log_error(f"❌ Erro ao gerar gráficos em segundo plano: {e}")
+
+
 
 # HANDLER INICIAL DA SKILL, EXIBE PRIMEIRO ATIVO
 class LaunchRequestHandler(AbstractRequestHandler):
@@ -283,32 +307,15 @@ class WakeUpIntentHandler(AbstractRequestHandler):
         # Lógica para acordar o servidor ou atualizar o tempo para a próxima hibernação
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["server_status"] = True
-        
-        
-        
-        # 🔹 Consulta os ativos do banco
-        conn = conectar_sqlite()
-        cursor = conn.cursor()
-        cursor.execute("SELECT codigo FROM ativos WHERE status = True")
-        ativos = [row[0] for row in cursor.fetchall()]
-        conn.close()
-        
-        # 🔹 Gera os gráficos
-        graficos_gerados = []
-        for ticker in ativos:
-            url = requisitando_chart(ticker)
-            if url:
-                graficos_gerados.append((ticker, url))
 
-        # 🔹 Mensagem para Alexa
-        if graficos_gerados:
-            primeiro = graficos_gerados[0]
-            speech_text = (
-                f"<speak><prosody volume='x-soft'>O servidor foi acordado. "
-                f"O gráfico de {primeiro[0]} está disponível em: <break time='300ms'/> {primeiro[1]}</prosody></speak>"
-            )
-        else:
-            speech_text = "<speak><prosody volume='x-soft'>O servidor foi acordado, mas nenhum gráfico foi gerado.</prosody></speak>"
+        # 🔹 Dispara a geração de gráficos em segundo plano
+        threading.Thread(target=gerar_todos_os_graficos).start()
+
+        # 🔹 Resposta rápida para Alexa
+        speech_text = (
+            "<speak><prosody volume='x-soft'>O servidor foi acordado. "
+            "Os gráficos estão sendo preparados agora em segundo plano.</prosody></speak>"
+        )
         
         # Verifica se o servidor está hibernado
         if session_attr.get("server_status"):
