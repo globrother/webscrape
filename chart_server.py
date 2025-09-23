@@ -12,7 +12,6 @@ import os
 
 # sslify = SSLify(app)
 OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
-#SECRET_TOKEN = "SK95-AL25-WS33"
 # 🔹 Definições da API
 API_KEY = "KY23IP0KJZYSOU3Y"  # Colocar em uma variável de ambiente
 SYMBOL = "BBAS3"

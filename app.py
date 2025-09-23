@@ -49,12 +49,11 @@ from alert_service import tratar_alerta
 from scraper import web_scrape
 from obter_grafico import requisitando_chart
 import grava_historico
-
 # ============================================================================================
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
-# ============================================================================
+# =====================================================================
 
 # Diretório para servir imagem do gráfico
 OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "cache")
@@ -1947,7 +1946,14 @@ def webhook():
 OUTPUT_DIR = "/home/ubuntu/webscrape/cache"
 
 @app.route('/static/<path:filename>')
+
+# 🔹 Verifica autenticação no header
 def static_files(filename):
+    
+    token = request.headers.get('x-api-key')
+    if token != SECRET_TOKEN:
+        return jsonify({"error": "Não autorizado! Autenticação falhou"}), 401
+    
     full_path = os.path.join(OUTPUT_DIR, filename)
     print(f"Tentando servir: {full_path}")
     
@@ -1956,13 +1962,6 @@ def static_files(filename):
         return jsonify({"error": "Arquivo não encontrado"}), 404
 
     return send_from_directory(OUTPUT_DIR, filename, mimetype="image/png")
-
-@app.route('/test')
-def test():
-    filename = "grafico-BBAS3.SA-100dias.png"
-    full_path = os.path.join(OUTPUT_DIR, filename)
-    exists = os.path.exists(full_path)
-    return f"Path: {full_path} — Exists: {exists}"
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
