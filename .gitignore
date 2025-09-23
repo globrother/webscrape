@@ -13,6 +13,9 @@ Thumbs.db
 venv/
 .venv/
 
+#Ignorar arquivo .env por segurança
+.env
+
 # Ignorar arquivos de log
 *.log
 
