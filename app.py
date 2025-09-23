@@ -18,6 +18,7 @@ from datetime import datetime
 import pytz
 import os
 import json
+import sqlite3
 #import requests
 #from bs4 import BeautifulSoup
 from flask import Flask, request, send_from_directory, jsonify
@@ -45,7 +46,9 @@ from utils import (
 from handlers.can_handle_base import APLUserEventHandler
 from alert_service import tratar_alerta
 from scraper import web_scrape
+from obter_grafico import requisitando_chart
 import grava_historico
+
 # ============================================================================================
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
@@ -55,6 +58,10 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_intent_ev
 # Diretório para servir imagem do gráfico
 OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "cache")
 log_info(f"OUTPUT_DIR:{OUTPUT_DIR}")
+
+#criando conexão com o banco SQLite
+def conectar_sqlite():
+    return sqlite3.connect("finance.db")
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
@@ -276,6 +283,32 @@ class WakeUpIntentHandler(AbstractRequestHandler):
         # Lógica para acordar o servidor ou atualizar o tempo para a próxima hibernação
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["server_status"] = True
+        
+        
+        
+        # 🔹 Consulta os ativos do banco
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+        cursor.execute("SELECT ticker FROM ativos WHERE status = True")
+        ativos = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        # 🔹 Gera os gráficos
+        graficos_gerados = []
+        for ticker in ativos:
+            url = requisitando_chart(ticker)
+            if url:
+                graficos_gerados.append((ticker, url))
+
+        # 🔹 Mensagem para Alexa
+        if graficos_gerados:
+            primeiro = graficos_gerados[0]
+            speech_text = (
+                f"<speak><prosody volume='x-soft'>O servidor foi acordado. "
+                f"O gráfico de {primeiro[0]} está disponível em: <break time='300ms'/> {primeiro[1]}</prosody></speak>"
+            )
+        else:
+            speech_text = "<speak><prosody volume='x-soft'>O servidor foi acordado, mas nenhum gráfico foi gerado.</prosody></speak>"
         
         # Verifica se o servidor está hibernado
         if session_attr.get("server_status"):
