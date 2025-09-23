@@ -55,6 +55,10 @@ import grava_historico
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
 # =====================================================================
 
+# ====================:: CONFIGURAÇÕES TOKENS ::=======================
+SECRET_TOKEN = os.getenv("API_KEY")
+# =====================================================================
+
 # Diretório para servir imagem do gráfico
 OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "cache")
 log_info(f"OUTPUT_DIR:{OUTPUT_DIR}")
