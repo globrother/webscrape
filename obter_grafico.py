@@ -3,6 +3,10 @@ import requests
 from chart_server import gerar_grafico
 import os
 
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="/home/ubuntu/webscrape/.env")
+
+
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
 from log_utils import log_debug, log_info, log_warning, log_error
