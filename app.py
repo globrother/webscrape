@@ -1954,9 +1954,9 @@ OUTPUT_DIR = "/home/ubuntu/webscrape/cache"
 # 🔹 Verifica autenticação no header
 def static_files(filename):
     
-    token = request.headers.get('x-api-key')
+    token = request.args.get("token")
     if token != SECRET_TOKEN:
-        return jsonify({"error": "Não autorizado! Autenticação falhou"}), 401
+        return jsonify({"error": "Não autorizado! Token inválido"}), 401
     
     full_path = os.path.join(OUTPUT_DIR, filename)
     print(f"Tentando servir: {full_path}")
