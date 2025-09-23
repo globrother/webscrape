@@ -1,4 +1,5 @@
 from time import time
+import requests
 from chart_server import gerar_grafico
 import os
 
@@ -35,12 +36,12 @@ def requisitando_chart(ticker):
         # 🔹 Monta a URL pública
         url_publica = f"{BASE_URL}/{nome_arquivo}"
         
-        """# 🔐 Verifica se a URL está acessível com a chave
+        # 🔐 Verifica se a URL está acessível com a chave
         headers = {"x-api-key": SECRET_TOKEN}
         response = requests.get(url_publica, headers=headers)
 
         if response.status_code != 200:
-            raise ConnectionError(f"Falha ao acessar o gráfico: {response.status_code}")"""
+            raise ConnectionError(f"Falha ao acessar o gráfico: {response.status_code}")
         
         log_info(f"⏱️​​ Processado em ⏳ {time() - start:.2f}s ⏳")
         return url_publica  # Retorna o caminho local do arquivo gerado
