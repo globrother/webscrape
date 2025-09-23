@@ -15,7 +15,7 @@ SECRET_TOKEN = os.getenv("API_KEY")
 # 🔹 Domínio público HTTPS
 BASE_URL = "https://graficoapi.duckdns.org/static"
 
-timestamp = int(time() // 3600)  # 🔹 Atualiza a cada hora
+timestamp = int(time() // 3600)  # Atualiza a cada hora
 url_arg = f"v={timestamp}&token={SECRET_TOKEN}"
 
 def requisitando_chart(ticker):
