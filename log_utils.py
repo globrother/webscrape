@@ -31,7 +31,7 @@ def worker_envio_telegram():
         elif fila_normal:
             msg = fila_normal.popleft()
         else:
-            time.sleep(1)
+            time.sleep(2)
             continue
 
         try:
@@ -63,7 +63,7 @@ def enviar_para_telegram(mensagem, chat_id=None):
     payload = {
         "chat_id": destino,
         "text": mensagem,
-        "parse_mode": "MarkdownV2" #"HTML"
+        #"parse_mode": "MarkdownV2" #"HTML"
     }
 
     try:
