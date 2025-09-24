@@ -211,6 +211,7 @@ def gerar_texto_historico(historico, aux):
         ]
 
         log_info(f"Histórico de alerta gerado com {len(linhas)} registros")
+        log_debug(f"Histórico de alerta gerado: {linhas}")
         return "<br>".join(linhas)
 
     else:
