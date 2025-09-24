@@ -275,7 +275,7 @@ def gerar_texto_historico(historico, aux):
         return "<br>".join(linhas)
     else:
         #linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003R$ {registro["valor"]:,.2f}'.replace('.', ',') for registro in historico]
+        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003R$ {float(registro["valor"]):,.2f}'.replace('.', ',') for registro in historico]
         
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
         log_debug("Histórico de ativo gerado")
