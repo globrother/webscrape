@@ -77,7 +77,8 @@ def enviar_para_telegram(mensagem, chat_id=None):
 class TelegramSelectiveHandler(logging.Handler):
     def emit(self, record):
         try:
-            if record.levelno != logging.INFO:
+            #if record.levelno != logging.INFO:
+            if record.levelno in [logging.WARNING, logging.ERROR, logging.CRITICAL]:
                 mensagem = self.format(record)
                 nivel = record.levelname
                 adicionar_na_fila(f"📡 {nivel}: {mensagem}", nivel=nivel)
