@@ -6,7 +6,6 @@ import time
 import html
 import json
 import re # Regex para trabalhar com expressões regulares
-import grava_historico
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
