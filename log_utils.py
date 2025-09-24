@@ -59,7 +59,7 @@ def worker_envio_telegram():
 
 
 # Enviar Alertas de Cota para o Telegram
-def enviar_para_telegram(mensagem, chat_id=None):
+def enviar_para_telegram(mensagem, chat_id=None, parse_mode=None):
     TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
     TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
     TELEGRAM_LOG_ID = os.getenv("TELEGRAM_LOG_ID")
@@ -68,18 +68,11 @@ def enviar_para_telegram(mensagem, chat_id=None):
         logger.warning("⚠️ Bot do Telegram não configurado")
         return
 
-    # Define o destino: se não for passado, usa LOG_ID por padrão
     destino = chat_id or TELEGRAM_LOG_ID
 
     if not destino:
         logger.warning("⚠️ Nenhum chat_id definido para envio")
         return
-
-    # Define parse_mode com base no destino
-    if destino == TELEGRAM_ALERT_ID:
-        parse_mode = "HTML"
-    else:
-        parse_mode = None  # ou "MarkdownV2" se quiser formatação leve
 
     url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
     payload = {
