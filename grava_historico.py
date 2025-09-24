@@ -205,6 +205,7 @@ def gerar_texto_historico(historico, aux):
         return "• 00/00/0000\u2003R$ 0,00"
 
     if aux == "alert":
+        log_debug("Flag de alerta detectado")
         linhas = [
             f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{formatar_reais(registro["valor"])}'
             for registro in historico
