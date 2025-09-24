@@ -8,11 +8,11 @@ import json
 import re # Regex para trabalhar com expressões regulares
 
 import grava_historico
+from obter_grafico import requisitando_chart
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
 from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
-
 # =====================================================================
 
 # VARIÁVEIS: 
@@ -208,6 +208,18 @@ def limpar_valor(valor_str): # Limpa para formato de float padrão internacional
         return float(valor_str.replace('R$', '').replace('.', '').replace(',', '.').strip())
     except ValueError:
         return 0.00  # ou tratar como quiser
+
+def gerar_todos_os_graficos(ativos):
+    log_info("🔄 Iniciando geração de gráficos em segundo plano...")
+    try:
+        graficos_gerados = []
+        for ticker in ativos:
+            url = requisitando_chart(ticker)
+            if url:
+                graficos_gerados.append((ticker, url))
+            log_info(f"✅ Gráfico gerado para {ticker}")
+    except Exception as e:
+        log_error(f"❌ Erro ao gerar gráficos em segundo plano: {e}")
 
 # Log para debug avançado (opcional)
 def log_detalhado_session(slots, session_attr):
