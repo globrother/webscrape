@@ -226,11 +226,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
             
             #log_debug(f"[web_scrape] fundo: {fundo}, apl_document: {apl_document}")
             
+            """
             if not apl_document or not isinstance(apl_document, dict) or not apl_document.get("mainTemplate"):
                 log_error(f"❌ apl_document inválido ou vazio para fundo {fundo}. Pulando renderização.")
                 return handler_input.response_builder.speak(
                     f"O fundo {fundo.upper()} está indisponível no momento. Tente novamente mais tarde."
                 ).set_should_end_session(False).response
+            """
             
             # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
             tempo_processamento = time.time() - start_time
