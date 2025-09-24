@@ -10,7 +10,8 @@ import sqlite3
 import time
 import html
 
-from utils import formatar_reais
+from formatadores import formatar_reais
+
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error, log_telegram

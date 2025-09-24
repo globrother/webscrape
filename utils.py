@@ -7,6 +7,8 @@ import html
 import json
 import re # Regex para trabalhar com expressões regulares
 
+import grava_historico
+
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
 from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
@@ -15,13 +17,8 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 
 # VARIÁVEIS: 
 
-def obter_mapeamento(): # Usado para evitar importação circular de formatar_reais
-    import grava_historico
-    return grava_historico.carregar_ativos()
-
 # Mapeamento de Estados e Fundos
-state_asset_mapping, lista_ativos = obter_mapeamento()
-#state_asset_mapping, lista_ativos = grava_historico.carregar_ativos() # Desativado devido importação circular de formatar_reais
+state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
 #log_info(f"\n O Mapa é: {state_asset_mapping}")
 
 # Ativos favoritados
@@ -211,18 +208,6 @@ def limpar_valor(valor_str): # Limpa para formato de float padrão internacional
         return float(valor_str.replace('R$', '').replace('.', '').replace(',', '.').strip())
     except ValueError:
         return 0.00  # ou tratar como quiser
-    
-def formatar_reais(valor):
-    """
-    Formata um número como moeda brasileira (R$).
-    Aceita float, int ou string numérica.
-    """
-    try:
-        valor_float = float(str(valor).replace('R$', '').replace('.', '').replace(',', '.').strip())
-        return f'R$ {valor_float:,.2f}'.replace('.', ',')
-    except (ValueError, TypeError):
-        return 'R$ 0,00'
-
 
 # Log para debug avançado (opcional)
 def log_detalhado_session(slots, session_attr):
