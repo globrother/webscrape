@@ -1,24 +1,31 @@
 # formatadores.py
 
-import locale
-
 def formatar_reais(valor):
     """
     Formata um número como moeda brasileira (R$).
-    Aceita float, int ou string numérica.
+    Aceita float, int ou string numérica com ponto ou vírgula.
     """
     try:
-        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Linux/macOS
-        # Para Windows, use: locale.setlocale(locale.LC_ALL, 'Portuguese_Brazil.1252')
-
         if isinstance(valor, (int, float)):
             valor_float = float(valor)
         else:
-            valor_str = str(valor).replace('R$', '').replace('.', '').replace(',', '.').strip()
+            # Remove R$ e espaços
+            valor_str = str(valor).replace('R$', '').replace(' ', '').strip()
+
+            # Se tiver vírgula e não tiver ponto, assume que vírgula é decimal
+            if ',' in valor_str and '.' not in valor_str:
+                valor_str = valor_str.replace(',', '.')
+
+            # Se tiver ponto e vírgula, assume que ponto é milhar e vírgula é decimal
+            elif ',' in valor_str and '.' in valor_str:
+                valor_str = valor_str.replace('.', '').replace(',', '.')
+
             valor_float = float(valor_str)
 
-        return locale.currency(valor_float, grouping=True)
-    except (ValueError, TypeError, locale.Error):
+        # Formata com separador de milhar brasileiro
+        reais = f"{valor_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        return f"R$ {reais}"
+    except (ValueError, TypeError):
         return 'R$ 0,00'
     
 """    
