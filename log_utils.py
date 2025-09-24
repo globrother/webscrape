@@ -13,6 +13,14 @@ from logging.handlers import RotatingFileHandler
 
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
+EMOJI_NIVEL = {
+    "WARNING": "🚨",
+    "ERROR": "❌",
+    "CRITICAL": "🛑",
+    "DEBUG": "🧪",
+    "INFO": "ℹ️"
+}
+
 fila_prioritaria = deque()
 fila_normal = deque()
 
@@ -28,7 +36,6 @@ def adicionar_na_fila(mensagem, nivel="DEBUG", chat_id=None):
         fila_prioritaria.append(item)
     else:
         fila_normal.append(item)
-
         
 # Worker que processa a fila e envia mensagens ao Telegram
 def worker_envio_telegram():
@@ -38,17 +45,21 @@ def worker_envio_telegram():
         elif fila_normal:
             item = fila_normal.popleft()
         else:
-            time.sleep(1)
+            time.sleep(2)
             continue
 
         mensagem = item["mensagem"]
+        nivel = item.get("nivel", "DEBUG")
         chat_id = item.get("chat_id") or os.getenv("TELEGRAM_LOG_ID")
 
         # Define parse_mode com base no destino
         if chat_id == os.getenv("TELEGRAM_ALERT_ID"):
             parse_mode = "HTML"
+            emoji = EMOJI_NIVEL.get(nivel, "")
+            mensagem = f"{emoji} {mensagem}"  # substitui o nome do nível por emoji
         else:
-            parse_mode = None  # ou None, se preferir sem formatação
+            parse_mode = None  # ou "MarkdownV2" se quiser
+            # mantém mensagem original com nome do nível
 
         try:
             enviar_para_telegram(mensagem, chat_id=chat_id, parse_mode=parse_mode)
@@ -56,7 +67,6 @@ def worker_envio_telegram():
         except Exception as e:
             log_error(f"Erro no envio da fila: {e}")
             time.sleep(5)
-
 
 # Enviar Alertas de Cota para o Telegram
 def enviar_para_telegram(mensagem, chat_id=None, parse_mode=None):
