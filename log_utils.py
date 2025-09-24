@@ -56,10 +56,10 @@ def worker_envio_telegram():
         if chat_id == os.getenv("TELEGRAM_ALERT_ID"):
             parse_mode = "HTML"
             emoji = EMOJI_NIVEL.get(nivel, "")
-            mensagem = f"{emoji} {mensagem}"  # substitui o nome do nível por emoji
+            mensagem = f"{emoji} {mensagem}"  # apenas emoji, sem nome do nível
         else:
-            parse_mode = None  # ou "MarkdownV2" se quiser
-            # mantém mensagem original com nome do nível
+            parse_mode = None  # ou "MarkdownV2"
+            mensagem = f"{nivel}: {mensagem}"  # nome do nível para logs técnicos
 
         try:
             enviar_para_telegram(mensagem, chat_id=chat_id, parse_mode=parse_mode)
