@@ -63,7 +63,7 @@ def enviar_para_telegram(mensagem, chat_id=None):
     payload = {
         "chat_id": destino,
         "text": mensagem,
-        "parse_mode": "HTML"
+        "parse_mode": "MarkdownV2" #"HTML"
     }
 
     try:
