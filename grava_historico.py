@@ -152,7 +152,7 @@ def ler_historico(sufixo):
         log_error(f"Erro ao ler histórico: {e}")
         return []  # Retorna uma lista vazia em caso de erro
 """
- 
+""" 
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
     #log_info("--> Iniciando Gerar Histórico")
@@ -194,6 +194,33 @@ def gerar_texto_historico(historico, aux):
         log_debug("Histórico de ativo gerado")
         log_info("✅🖥️ Mostrando Tela")
         #return "<br>".join(linhas)
+        return linhas
+"""
+
+def gerar_texto_historico(historico, aux):
+    log_debug("Agora no método gerar_texto_historico")
+
+    if not historico:
+        log_info("Histórico está vazio")
+        return "• 00/00/0000\u2003R$ 0,00"
+
+    if aux == "alert":
+        linhas = [
+            f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{formatar_reais(registro["valor"])}'
+            for registro in historico
+        ]
+
+        log_info(f"Histórico de alerta gerado com {len(linhas)} registros")
+        return "<br>".join(linhas)
+
+    else:
+        linhas = [
+            f'{registro["data"][:-5]} {registro["tempo"]}\u2003{formatar_reais(registro["valor"])}'
+            for registro in historico
+        ]
+
+        log_debug("Histórico de ativo gerado")
+        log_info("✅🖥️ Mostrando Tela")
         return linhas
 
 #::--> CARREGAR LISTA DE ATIVOS - USA CACHE EM ATÉ 10 MINUTOS <--::
