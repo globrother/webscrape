@@ -1,9 +1,7 @@
 # scraper.py
 
 from utils import state_asset_mapping
-from utils import _load_apl_document
-from utils import limpar_asset_name
-from utils import comparador
+from utils import _load_apl_document, limpar_asset_name, comparador
 from infofii import get_dadosfii
 import grava_historico
 import obter_grafico
@@ -23,6 +21,10 @@ def web_scrape(fundo):
     doc_apl = "apl_fii.json"  # f"apl_{fundo_fii}.json"
     # Carregar APL padrão de exibiçaõ dos fundos
     apl_document = _load_apl_document(doc_apl)
+    log_debug(f"Tentando carregar APL: {doc_apl}")
+    log_debug(f"Resultado do apl_document: {apl_document}")
+
+    
     # Adiciona a geração do texto do histórico de alertas
     sufixo = f"alert_value_{fundo_fii}"
     historico = grava_historico.ler_historico(sufixo)

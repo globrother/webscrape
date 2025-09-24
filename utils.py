@@ -3,6 +3,7 @@
 from ask_sdk_model.dialog.dynamic_entities_directive import DynamicEntitiesDirective
 from ask_sdk_model.interfaces.alexa.presentation.apl import RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand
 import time
+import os
 import html
 import json
 import re # Regex para trabalhar com expressões regulares
@@ -73,12 +74,13 @@ def _load_apl_document(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             # print(f"Content of {file_path}: {content}")
+            log_debug(f"Tentando carregar APL em: {os.path.abspath(file_path)}")
             return json.loads(content)
     except json.JSONDecodeError as e:
-        print(f"Error decoding JSON from {file_path}: {e}")
+        log_error(f"❌ Erro ao decodificar JSON de {file_path}: {e}")
         return None
     except FileNotFoundError:
-        print(f"File not found: {file_path}")
+        log_error(f"❌ Arquivo não encontrado: {file_path}")
         return None
 
 def gerar_sinonimos(fundo):
