@@ -14,7 +14,7 @@ from formatadores import formatar_reais
 
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
-from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
+from log_utils import log_debug, log_info, log_warning, log_error, log_telegram, adicionar_na_fila
 # =====================================================================
 
 # Usar o logger para registrar mensagens
@@ -94,6 +94,9 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
         f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>"
     )
     log_telegram(mensagem)
+    nivel = "WARNING"
+    adicionar_na_fila(f"📡 {nivel}: {mensagem}", nivel=nivel)
+
 
     # Insere novo registro
     cursor.execute("INSERT INTO historico (data, tempo, valor, ativo) VALUES (?, ?, ?, ?)",
