@@ -169,6 +169,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 session_attr["exibir_favoritos"] = False
                 
             # Garante que IDs realmente existem no state_asset_mapping
+            log_debug(f"ativos_ids: {ativos_ids}")
             ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
 
             session_attr["ativos_ids"] = ativos_ids
