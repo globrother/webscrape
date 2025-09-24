@@ -56,9 +56,10 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     fii_safe = html.escape(sufixo.upper())
     cota_safe = html.escape(f"{valor}")
     mensagem = (
+        f"🔸<b> {fii_safe}:</b>​<b>{cota_safe}</b>\n"
         f"<b>Gobs-Finance</b>: {var_fii_telegram}\n"
-        f"------------------------------------------------ \n"
-        f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>"
+        f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>\n"
+        f"-----------------------------------------------------"
     )
     log_telegram(mensagem)
     nivel = "WARNING"
