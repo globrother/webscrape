@@ -1,13 +1,46 @@
+import os
+import time
+import json
 import logging
 import datetime
 import requests
-import json
-import os
+import threading
 
+
+from collections import deque
 from logging.handlers import RotatingFileHandler
 
 
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
+
+fila_prioritaria = deque()
+fila_normal = deque()
+
+# Adiciona mensagem na fila apropriada
+def adicionar_na_fila(mensagem, nivel="DEBUG"):
+    if nivel in ["ERROR", "CRITICAL"]:
+        fila_prioritaria.append(mensagem)
+    else:
+        fila_normal.append(mensagem)
+        
+# Worker que processa a fila e envia mensagens ao Telegram
+def worker_envio_telegram():
+    while True:
+        if fila_prioritaria:
+            msg = fila_prioritaria.popleft()
+        elif fila_normal:
+            msg = fila_normal.popleft()
+        else:
+            time.sleep(1)
+            continue
+
+        try:
+            enviar_para_telegram(msg, chat_id=os.getenv("TELEGRAM_LOG_ID"))
+            time.sleep(1)  # respeita limite de 1 msg/s
+        except Exception as e:
+            log_error(f"Erro no envio da fila: {e}")
+            time.sleep(5)
+
 
 # Enviar Alertas de Cota para o Telegram
 def enviar_para_telegram(mensagem, chat_id=None):
@@ -35,45 +68,21 @@ def enviar_para_telegram(mensagem, chat_id=None):
 
     try:
         resp = requests.post(url, json=payload, timeout=3)
-        logger.info(f"Status Telegram: {resp.status_code}")
+        #logger.info(f"Status Telegram: {resp.status_code}")
         if resp.status_code != 200:
             logger.error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:
         logger.error(f"Erro ao enviar para Telegram: {e}")
-
-"""def enviar_para_telegram(mensagem):
-    TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
-    TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
-    TELEGRAM_LOG_ID = os.getenv("TELEGRAM_LOG_ID")
-
-    if not TELEGRAM_KEY or not TELEGRAM_ALERT_ID:
-        log_warning("⚠️ Telegram não configurado")
-        return
-
-    url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_ALERT_ID,
-        "text": mensagem,
-        "parse_mode": "HTML"
-    }
-        
-    try:
-        resp = requests.post(url, json=payload, timeout=3)
-        log_info(F"Status:{resp.status_code}")
-        if resp.status_code != 200:
-            log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
-    except Exception as e:
-        log_error(f"Erro ao enviar para Telegram: {e}")
-"""
 
 class TelegramSelectiveHandler(logging.Handler):
     def emit(self, record):
         try:
             if record.levelno != logging.INFO:
                 mensagem = self.format(record)
-                enviar_para_telegram(f"📡 Log: {mensagem}", chat_id=os.getenv("TELEGRAM_LOG_ID"))
+                nivel = record.levelname
+                adicionar_na_fila(f"📡 {nivel}: {mensagem}", nivel=nivel)
         except Exception as e:
-            logger.error(f"Erro no TelegramSelectiveHandler: {e}")
+            log_error(f"Erro no TelegramSelectiveHandler: {e}")
 
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
@@ -174,3 +183,6 @@ def log_session_state(handler_input, contexto=""):
         logger.info(f"🗂️ Sessão atual {f'({contexto})' if contexto else ''}: {session_str}")
     except Exception as e:
         logger.warning(f"⚠️ Erro ao registrar estado da sessão: {e}")
+
+# Worker para envio assíncrono de mensagens do Telegram
+threading.Thread(target=worker_envio_telegram, daemon=True).start()
