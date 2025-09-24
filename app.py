@@ -277,7 +277,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             # Só fala se não for favoritos
             if not session_attr.get("exibir_favoritos"):
                 handler_input.response_builder.speak(
-                    "<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}"
+                    f"<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}"
                 )
 
             # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
