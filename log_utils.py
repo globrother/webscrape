@@ -6,6 +6,10 @@ import os
 
 from logging.handlers import RotatingFileHandler
 
+# ====================:: CONFIGURAÇÃO DO LOG ::====================
+from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
+# =====================================================================
+
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
 # Enviar Alertas de Cota para o Telegram

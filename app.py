@@ -51,7 +51,7 @@ from scraper import web_scrape
 import grava_historico
 # ============================================================================================
 
-# ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
+# ====================:: CONFIGURAÇÃO DO LOG ::====================
 from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
 # =====================================================================
 
