@@ -159,15 +159,11 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 ).set_should_end_session(True).response
             
             # 🔊 Fala com pausa para mascarar o tempo de geração
-            speech_text = (
-                "<speak>"
+            intro_ssml = (
                 "<prosody volume='x-soft'>Iniciando os gráficos...</prosody>"
                 "<break time='3s'/>"
                 "<prosody volume='medium'>Pronto! Aqui está o primeiro ativo.</prosody>"
-                "</speak>"
             )
-
-            return handler_input.response_builder.speak(speech_text).response
             
             #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
             #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
@@ -288,7 +284,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             # Só fala se não for favoritos
             if not session_attr.get("exibir_favoritos"):
                 handler_input.response_builder.speak(
-                    f"<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}"
+                    f"<speak>{intro_ssml}<break time='1s'/>Aqui estão as atualizações financeiras:<break time='1s'/>\n{voz}</speak>"
                 )
 
             # **Avance o estado para o próximo fundo antes de agendar autoNavigate**
