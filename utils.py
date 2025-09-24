@@ -19,7 +19,7 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 
 # Mapeamento de Estados e Fundos
 state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
-log_info(f"\n O Mapa é: {state_asset_mapping}")
+#log_info(f"\n O Mapa é: {state_asset_mapping}")
 
 # Ativos favoritados
 ativos_favoritos = [
