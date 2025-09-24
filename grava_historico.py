@@ -90,7 +90,7 @@ def ler_historico(sufixo):
                 SELECT data, tempo, valor FROM alertas
                 WHERE ativo = ?
                 ORDER BY data DESC, tempo DESC
-            """, (codigo,))
+            """, (ativo,))
         else:
             ativo = sufixo.lower()
             log_debug(f"Consultando histórico para: {ativo}")
