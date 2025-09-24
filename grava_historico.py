@@ -32,7 +32,7 @@ brt_tz = pytz.timezone("America/Sao_Paulo")
 #criando conexão com o banco SQLite
 def conectar_sqlite():
     caminho = os.path.abspath("/home/ubuntu/webscrape/finance.db")
-    return sqlite3.connect(caminho, check_same_thread=False)
+    return sqlite3.connect(caminho)
 #def conectar_sqlite():
     #return sqlite3.connect("finance.db")
 
