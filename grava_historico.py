@@ -55,11 +55,12 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     # Envia alerta Telegram
     fii_safe = html.escape(sufixo.upper())
     cota_safe = html.escape(f"{valor}")
+    cota_safe = formatar_reais(cota_safe)
     mensagem = (
-        f"🔸<b> {fii_safe}:</b>​<b>{cota_safe}</b>\n"
+        f"🔸<b> {fii_safe}:</b> ​<b>{cota_safe}</b>\n"
         f"<b>Gobs-Finance</b>: {var_fii_telegram}\n"
         f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>\n"
-        f"-----------------------------------------------------"
+        f"--------------------------------------------------------"
     )
     log_telegram(mensagem)
     nivel = "WARNING"
@@ -409,26 +410,6 @@ def atualizar_status_ativo(state_id, status: bool):
     except Exception as e:
         log_error(f"❌ Erro ao atualizar status no SQLite: {e}")
         return False
-
-
-"""
-def atualizar_status_ativo(object_id, status: bool):
-    log_debug(f"Atualizando status do ativo {object_id} para {status}")
-    url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
-    headers = {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY,
-        "Content-Type": "application/json"
-    }
-    body = {"status": status}
-    response = requests.put(url, headers=headers, data=json.dumps(body))
-    if response.status_code == 200:
-        log_info(f"✔️ Status atualizado com sucesso para {status}")
-        return True
-    else:
-        log_error(f"❌ Erro ao atualizar status: {response.text}")
-        return False
-"""
 
 # ::--> ATUALIZAR FAVORITE DO ATIVO <--::
 def atualizar_favorito(state_id, favorito_bool):
