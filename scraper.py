@@ -22,7 +22,7 @@ def web_scrape(fundo):
     # Carregar APL padrão de exibiçaõ dos fundos
     apl_document = _load_apl_document(doc_apl)
     log_debug(f"Tentando carregar APL: {doc_apl}")
-    log_debug(f"Resultado do apl_document: {apl_document}")
+    #log_debug(f"Resultado do apl_document: {apl_document}")
 
     
     # Adiciona a geração do texto do histórico de alertas
