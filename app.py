@@ -65,7 +65,11 @@ log_info(f"OUTPUT_DIR:{OUTPUT_DIR}")
 
 #criando conexão com o banco SQLite
 def conectar_sqlite():
-    return sqlite3.connect("finance.db")
+    caminho = os.path.abspath("/home/ubuntu/webscrape/finance.db")
+    return sqlite3.connect(caminho)
+#def conectar_sqlite():
+    #return sqlite3.connect("finance.db")
+
 
 # Define o fuso horário para horário de Brasília
 brt_tz = pytz.timezone("America/Sao_Paulo")
@@ -86,7 +90,19 @@ log_info("✅ APLICATIVO DA CARTEIRA FINANCEIRA INICIADO COM SUCESSO!")
 
 # ====================::::: CLASSES E INTENTS DA SKILL ALEXA :::::====================
 
-def gerar_todos_os_graficos():
+def gerar_todos_os_graficos(ativos):
+    log_info("🔄 Iniciando geração de gráficos em segundo plano...")
+    try:
+        graficos_gerados = []
+        for ticker in ativos:
+            url = requisitando_chart(ticker)
+            if url:
+                graficos_gerados.append((ticker, url))
+            log_info(f"✅ Gráfico gerado para {ticker}")
+    except Exception as e:
+        log_error(f"❌ Erro ao gerar gráficos em segundo plano: {e}")
+
+    """
     log_info("🔄 Iniciando geração de gráficos em segundo plano...")
     try:
         # 🔹 Consulta os ativos do banco
@@ -106,7 +122,7 @@ def gerar_todos_os_graficos():
             log_info(f"✅ Gráfico gerado para {ticker}")
     except Exception as e:
         log_error(f"❌ Erro ao gerar gráficos em segundo plano: {e}")
-
+"""
 
 
 # HANDLER INICIAL DA SKILL, EXIBE PRIMEIRO ATIVO
@@ -323,8 +339,18 @@ class WakeUpIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["server_status"] = True
 
+        # 🔹 Consulta os ativos do banco
+        conn = conectar_sqlite()
+        cursor = conn.cursor()
+        cursor.execute("SELECT codigo FROM ativos WHERE status = True")
+        ativos = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        log_debug(f"Usando banco em: {os.path.abspath('finance.db')}")
+        
         # 🔹 Dispara a geração de gráficos em segundo plano
-        threading.Thread(target=gerar_todos_os_graficos).start()
+        threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
+        #hreading.Thread(target=gerar_todos_os_graficos).start()
 
         # 🔹 Resposta rápida para Alexa
         speech_text = (
