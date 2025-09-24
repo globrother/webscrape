@@ -4,18 +4,52 @@ import requests
 import json
 import os
 
+from logging.handlers import RotatingFileHandler
+
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
 # Enviar Alertas de Cota para o Telegram
-def enviar_para_telegram(mensagem):
-    TELEGRAM_ALERT_KEY = os.getenv("TELEGRAM_ALERT_KEY")
+def enviar_para_telegram(mensagem, chat_id=None):
+    TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
     TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
+    TELEGRAM_LOG_ID = os.getenv("TELEGRAM_LOG_ID")
 
-    if not TELEGRAM_ALERT_KEY or not TELEGRAM_ALERT_ID:
+    if not TELEGRAM_KEY:
+        log_warning("⚠️ Bot do Telegram não configurado")
+        return
+
+    # Define o destino: se não for passado, usa LOG_ID por padrão
+    destino = chat_id or TELEGRAM_LOG_ID
+
+    if not destino:
+        log_warning("⚠️ Nenhum chat_id definido para envio")
+        return
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
+    payload = {
+        "chat_id": destino,
+        "text": mensagem,
+        "parse_mode": "HTML"
+    }
+
+    try:
+        resp = requests.post(url, json=payload, timeout=3)
+        log_info(f"Status Telegram: {resp.status_code}")
+        if resp.status_code != 200:
+            log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
+    except Exception as e:
+        log_error(f"Erro ao enviar para Telegram: {e}")
+
+"""def enviar_para_telegram(mensagem):
+    TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
+    TELEGRAM_ALERT_ID = os.getenv("TELEGRAM_ALERT_ID")
+    TELEGRAM_LOG_ID = os.getenv("TELEGRAM_LOG_ID")
+
+    if not TELEGRAM_KEY or not TELEGRAM_ALERT_ID:
         log_warning("⚠️ Telegram não configurado")
         return
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_ALERT_KEY}/sendMessage"
+    url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
     payload = {
         "chat_id": TELEGRAM_ALERT_ID,
         "text": mensagem,
@@ -29,6 +63,16 @@ def enviar_para_telegram(mensagem):
             log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:
         log_error(f"Erro ao enviar para Telegram: {e}")
+"""
+
+class TelegramSelectiveHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            if record.levelno != logging.INFO:
+                mensagem = self.format(record)
+                enviar_para_telegram(f"📡 Log: {mensagem}", chat_id=os.getenv("TELEGRAM_LOG_ID"))
+        except Exception as e:
+            log_error(f"Erro no TelegramSelectiveHandler: {e}")
 
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
@@ -54,8 +98,6 @@ class LogtailSafeHandler(logging.Handler):
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
 
-from logging.handlers import RotatingFileHandler
-
 # logger global embutido
 LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 logger = logging.getLogger("skill")
@@ -66,10 +108,16 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+# Para salvar LOG em arquivo app.log
 LOG_PATH = "/home/ubuntu/app.log"
 file_handler = RotatingFileHandler(LOG_PATH, maxBytes=5*1024*1024, backupCount=1)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
+# Handler customizado para enviar logs específicos ao Telegram
+telegram_handler = TelegramSelectiveHandler()
+telegram_handler.setFormatter(formatter)
+logger.addHandler(telegram_handler)
 
 raw_formatter = logging.Formatter("%(message)s")
 raw_handler = logging.StreamHandler()
