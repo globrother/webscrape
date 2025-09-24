@@ -6,9 +6,6 @@ import os
 
 from logging.handlers import RotatingFileHandler
 
-# ====================:: CONFIGURAÇÃO DO LOG ::====================
-from log_utils import log_debug, log_info, log_warning, log_error, log_intent_event, log_session_state
-# =====================================================================
 
 DEBUG_MODE = True  # Defina como False para ocultar logs de debug
 
@@ -19,14 +16,14 @@ def enviar_para_telegram(mensagem, chat_id=None):
     TELEGRAM_LOG_ID = os.getenv("TELEGRAM_LOG_ID")
 
     if not TELEGRAM_KEY:
-        log_warning("⚠️ Bot do Telegram não configurado")
+        logger.warning("⚠️ Bot do Telegram não configurado")
         return
 
     # Define o destino: se não for passado, usa LOG_ID por padrão
     destino = chat_id or TELEGRAM_LOG_ID
 
     if not destino:
-        log_warning("⚠️ Nenhum chat_id definido para envio")
+        logger.warning("⚠️ Nenhum chat_id definido para envio")
         return
 
     url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
@@ -38,11 +35,11 @@ def enviar_para_telegram(mensagem, chat_id=None):
 
     try:
         resp = requests.post(url, json=payload, timeout=3)
-        log_info(f"Status Telegram: {resp.status_code}")
+        logger.info(f"Status Telegram: {resp.status_code}")
         if resp.status_code != 200:
-            log_error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
+            logger.error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:
-        log_error(f"Erro ao enviar para Telegram: {e}")
+        logger.error(f"Erro ao enviar para Telegram: {e}")
 
 """def enviar_para_telegram(mensagem):
     TELEGRAM_KEY = os.getenv("TELEGRAM_KEY")
@@ -76,7 +73,7 @@ class TelegramSelectiveHandler(logging.Handler):
                 mensagem = self.format(record)
                 enviar_para_telegram(f"📡 Log: {mensagem}", chat_id=os.getenv("TELEGRAM_LOG_ID"))
         except Exception as e:
-            log_error(f"Erro no TelegramSelectiveHandler: {e}")
+            logger.error(f"Erro no TelegramSelectiveHandler: {e}")
 
 class LogtailSafeHandler(logging.Handler):
     def __init__(self, source_token, endpoint=None):
