@@ -54,6 +54,8 @@ class LogtailSafeHandler(logging.Handler):
         except Exception as e:
             print("⚠️ Falha ao enviar log para Logtail:", e)
 
+from logging.handlers import RotatingFileHandler
+
 # logger global embutido
 LOG_LOGTAIL_KEY = os.getenv("LOG_LOGTAIL_KEY")
 logger = logging.getLogger("skill")
@@ -63,6 +65,11 @@ formatter = logging.Formatter("[%(levelname)s] %(module)s.%(funcName)s: %(messag
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
+LOG_PATH = "/home/ubuntu/app.log"
+file_handler = RotatingFileHandler(LOG_PATH, maxBytes=5*1024*1024, backupCount=1)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 raw_formatter = logging.Formatter("%(message)s")
 raw_handler = logging.StreamHandler()
