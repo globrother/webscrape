@@ -191,6 +191,7 @@ def gerar_texto_historico(historico, aux):
 
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
+    log_debug(f"VALOR DE AUX >> {aux}")
 
     if not historico:
         log_info("Histórico está vazio")
