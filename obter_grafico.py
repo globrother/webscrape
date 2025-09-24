@@ -27,7 +27,7 @@ def requisitando_chart(ticker):
     log_debug("Agora em requisitando_chart")
     try:
         caminho_imagem = gerar_grafico(ticker)
-        log_info(f"Caminho da Imagem:{caminho_imagem}")
+        #log_info(f"Caminho da Imagem:{caminho_imagem}")
         
         if not caminho_imagem or not os.path.exists(caminho_imagem):
             raise FileNotFoundError("Gráfico não foi gerado ou não existe.")

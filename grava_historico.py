@@ -203,10 +203,29 @@ def ler_historico(sufixo):
     try:
         conn = conectar_sqlite()
         cursor = conn.cursor()
-        cursor.execute("SELECT data, tempo, valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC", (sufixo,))
+
+        if sufixo.startswith("alert:"):
+            codigo = sufixo.split("alert:")[1].lower()
+            log_info(f"Código é: {codigo}")
+            log_debug(f"Consultando alertas para: {codigo}")
+            cursor.execute("""
+                SELECT data, tempo, valor FROM alertas
+                WHERE codigo = ?
+                ORDER BY data DESC, tempo DESC
+            """, (codigo,))
+        else:
+            ativo = sufixo.lower()
+            log_debug(f"Consultando histórico para: {ativo}")
+            cursor.execute("""
+                SELECT data, tempo, valor FROM historico
+                WHERE ativo = ?
+                ORDER BY data DESC, tempo DESC
+            """, (ativo,))
+
         historico = [{"data": row[0], "tempo": row[1], "valor": row[2]} for row in cursor.fetchall()]
         conn.close()
         return historico
+
     except Exception as e:
         log_error(f"Erro ao ler histórico: {e}")
         return []
