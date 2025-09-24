@@ -329,8 +329,13 @@ def carregar_ativos():
         state_fund_mapping = {f["state_id"]: f for f in ativos if f["status"]}
 
         # Atualiza o cache
-        _ativos_cache = (state_fund_mapping, ativos)
-        _ativos_cache_time = agora
+        if ativos_raw:
+            _ativos_cache = (state_fund_mapping, ativos)
+            _ativos_cache_time = agora
+            log_debug(f"Total de ativos carregados do banco: {len(ativos_raw)}")
+            log_debug(f"state_fund_mapping gerado: {len(state_fund_mapping)}")
+        else:
+            log_warning("Nenhum ativo encontrado — cache não será atualizado.")
         return _ativos_cache
 
     except Exception as e:

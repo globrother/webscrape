@@ -167,10 +167,21 @@ class LaunchRequestHandler(AbstractRequestHandler):
             else:
                 ativos_ids = sorted(state_asset_mapping.keys())
                 session_attr["exibir_favoritos"] = False
+            
+            if not ativos_ids:
+                log_error("ativos_ids está vazio — não há ativos disponíveis para exibição.")
+                return handler_input.response_builder.speak(
+                    "Não encontrei ativos disponíveis no momento. Tente novamente mais tarde."
+                ).set_should_end_session(True).response
                 
             # Garante que IDs realmente existem no state_asset_mapping
+            log_debug(f"ativos_ids antes do filtro: {ativos_ids}")
+            log_debug(f"state_asset_mapping.keys(): {list(state_asset_mapping.keys())}")
+
             log_debug(f"ativos_ids: {ativos_ids}")
             ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
+            
+            log_debug(f"ativos_ids após filtro: {ativos_ids}")
 
             session_attr["ativos_ids"] = ativos_ids
 
