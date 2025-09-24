@@ -16,8 +16,13 @@ from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 
 # VARIÁVEIS: 
 
+def obter_mapeamento(): # Usado para evitar importação circular de formatar_reais
+    import grava_historico
+    return grava_historico.carregar_ativos()
+
 # Mapeamento de Estados e Fundos
-state_asset_mapping, lista_ativos = grava_historico.carregar_ativos()
+state_asset_mapping, lista_ativos = obter_mapeamento()
+#state_asset_mapping, lista_ativos = grava_historico.carregar_ativos() # Desativado devido importação circular de formatar_reais
 #log_info(f"\n O Mapa é: {state_asset_mapping}")
 
 # Ativos favoritados
