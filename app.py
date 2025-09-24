@@ -254,7 +254,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                     ExecuteCommandsDirective(
                         token="mainScreenToken",
                         commands=[
-                            SendEventCommand(arguments=["autoNavigate"], delay=3000)
+                            SendEventCommand(arguments=["autoNavigate"], delay=1000)
                         ]
                     )
                 )
