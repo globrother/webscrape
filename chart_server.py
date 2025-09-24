@@ -45,7 +45,6 @@ def enviar_para_telegram(mensagem):
 print("Iniciando Rederização do Gráfico")
 # 🔹 Função para verificar se o gráfico já existe no cache
 def get_cached_image(ticker):
-    print("CACHE")
     filename = f"{CACHE_DIR}/grafico-{ticker}-15dias.png"
     
     if os.path.exists(filename):
@@ -70,7 +69,7 @@ def gerar_grafico(ticker):
     try:
         ativo = yf.Ticker(ticker)
         historico = ativo.history(period="100d")
-        print("requisição finalizada de Yahoo Finance para {ticker}]: 100 dias.")
+        print(F"requisição finalizada de Yahoo Finance para {ticker}]: 100 dias.")
         if historico.empty:
             raise ValueError("Ticker não encontrado ou sem dados")
     except ValueError as e:
