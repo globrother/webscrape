@@ -36,7 +36,7 @@ def worker_envio_telegram():
 
         try:
             enviar_para_telegram(msg, chat_id=os.getenv("TELEGRAM_LOG_ID"))
-            time.sleep(1)  # respeita limite de 1 msg/s
+            time.sleep(2)  # respeita limite de 1 msg/s
         except Exception as e:
             log_error(f"Erro no envio da fila: {e}")
             time.sleep(5)
