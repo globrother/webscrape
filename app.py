@@ -230,6 +230,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                     f"O fundo {fundo.upper()} está indisponível no momento. Tente novamente mais tarde."
                 ).set_should_end_session(False).response
 
+            log_debug(f"[web_scrape] fundo: {fundo}, apl_document: {apl_document}")
             
             # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
             tempo_processamento = time.time() - start_time
