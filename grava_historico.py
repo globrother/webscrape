@@ -91,6 +91,16 @@ def ler_historico(sufixo):
                 WHERE ativo = ?
                 ORDER BY data DESC, tempo DESC
             """, (ativo,))
+            resultados = cursor.fetchall()
+
+            if resultados:
+                for row in resultados:
+                    data, tempo, valor = row
+                    log_info(f"🔍 Encontrado: {data} {tempo} → {formatar_reais(valor)}")
+            else:
+                log_info("⚠️ Nenhum alerta encontrado para esse ativo.")
+
+
         else:
             ativo = sufixo.lower()
             log_debug(f"Consultando histórico para: {ativo}")
