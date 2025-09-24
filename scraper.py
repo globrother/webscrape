@@ -26,7 +26,7 @@ def web_scrape(fundo):
 
     
     # Adiciona a geração do texto do histórico de alertas
-    sufixo = f"alert_value_{fundo_fii}"
+    sufixo = f"alert:{fundo_fii}" #f"alert_value_{fundo_fii}"
     historico = grava_historico.ler_historico(sufixo)
     aux = "alert"
     hist_alert = grava_historico.gerar_texto_historico(historico, aux)

@@ -80,7 +80,8 @@ def ler_historico(sufixo):
     try:
         conn = conectar_sqlite()
         cursor = conn.cursor()
-
+        
+        log_info(f"Sufixo recebido: {sufixo}")
         if sufixo.startswith("alert:"):
             codigo = sufixo.split("alert:")[1].lower()
             log_info(f"Código é: {codigo}")
