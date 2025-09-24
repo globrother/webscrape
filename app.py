@@ -224,7 +224,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
             dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
             
-            log_debug(f"[web_scrape] fundo: {fundo}, apl_document: {apl_document}")
+            #log_debug(f"[web_scrape] fundo: {fundo}, apl_document: {apl_document}")
             
             if not apl_document or not isinstance(apl_document, dict) or not apl_document.get("mainTemplate"):
                 log_error(f"❌ apl_document inválido ou vazio para fundo {fundo}. Pulando renderização.")
