@@ -202,6 +202,24 @@ def extrair_valor_slot(slots, nome_slot):
     slot = slots.get(nome_slot)
     return slot.value if slot and slot.value else None
 
+def limpar_valor(valor_str): # Limpa para formato de float padrão internacional 0.00
+    try:
+        return float(valor_str.replace('R$', '').replace('.', '').replace(',', '.').strip())
+    except ValueError:
+        return 0.00  # ou tratar como quiser
+    
+def formatar_reais(valor):
+    """
+    Formata um número como moeda brasileira (R$).
+    Aceita float, int ou string numérica.
+    """
+    try:
+        valor_float = float(str(valor).replace('R$', '').replace('.', '').replace(',', '.').strip())
+        return f'R$ {valor_float:,.2f}'.replace('.', ',')
+    except (ValueError, TypeError):
+        return 'R$ 0,00'
+
+
 # Log para debug avançado (opcional)
 def log_detalhado_session(slots, session_attr):
     logging.info(f"Slots: {slots}")

@@ -10,6 +10,8 @@ import sqlite3
 import time
 import html
 
+from utils import formatar_reais
+
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
 # =====================================================================
@@ -276,8 +278,10 @@ def gerar_texto_historico(historico, aux):
     else:
         log_info(f'{historico[0]["valor"]}')
         #linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003R$ {float(registro["valor"]):,.2f}'.replace('.', ',') for registro in historico]
-        
+        #linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003R$ {float(registro["valor"]):,.2f}'.replace('.', ',') for registro in historico]
+        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{formatar_reais(registro["valor"])}' for registro in historico
+]
+
         #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
         log_debug("Histórico de ativo gerado")
         log_info("✅🖥️ Mostrando Tela")

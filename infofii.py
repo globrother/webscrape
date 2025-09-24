@@ -5,7 +5,7 @@
 """
 import requests
 from bs4 import BeautifulSoup
-from utils import limpar_asset_name
+from utils import limpar_asset_name, limpar_valor
 from time import time
 import grava_historico
 #import app
@@ -216,7 +216,8 @@ def get_dadosfii(fii):
         # hist_text_xpml = grava_historico.gerar_texto_historico(meu_historico)
         # log_info("começar a chamar função de gravar Veja")
         sufixo = limpar_asset_name(fii)
-        valor = f"R$ {cota_fii}"
+        #valor = f"{cota_fii}" # f"R$ {cota_fii}"
+        valor = limpar_valor(cota_fii)
         aux = "fund"
         var_fii_telegram = f"{aux_fii.capitalize()}: {var_fii}"
         grava_historico.gravar_historico(sufixo, valor, var_fii_telegram)
