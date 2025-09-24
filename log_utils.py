@@ -17,26 +17,42 @@ fila_prioritaria = deque()
 fila_normal = deque()
 
 # Adiciona mensagem na fila apropriada
-def adicionar_na_fila(mensagem, nivel="DEBUG"):
+def adicionar_na_fila(mensagem, nivel="DEBUG", chat_id=None):
+    item = {
+        "mensagem": mensagem,
+        "nivel": nivel,
+        "chat_id": chat_id
+    }
+
     if nivel in ["ERROR", "CRITICAL"]:
-        fila_prioritaria.append(mensagem)
+        fila_prioritaria.append(item)
     else:
-        fila_normal.append(mensagem)
+        fila_normal.append(item)
+
         
 # Worker que processa a fila e envia mensagens ao Telegram
 def worker_envio_telegram():
     while True:
         if fila_prioritaria:
-            msg = fila_prioritaria.popleft()
+            item = fila_prioritaria.popleft()
         elif fila_normal:
-            msg = fila_normal.popleft()
+            item = fila_normal.popleft()
         else:
-            time.sleep(2)
+            time.sleep(1)
             continue
 
+        mensagem = item["mensagem"]
+        chat_id = item.get("chat_id") or os.getenv("TELEGRAM_LOG_ID")
+
+        # Define parse_mode com base no destino
+        if chat_id == os.getenv("TELEGRAM_ALERT_ID"):
+            parse_mode = "HTML"
+        else:
+            parse_mode = None  # ou None, se preferir sem formatação
+
         try:
-            enviar_para_telegram(msg, chat_id=os.getenv("TELEGRAM_LOG_ID"))
-            time.sleep(3)  # respeita limite de 1 msg/s
+            enviar_para_telegram(mensagem, chat_id=chat_id, parse_mode=parse_mode)
+            time.sleep(3)
         except Exception as e:
             log_error(f"Erro no envio da fila: {e}")
             time.sleep(5)
@@ -59,16 +75,23 @@ def enviar_para_telegram(mensagem, chat_id=None):
         logger.warning("⚠️ Nenhum chat_id definido para envio")
         return
 
+    # Define parse_mode com base no destino
+    if destino == TELEGRAM_ALERT_ID:
+        parse_mode = "HTML"
+    else:
+        parse_mode = None  # ou "MarkdownV2" se quiser formatação leve
+
     url = f"https://api.telegram.org/bot{TELEGRAM_KEY}/sendMessage"
     payload = {
         "chat_id": destino,
-        "text": mensagem,
-        #"parse_mode": "MarkdownV2" #"HTML"
+        "text": mensagem
     }
+
+    if parse_mode:
+        payload["parse_mode"] = parse_mode
 
     try:
         resp = requests.post(url, json=payload, timeout=3)
-        #logger.info(f"Status Telegram: {resp.status_code}")
         if resp.status_code != 200:
             logger.error(f"❌ Falha Telegram: {resp.status_code} - {resp.text}")
     except Exception as e:

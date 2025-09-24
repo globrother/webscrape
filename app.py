@@ -197,8 +197,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 ).set_should_end_session(True).response
                 
             # Garante que IDs realmente existem no state_asset_mapping
-            log_debug(f"ativos_ids antes do filtro: {ativos_ids}")
-            log_debug(f"state_asset_mapping.keys(): {list(state_asset_mapping.keys())}")
+            #log_debug(f"ativos_ids antes do filtro: {ativos_ids}")
+            #log_debug(f"state_asset_mapping.keys(): {list(state_asset_mapping.keys())}")
 
             log_debug(f"ativos_ids: {ativos_ids}")
             ativos_ids = [i for i in ativos_ids if i in state_asset_mapping]
@@ -207,9 +207,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
             session_attr["ativos_ids"] = ativos_ids
 
-            #log_info(f"Hora: {hora}")
-            log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
-            log_debug(f"ativos_ids definidos: {ativos_ids}")
+            #log_debug(f"intervalos_favoritos: {intervalos_favoritos}")
+            #log_debug(f"ativos_ids definidos: {ativos_ids}")
             
             # Defina o delay com base em favoritos
             exibir_favoritos = session_attr.get("exibir_favoritos", False)
