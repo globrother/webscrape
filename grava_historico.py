@@ -55,7 +55,9 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     # Envia alerta Telegram
     fii_safe = html.escape(sufixo.upper())
     cota_safe = html.escape(f"{valor}")
+    log_info(f"cota_safe antes: {cota_safe}")
     cota_safe = formatar_reais(cota_safe)
+    log_info(f"cota_safe depois: {cota_safe}")
     mensagem = (
         f"🔸<b> {fii_safe}:</b> ​<b>{cota_safe}</b>\n"
         f"<b>Gobs-Finance</b>: {var_fii_telegram}\n"
