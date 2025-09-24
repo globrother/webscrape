@@ -83,12 +83,12 @@ def ler_historico(sufixo):
         
         log_info(f"Sufixo recebido: {sufixo}")
         if sufixo.startswith("alert:"):
-            codigo = sufixo.split("alert:")[1].lower()
-            log_info(f"Código é: {codigo}")
+            ativo = sufixo.split("alert:")[1].lower()
+            log_info(f"O Ativo é: {ativo}")
             log_debug(f"Consultando alertas para: {ativo}")
             cursor.execute("""
                 SELECT data, tempo, valor FROM alertas
-                WHERE codigo = ?
+                WHERE ativo = ?
                 ORDER BY data DESC, tempo DESC
             """, (codigo,))
         else:
