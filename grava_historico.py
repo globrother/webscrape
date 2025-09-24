@@ -60,7 +60,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     log_info(f"cota_safe depois: {cota_safe}")
     mensagem = (
         f"🔸<b> {fii_safe}:</b> ​<b>{cota_safe}</b>\n"
-        f"<b>JEFF é o meu amor</b>❤💗❤: {var_fii_telegram}\n"
+        f"<b>JEFF é o meu AMOR</b> ❤: {var_fii_telegram}\n"
         f"O Ativo 🔸<b> {fii_safe} </b> chegou a 💵 ​<b>{cota_safe}</b>\n"
         f"--------------------------------------------------------"
     )
