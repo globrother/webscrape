@@ -142,7 +142,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             if not session_attr.get("graficos_em_progresso", False):
                 session_attr["graficos_em_progresso"] = True
                 # 🔹 Dispara a geração de gráficos em segundo plano
-                threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
+                # threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
                 
         except Exception as e:
             log_error(f"Erro ao iniciar geração de gráficos em segundo plano: {e}")
