@@ -224,6 +224,13 @@ class LaunchRequestHandler(AbstractRequestHandler):
             fundo = state_asset_mapping[ativos_ids[0]]["codigo"]
             dados_info, _, _, _, apl_document, voz, timeout = web_scrape(fundo)
             
+            if not apl_document or not isinstance(apl_document, dict) or not apl_document.get("mainTemplate"):
+                log_error(f"❌ apl_document inválido ou vazio para fundo {fundo}. Pulando renderização.")
+                return handler_input.response_builder.speak(
+                    f"O fundo {fundo.upper()} está indisponível no momento. Tente novamente mais tarde."
+                ).set_should_end_session(False).response
+
+            
             # GARANTE QUE O TEMPO TOTAL NÃO EXCEDE O TEMPO DA ALEXA DE ~9s
             tempo_processamento = time.time() - start_time
             log_info(f"Tempo de processamento do ativo {fundo}: {tempo_processamento:.2f}s")
