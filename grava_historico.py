@@ -259,7 +259,7 @@ def gerar_texto_historico(historico, aux):
     
     if aux == "alert":
         # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{formatar_reais(registro["valor"])}' for registro in historico]
+        linhas = [f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{registro["valor"]}' for registro in historico]
         #log_info(f"\n Linhas antes: {linhas}\n")
         if len(linhas) > 1:
             if len(linhas) >= 4:
