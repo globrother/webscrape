@@ -74,7 +74,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     conn.commit()
     conn.close()
     log_info("Histórico gravado com sucesso.")
-
+    
 def ler_historico(sufixo):
     log_debug("Agora no método ler_historico")
     try:
@@ -84,21 +84,24 @@ def ler_historico(sufixo):
         log_info(f"Sufixo recebido: {sufixo}")
         if sufixo.startswith("alert:"):
             ativo = sufixo.split("alert:")[1].lower()
-            #log_info(f"O Ativo é: {ativo}")
-            #log_debug(f"Consultando alertas para: {ativo}")
+            log_debug(f"Consultando alertas para: {ativo}")
             cursor.execute("""
-                SELECT data, tempo, valor FROM alertas
+                SELECT data, tempo, valor
+                FROM alertas
                 WHERE ativo = ?
-                ORDER BY data DESC, tempo DESC
+                ORDER BY DATE(substr(data, 7, 4) || '-' || substr(data, 4, 2) || '-' || substr(data, 1, 2)) DESC,
+                         TIME(tempo) DESC
             """, (ativo,))
 
         else:
             ativo = sufixo.lower()
             log_debug(f"Consultando histórico para: {ativo}")
             cursor.execute("""
-                SELECT data, tempo, valor FROM historico
+                SELECT data, tempo, valor
+                FROM historico
                 WHERE ativo = ?
-                ORDER BY data DESC, tempo DESC
+                ORDER BY DATE(substr(data, 7, 4) || '-' || substr(data, 4, 2) || '-' || substr(data, 1, 2)) DESC,
+                         TIME(tempo) DESC
             """, (ativo,))
 
         historico = [{"data": row[0], "tempo": row[1], "valor": row[2]} for row in cursor.fetchall()]
