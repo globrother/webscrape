@@ -84,8 +84,8 @@ def ler_historico(sufixo):
         log_info(f"Sufixo recebido: {sufixo}")
         if sufixo.startswith("alert:"):
             ativo = sufixo.split("alert:")[1].lower()
-            log_info(f"O Ativo é: {ativo}")
-            log_debug(f"Consultando alertas para: {ativo}")
+            #log_info(f"O Ativo é: {ativo}")
+            #log_debug(f"Consultando alertas para: {ativo}")
             cursor.execute("""
                 SELECT data, tempo, valor FROM alertas
                 WHERE ativo = ?
@@ -102,12 +102,7 @@ def ler_historico(sufixo):
             """, (ativo,))
 
         historico = [{"data": row[0], "tempo": row[1], "valor": row[2]} for row in cursor.fetchall()]
-        log_info(f"🔎 Registros encontrados: {len(historico)}")
-
-        for h in historico[:10]:  # limita aos 10 primeiros
-            valor_formatado = formatar_reais(h['valor'])
-            log_info(f"📌 {h['data']} {h['tempo']} → {valor_formatado}")
-
+        
         conn.close()
         return historico
 
@@ -193,7 +188,7 @@ def gerar_texto_historico(historico, aux):
         #return "<br>".join(linhas)
         return linhas
 """
-
+"""
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
     log_debug(f"VALOR DE AUX >> {aux} ⚠ ⚠ ⚠")
@@ -222,6 +217,44 @@ def gerar_texto_historico(historico, aux):
         log_debug("Histórico de ativo gerado")
         log_info("✅🖥️ Mostrando Tela")
         return linhas
+"""
+
+def gerar_texto_historico(historico, aux):
+    log_debug("Agora no método gerar_texto_historico")
+    log_debug(f"VALOR DE AUX >> {aux} ⚠ ⚠ ⚠")
+
+    if not historico:
+        log_info("Histórico está vazio")
+        return "• 00/00/0000\u2003R$ 0,00"
+    
+    if aux == "alert":
+        log_debug("🧪 Flag de alerta detectado")
+
+        # Limita aos 10 primeiros registros
+        historico = historico[:10]
+
+        # Formata cada linha com data e valor
+        linhas = [
+            f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{formatar_reais(registro["valor"])}'
+            for registro in historico
+        ]
+
+        log_info(f"Histórico de alerta gerado com {len(linhas)} registros")
+        log_debug(f"🧪 Linhas antes: {linhas}")
+
+        if len(linhas) > 1:
+            if len(linhas) >= 4:
+                linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
+            elif len(linhas) == 3:
+                linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}']
+            else:
+                linhas = [f'{linhas[0]}\u2003{linhas[1]}']
+        else:
+            log_info("Um registro encontrado")
+            linhas = [linhas[0]]
+
+        log_debug(f"🧪 Histórico de alerta gerado: {linhas}")
+        return "<br>".join(linhas)
 
 #::--> CARREGAR LISTA DE ATIVOS - USA CACHE EM ATÉ 10 MINUTOS <--::
 # Variáveis globais para cache
