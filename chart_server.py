@@ -69,7 +69,7 @@ def gerar_grafico(ticker):
     try:
         ativo = yf.Ticker(ticker)
         historico = ativo.history(period="100d")
-        print(F"requisição finalizada de Yahoo Finance para {ticker}]: 100 dias.")
+        print(F"requisição finalizada de Yahoo Finance para {ticker}: 100 dias.")
         if historico.empty:
             raise ValueError("Ticker não encontrado ou sem dados")
     except ValueError as e:
