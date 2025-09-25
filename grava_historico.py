@@ -45,7 +45,14 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
 
     # Verifica se o valor já existe
-    cursor.execute("SELECT valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC LIMIT 1", (sufixo,))
+    cursor.execute("""
+        SELECT valor FROM historico
+        WHERE ativo = ?
+        ORDER BY DATE(substr(data, 7, 4) || '-' || substr(data, 4, 2) || '-' || substr(data, 1, 2)) DESC,
+                TIME(tempo) DESC
+        LIMIT 1
+    """, (sufixo,))
+    #cursor.execute("SELECT valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC LIMIT 1", (sufixo,))
     resultado = cursor.fetchone()
     if resultado and resultado[0] == valor:
         log_warning("Valor igual ao último registrado. Abortando gravar.")
