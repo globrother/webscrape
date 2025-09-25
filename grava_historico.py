@@ -255,6 +255,15 @@ def gerar_texto_historico(historico, aux):
 
         log_debug(f"🧪 Histórico de alerta gerado: {linhas}")
         return "<br>".join(linhas)
+    else:
+        linhas = [
+            f'{registro["data"][:-5]} {registro["tempo"]}\u2003{formatar_reais(registro["valor"])}'
+            for registro in historico
+        ]
+
+        log_debug("Histórico de ativo gerado")
+        log_info("✅🖥️ Mostrando Tela")
+        return linhas
 
 #::--> CARREGAR LISTA DE ATIVOS - USA CACHE EM ATÉ 10 MINUTOS <--::
 # Variáveis globais para cache
