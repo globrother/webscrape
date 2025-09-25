@@ -125,7 +125,13 @@ def get_dynamic_entities_directive():
 def comparador(historico, cota_atual, voz_fundo, fii):
     # Verificar se o histórico é válido e contém pelo menos um registro
     if historico and isinstance(historico, list) and len(historico) >= 1:
-        alert_value = historico[0].get("valor", "").replace("R$ ", "")
+        alert_raw = historico[0].get("valor", "")
+        if isinstance(alert_raw, (int, float)):
+            alert_value = str(alert_raw)
+        else:
+            alert_value = str(alert_raw).replace("R$ ", "")
+
+        #alert_value = historico[0].get("valor", "").replace("R$ ", "")
         logging.info(f"Valor do Alerta: {alert_value}")
         logging.info(f"Valor Atual da Cota: {cota_atual}")
 
