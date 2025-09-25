@@ -91,7 +91,6 @@ def ler_historico(sufixo):
                 WHERE ativo = ?
                 ORDER BY data DESC, tempo DESC
             """, (ativo,))
-            resultados = cursor.fetchall()
 
         else:
             ativo = sufixo.lower()
@@ -103,6 +102,10 @@ def ler_historico(sufixo):
             """, (ativo,))
 
         historico = [{"data": row[0], "tempo": row[1], "valor": row[2]} for row in cursor.fetchall()]
+        log_info(f"🔎 Registros encontrados: {len(historico)}")
+        for h in historico:
+            log_info(f"📌 {h['data']} {h['tempo']} → {h['valor']}")
+
         conn.close()
         return historico
 
