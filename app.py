@@ -2007,10 +2007,13 @@ def webhook():
     log_info("✅ Resposta gerada com sucesso para a Alexa.")
     return jsonify(response)
 
+@app.route("/saude")
+def saude():
+    return "OK", 200
+
 OUTPUT_DIR = "/home/ubuntu/webscrape/cache"
 
 @app.route('/static/<path:filename>')
-
 # 🔹 Verifica autenticação no header
 def static_files(filename):
     
