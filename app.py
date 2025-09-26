@@ -142,7 +142,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             if not session_attr.get("graficos_em_progresso", False):
                 session_attr["graficos_em_progresso"] = True
                 # 🔹 Dispara a geração de gráficos em segundo plano
-                threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
+                #threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
                 
         except Exception as e:
             log_error(f"Erro ao iniciar geração de gráficos em segundo plano: {e}")
@@ -2021,6 +2021,27 @@ def static_files(filename):
         return jsonify({"error": "Arquivo não encontrado"}), 404
 
     return send_from_directory(OUTPUT_DIR, filename, mimetype="image/png")
+
+def atualizar_graficos_periodicamente():
+    while True:
+        try:
+            log_info("⏰ Atualizando gráficos em background (agendado)...")
+            # Consulta os ativos do banco
+            conn = conectar_sqlite()
+            cursor = conn.cursor()
+            cursor.execute("SELECT codigo FROM ativos WHERE status = True")
+            ativos = [row[0] for row in cursor.fetchall()]
+            conn.close()
+            # Gera os gráficos (chame sua função que gera todos)
+            gerar_todos_os_graficos(ativos)
+            log_info("✅ Gráficos atualizados com sucesso.")
+        except Exception as e:
+            log_error(f"Erro ao atualizar gráficos agendados: {e}")
+        # Aguarda 20 minutos (1200 segundos)
+        time.sleep(1200)
+
+# Inicia a thread de atualização automática ao iniciar o app
+threading.Thread(target=atualizar_graficos_periodicamente, daemon=True).start()
 
 if __name__ == '__main__':
     log_info("\n Iniciando o servidor Flask...\n")
