@@ -30,7 +30,7 @@ def enviar_para_telegram(mensagem):
     CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
     if not TELEGRAM_TOKEN or not CHAT_ID:
-        print("⚠️ Telegram não configurado")
+        print("⚠️ Telegram não configurado.")
         return
 
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
