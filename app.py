@@ -2038,7 +2038,7 @@ def atualizar_graficos_periodicamente():
         except Exception as e:
             log_error(f"Erro ao atualizar gráficos agendados: {e}")
         # Aguarda 20 minutos (1200 segundos)
-        time.sleep(1200)
+        time.sleep(60)
 
 # Inicia a thread de atualização automática ao iniciar o app
 threading.Thread(target=atualizar_graficos_periodicamente, daemon=True).start()
