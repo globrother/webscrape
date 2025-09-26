@@ -120,126 +120,17 @@ def ler_historico(sufixo):
         log_error(f"Erro ao ler histórico: {e}")
         return []
 
-"""
-def ler_historico(sufixo):
-    log_debug("Agora no método ler_historico")
-
-    try:
-        #log_info("--> Iniciando Ler Histórico")
-        
-        if not testar_conexao():
-            log_error("Erro ao conectar com o servidor Back4App.")
-            return
-        
-        nome_classe = obter_nome_classe(sufixo)
-        log_debug(f"Iniciando Leitura de: {nome_classe}")
-        
-        # Conexão ao servidor Back4App
-        connection = http.client.HTTPSConnection('parseapi.back4app.com', 443)
-        connection.connect()
-        log_debug(f"Conectando ao servidor para ler: {nome_classe}")
-
-        # Requisição GET para recuperar objetos da classe ordenados por createdAt
-        connection.request('GET', f'/classes/{nome_classe}?order=-createdAt', '', {
-            "X-Parse-Application-Id": APPLICATION_ID,
-            "X-Parse-REST-API-Key": REST_API_KEY
-        })
-        resultados = json.loads(connection.getresponse().read())
-        historico = [{"data": resultado['data'],"tempo": resultado.get('tempo', ':'),"valor": resultado['valor']} for resultado in resultados['results']]
-        connection.close()
-        #historico = [{'data': '24/01/2025','tempo': '14:15','valor': 'R$ 9,16'}]
-        #log_info(f"valor de hitórico: {historico}")
-        return historico
-    except Exception as e:
-        log_error(f"Erro ao ler histórico: {e}")
-        return []  # Retorna uma lista vazia em caso de erro
-"""
-""" 
 def gerar_texto_historico(historico, aux):
     log_debug("Agora no método gerar_texto_historico")
-    #log_info("--> Iniciando Gerar Histórico")
-    
-    # Verificar se o histórico está vazio
-    if not historico:
-        log_info("Histórico está vazio")
-        return "• 00/00/0000\u2003R$ 0,00"
-    
-    #log_info("Iniciando condição")
-    
-    if aux == "alert":
-        # Usar a nova coluna "tempo"
-        linhas = [f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{registro["valor"]}' for registro in historico]
-        #log_info(f"\n Linhas antes: {linhas}\n")
-        if len(linhas) > 1:
-            if len(linhas) >= 4:
-                linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-            elif len(linhas) == 3:
-                linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}']
-            else:
-                linhas = [f'{linhas[0]}\u2003{linhas[1]}']
-            #log_info(f"Hist alerta gerado: {linhas}")
-        else:
-            log_info("Um registro encontrado")
-            linhas = [linhas[0]]
-        #if len(linhas) > 1:
-            #linhas = [f'{linhas[0]}\u2003{linhas[1]}<br>{linhas[2]}\u2003{linhas[3]}']
-        #log_info(f"Histórico de alerta gerado: {linhas}")
-        return "<br>".join(linhas)
-    else:
-        log_info(f'{historico[0]["valor"]}')
-        #linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{registro["valor"]}' for registro in historico]
-        #linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003R$ {float(registro["valor"]):,.2f}'.replace('.', ',') for registro in historico]
-        linhas = [f'{registro["data"][:-5]} {registro["tempo"]}\u2003{formatar_reais(registro["valor"])}' for registro in historico
-]
-
-        #meio = len(linhas) // 2  # Divide ao meio para colunas no APL
-        log_debug("Histórico de ativo gerado")
-        log_info("✅🖥️ Mostrando Tela")
-        #return "<br>".join(linhas)
-        return linhas
-"""
-"""
-def gerar_texto_historico(historico, aux):
-    log_debug("Agora no método gerar_texto_historico")
-    log_debug(f"VALOR DE AUX >> {aux} ⚠ ⚠ ⚠")
-
-    if not historico:
-        log_info("Histórico está vazio")
-        return "• 00/00/0000\u2003R$ 0,00"
-
-    if aux == "alert":
-        log_debug("Flag de alerta detectado")
-        linhas = [
-            f'• {registro["data"][:-4] + registro["data"][-2:]}\u2003{formatar_reais(registro["valor"])}'
-            for registro in historico
-        ]
-
-        log_info(f"Histórico de alerta gerado com {len(linhas)} registros")
-        log_debug(f"Histórico de alerta gerado: {linhas}")
-        return "<br>".join(linhas)
-
-    else:
-        linhas = [
-            f'{registro["data"][:-5]} {registro["tempo"]}\u2003{formatar_reais(registro["valor"])}'
-            for registro in historico
-        ]
-
-        log_debug("Histórico de ativo gerado")
-        log_info("✅🖥️ Mostrando Tela")
-        return linhas
-"""
-
-def gerar_texto_historico(historico, aux):
-    log_debug("Agora no método gerar_texto_historico")
-    log_debug(f"VALOR DE AUX >> {aux} ⚠ ⚠ ⚠")
+    #log_debug(f"VALOR DE AUX >> {aux} ⚠ ⚠ ⚠")
 
     if not historico:
         log_info("Histórico está vazio")
         return "• 00/00/0000\u2003R$ 0,00"
     
     if aux == "alert":
-        log_debug("🧪 Flag de alerta detectado")
-
+        #log_debug("🧪 Flag de alerta detectado")
+        
         # Limita aos 10 primeiros registros
         historico = historico[:10]
 
@@ -328,48 +219,6 @@ def carregar_ativos():
         log_error(f"❌ Erro ao carregar ativos do SQLite: {e}")
         return ({}, [])
 
-"""
-def carregar_ativos():
-    log_debug("Agora no método carregar_ativos")
-    global _ativos_cache, _ativos_cache_time
-    agora = time.time()
-    # Se o cache existe e não expirou, retorna do cache
-    if _ativos_cache and (agora - _ativos_cache_time) < _CACHE_TTL:
-        return _ativos_cache
-
-    # Senão, busca do Back4App
-    url = "https://parseapi.back4app.com/classes/map_ativo?limit=1000"
-    #print("APPLICATION_ID:", APPLICATION_ID)
-    #print("REST_API_KEY:", REST_API_KEY)
-    headers = {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        try:
-            data = response.json()
-        except Exception as e:
-            log_error(f"❌ Erro ao decodificar JSON: {e}")
-            data = {"results": []}
-    else:
-        log_error(f"❌ Requisição falhou. Status code: {response.status_code}")
-        data = {"results": []}
-
-    #log_info(f"DEBUG resposta Back4App:{data}") 
-    ativos = data['results']
-    #state_fund_mapping = {f['state_id']: f['codigo'] for f in ativos if f['status']}
-    state_fund_mapping = {f['state_id']: f for f in ativos if f.get('status', True)}
-    # Atualiza o cache
-    _ativos_cache = (state_fund_mapping, ativos)
-    _ativos_cache_time = agora
-    return _ativos_cache
-
-# Exemplo de uso:
-#state_fund_mapping, lista_ativos = carregar_ativos()
-"""
-
 #::--> ADICIONAR ATIVO AO BANCO DE DADOS <--::
 def adicionar_ativo(ativo_dict):
     log_debug("Agora no método adicionar_ativo")
@@ -410,24 +259,6 @@ def adicionar_ativo(ativo_dict):
         log_error(f"❌ Erro ao cadastrar ativo no SQLite: {e}")
         return False
 
-"""
-def adicionar_ativo(ativo_dict):
-    log_debug("Agora no método adicionar_ativo")
-    url = "https://parseapi.back4app.com/classes/map_ativo"
-    headers = {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY,
-        "Content-Type": "application/json"
-    }
-    response = requests.post(url, headers=headers, data=json.dumps(ativo_dict))
-    log_debug(f"resposta de adicionar_ativo: {response.status_code}")
-    if response.status_code in (200, 201):
-        log_info(f"Arquivo gravado: {ativo_dict}\n")
-        return response.json()
-    else:
-        log_error(f"❌ Erro ao cadastrar ativo: {response.text}")
-        return False
-"""
 #::--> EXCLUIR ATIVO AO BANCO DE DADOS <--::
 def excluir_ativo(state_id):
     log_debug(f"🗑️ Agora no método excluir_ativo: {state_id}")
@@ -456,23 +287,6 @@ def excluir_ativo(state_id):
     except Exception as e:
         log_error(f"❌ Erro ao excluir ativo no SQLite: {e}")
         return False
-
-
-"""
-def excluir_ativo(object_id):
-    log_debug(f"🗑️ Agora no método excluir_ativo: {object_id}")
-    url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
-    headers = {
-        "X-Parse-Application-Id": APPLICATION_ID,
-        "X-Parse-REST-API-Key": REST_API_KEY
-    }
-    response = requests.delete(url, headers=headers)
-    if response.status_code == 200:
-        log_info(f"✅ Ativo excluído com sucesso: {object_id}")
-        return True
-    else:
-        log_error(f"❌ Erro ao excluir ativo: {response.text}")
-        return False"""
 
 # ::--> ATUALIZAR STATUS DO ATIVO <--::
 def atualizar_status_ativo(state_id, status: bool):
@@ -530,28 +344,3 @@ def atualizar_favorito(state_id, favorito_bool):
     except Exception as e:
         log_error(f"❌ Erro ao atualizar favorito no SQLite: {e}")
         return False
-
-"""
-def atualizar_favorito(object_id, favorito_bool):
-    try:
-        log_debug(f"Atualizando status do ativo {object_id} para {favorito_bool}")
-        url = f"https://parseapi.back4app.com/classes/map_ativo/{object_id}"
-        log_warning(f"Id do OBJETO:{object_id}:{favorito_bool}")
-        headers = {
-            "X-Parse-Application-Id": APPLICATION_ID,
-            "X-Parse-REST-API-Key": REST_API_KEY,
-            "Content-Type": "application/json"
-        }
-        body = {"favorite": favorito_bool}
-        response = requests.put(url, headers=headers, data=json.dumps(body))
-        if response.status_code == 200:
-            log_debug(f"Resposta bruta do servidor: {response.text[:300]}")
-            log_info(f"✔️ Status do favorito atualizado com sucesso para {favorito_bool}")
-            return True
-        else:
-            log_error(f"❌ Erro ao atualizar status do favorito: {response.text}")
-            return False
-    except Exception as e:
-        log_error(f"Erro ao atualizar favorito: {e}")
-        return False
-"""
