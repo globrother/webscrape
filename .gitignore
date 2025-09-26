@@ -36,3 +36,7 @@ node_modules/
 
 # ignorar arquivos de banco de dados
 Back4App_data/*.csv
+
+# ignorar scripts de backup
+backup_config.sh
+baixar_backup.sh
