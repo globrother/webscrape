@@ -10,10 +10,11 @@ import re # Regex para trabalhar com expressões regulares
 
 import grava_historico
 from obter_grafico import requisitando_chart
+from formatadores import formatar_reais
 
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 import logging
-from log_utils import log_debug, log_info, log_warning, log_error, log_telegram
+from log_utils import log_debug, log_info, log_warning, log_error, log_telegram, adicionar_na_fila
 # =====================================================================
 
 # VARIÁVEIS: 
@@ -144,15 +145,21 @@ def comparador(historico, cota_atual, voz_fundo, fii):
                 #logging.info(f"Valor de cota_atual_float: {cota_atual_float} \n")
 
                 # Comparar os valores e adicionar aviso de fala se necessário
+                # Envia alerta Telegram
                 if cota_atual_float <= alert_value_float:
                     voz_fundo += f"\n<break time='900ms'/>Aviso!<break time='500ms'/> Alerta de preço da cota atingido em ({cota_atual})!<break time='500ms'/> Repito, Alerta de preço atingido."
                     fii_safe = html.escape(fii.upper())
                     cota_safe = html.escape(f"{cota_atual}")  # R$ 21,72
+                    log_info(f"cota_safe_alert antes: {cota_safe}")
+                    cota_safe = formatar_reais(cota_safe)
+                    log_info(f"cota_safe_alert depois: {cota_safe}")
                     mensagem = (
                     f"🔥🔥<b>Alerta ATINGIDO</b>🔥🔥: R$ {cota_safe} 💲🏁​\n"
                     f"para o Ativo 🔸<b> {fii_safe} </b>"
                     )
                     log_telegram(mensagem)
+                    nivel = "WARNING"
+                    adicionar_na_fila(mensagem, nivel, chat_id=os.getenv("TELEGRAM_ALERT_ID"))
             except ValueError as e:
                 logging.error(f"Erro ao converter valores para float: {e}")
     else:
