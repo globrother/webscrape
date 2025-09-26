@@ -10,6 +10,8 @@ import time
 #import json
 import os
 
+from log_utils import log_info, log_error, log_warning
+
 # sslify = SSLify(app)
 OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
 # 🔹 Definições da API
@@ -67,11 +69,22 @@ def gerar_grafico(ticker):
 
     # 🔹 Obtendo dados do yfinance
     try:
+        # ...tenta gerar o gráfico normalmente...
         ativo = yf.Ticker(ticker)
         historico = ativo.history(period="100d")
         print(F"requisição finalizada de Yahoo Finance para {ticker}: 100 dias.")
         if historico.empty:
             raise ValueError("Ticker não encontrado ou sem dados")
+    except Exception as e:
+        log_error(f"Erro ao gerar gráfico para {ticker}: {e}")
+        # Tenta usar imagem em cache
+        cached_image = get_cached_image(ticker)
+        if cached_image:
+            log_warning(f"Usando imagem em cache para {ticker} devido a erro na geração.")
+            return cached_image
+        else:
+            log_error(f"Sem imagem em cache para {ticker}.")
+            return None 
     except ValueError as e:
         raise ValueError(f"Ticker inválido ou sem dados: {e}")
     except ConnectionError as e:
