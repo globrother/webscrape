@@ -2007,7 +2007,7 @@ def webhook():
     log_info("✅ Resposta gerada com sucesso para a Alexa.")
     return jsonify(response)
 
-@app.route("/saude")
+@app.route('/saude')
 def saude():
     return "OK", 200
 
