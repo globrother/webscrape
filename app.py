@@ -128,6 +128,10 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
+        """
+        # BLOCO PARA ATUALIZAR GRÁFICOS NA PARTIDA
+        # (não é mais necessário, pois foi implementado >
+        # > atualizar_graficos_periodicamente() no flask )
         try:
             # 🔹 Consulta os ativos do banco
             conn = conectar_sqlite()
@@ -142,11 +146,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
             if not session_attr.get("graficos_em_progresso", False):
                 session_attr["graficos_em_progresso"] = True
                 # 🔹 Dispara a geração de gráficos em segundo plano
-                #threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
+                threading.Thread(target=gerar_todos_os_graficos, args=(ativos,)).start()
                 
         except Exception as e:
             log_error(f"Erro ao iniciar geração de gráficos em segundo plano: {e}")
-            
+         """ 
+           
         try:    
             log_info("PASSOU AQUI")
             start_time = time.time()
@@ -2038,7 +2043,7 @@ def atualizar_graficos_periodicamente():
         except Exception as e:
             log_error(f"Erro ao atualizar gráficos agendados: {e}")
         # Aguarda 20 minutos (1200 segundos)
-        time.sleep(60)
+        time.sleep(1200)
 
 # Inicia a thread de atualização automática ao iniciar o app
 threading.Thread(target=atualizar_graficos_periodicamente, daemon=True).start()
