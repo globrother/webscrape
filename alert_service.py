@@ -142,7 +142,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # prepara directives de retorno (tela inicial + navegação)
     first_asset = state_asset_mapping[fundo_state_id]["codigo"]
     log_debug(f"Ativo para mostrar: {first_asset}")
-    dados_info, _, _, _, apl_doc, _ = web_scrape(first_asset)
+    dados_info, _, _, _, apl_doc, _, _ = web_scrape(first_asset)
     directives = [
         RenderDocumentDirective(
             token="mainScreenToken",
