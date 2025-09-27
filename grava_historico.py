@@ -72,7 +72,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
         f"--------------------------------------------------------"
     )
     log_telegram(mensagem)
-    nivel = "WARNING"
+    nivel = "ERROR"
     adicionar_na_fila(mensagem, nivel, chat_id=os.getenv("TELEGRAM_ALERT_ID"))
 
     # Insere novo registro
