@@ -9,6 +9,8 @@ from utils import limpar_asset_name, state_asset_mapping, _load_apl_document
 from scraper import web_scrape
 import grava_historico
 
+from formatadores import formatar_reais
+
 # ====================:: CONFIGURAÇÃO DO LOGTAIL ::====================
 from log_utils import log_debug, log_info, log_warning, log_error
 # =====================================================================
@@ -128,12 +130,13 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # -----------------------------------
     # 7) tudo OK, CRIA o alerta
     alert_value = session_attr["AlertValue"]
-    key = f"alert_value_{sigla_normalizada}"
+    key = sigla_normalizada
     session_attr[key] = alert_value
     log_info(f"[Service] Salvando alerta: {sigla_normalizada} → {alert_value}")
 
     # grava histórico
-    valor_formatado = f"R$ {alert_value}"
+    valor_formatado = formatar_reais(alert_value)
+    log_debug(f"VALOR FORMATADO: {valor_formatado}")
     grava_historico.gravar_historico(key, valor_formatado)
     historico = grava_historico.ler_historico(key)
     texto_hist = grava_historico.gerar_texto_historico(historico, "alert")
