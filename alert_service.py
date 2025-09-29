@@ -130,7 +130,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     # -----------------------------------
     # 7) tudo OK, CRIA o alerta
     alert_value = session_attr["AlertValue"]
-    key = f"alert_value_{sigla_normalizada}"
+    key = f"alert:{sigla_normalizada}" #f"alert_value_{sigla_normalizada}"
     session_attr[key] = alert_value
     log_info(f"[Service] Salvando alerta: {sigla_normalizada} → {alert_value}")
 
@@ -138,7 +138,7 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     valor_formatado = limpar_valor(alert_value)
     log_info(f"SIGLA NORMALIZADA: {sigla_normalizada}")
     log_info(f"VALOR FORMATADO: {valor_formatado}")
-    grava_historico.gravar_historico(sigla_normalizada, valor_formatado)
+    grava_historico.gravar_historico(sigla_normalizada, valor_formatado, tabela="alertas")
     historico = grava_historico.ler_historico(key)
     texto_hist = grava_historico.gerar_texto_historico(historico, "alert")
     log_info(f"[Service] Histórico gerado: {texto_hist}")

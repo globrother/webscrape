@@ -36,7 +36,7 @@ def conectar_sqlite():
 #def conectar_sqlite():
     #return sqlite3.connect("finance.db")
 
-def gravar_historico(sufixo, valor, var_fii_telegram=None):
+def gravar_historico(sigla, valor, tabela="historico", var_fii_telegram=None):
     log_debug("Agora no método gravar_historico")
     conn = conectar_sqlite()
     cursor = conn.cursor()
@@ -45,13 +45,13 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
 
     # Verifica se o valor já existe
-    cursor.execute("""
-        SELECT valor FROM historico
+    cursor.execute(f"""
+        SELECT valor FROM {tabela}
         WHERE ativo = ?
         ORDER BY DATE(substr(data, 7, 4) || '-' || substr(data, 4, 2) || '-' || substr(data, 1, 2)) DESC,
                 TIME(tempo) DESC
         LIMIT 1
-    """, (sufixo,))
+    """, (sigla,))
     #cursor.execute("SELECT valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC LIMIT 1", (sufixo,))
     resultado = cursor.fetchone()
     if resultado and resultado[0] == valor:
@@ -60,7 +60,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
         return
 
     # Envia alerta Telegram
-    fii_safe = html.escape(sufixo.upper())
+    fii_safe = html.escape(sigla.upper())
     cota_safe = html.escape(f"{valor}")
     log_info(f"cota_safe antes: {cota_safe}")
     cota_safe = formatar_reais(cota_safe)
@@ -80,7 +80,7 @@ def gravar_historico(sufixo, valor, var_fii_telegram=None):
                    (data_atual, tempo_atual, valor, sufixo))
     conn.commit()
     conn.close()
-    log_info("Histórico gravado com sucesso.")
+    log_info(f"Histórico gravado com sucesso na tabela {tabela}.")
     
 def ler_historico(sufixo):
     log_debug("Agora no método ler_historico")
