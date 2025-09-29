@@ -13,7 +13,7 @@ from collections import deque
 from logging.handlers import RotatingFileHandler
 
 
-DEBUG_MODE = True  # Defina como False para ocultar logs de debug
+DEBUG_MODE = False  # Defina como False para ocultar logs de debug
 
 EMOJI_NIVEL = {
     "WARNING": "🚨",
