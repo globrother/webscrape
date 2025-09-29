@@ -77,7 +77,7 @@ def gravar_historico(sigla, valor, tabela="historico", var_fii_telegram=None):
 
     # Insere novo registro
     cursor.execute("INSERT INTO historico (data, tempo, valor, ativo) VALUES (?, ?, ?, ?)",
-                   (data_atual, tempo_atual, valor, sufixo))
+                   (data_atual, tempo_atual, valor, sigla))
     conn.commit()
     conn.close()
     log_info(f"Histórico gravado com sucesso na tabela {tabela}.")
