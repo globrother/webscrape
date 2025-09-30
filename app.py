@@ -1032,7 +1032,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         log_session_state(handler_input, "session_attr no início")
         request_type = handler_input.request_envelope.request.object_type
-        log_warning(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
+        log_debug(f"DynamicScreenHandler: Tipo de solicitação recebido: {request_type}")
 
         # Bloqueia IntentRequests (evita que outros intents sejam processados incorretamente)
         if is_request_type("IntentRequest")(handler_input):
@@ -1054,7 +1054,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             arguments = handler_input.request_envelope.request.arguments
             log_info(f"UserEvent recebido: argumentos={arguments}, contexto={session_attr.get('contexto_atual')}")
             if arguments and arguments[0] == "autoNavigate":
-                log_warning("DynamicScreenHandler acionado para evento autoNavigate.")
+                log_debug("DynamicScreenHandler acionado para evento autoNavigate.")
                 return True
 
         log_warning("DynamicScreenHandler ignorado para eventos de toque ou intent errado.")
@@ -1072,9 +1072,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
         token_apl = "mainScreenToken"
 
         log_info("=== DynamicScreenHandler.handle ===")
-        log_info(f"ativos_ids: {ativos_ids}")
+        #log_info(f"ativos_ids: {ativos_ids}")
         #log_info(f"exibir_favoritos: {exibir_favoritos}")
-        log_info(f"current_state: {current_state}")
+        #log_info(f"current_state: {current_state}")
         log_session_state(handler_input, "Atributos da sessão")
 
         # Garante que tipos são iguais (tudo int ou tudo str)
