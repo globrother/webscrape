@@ -76,7 +76,7 @@ def gravar_historico(sigla, valor, var_fii_telegram=None, tabela="historico"):
     adicionar_na_fila(mensagem, nivel, chat_id=os.getenv("TELEGRAM_ALERT_ID"))
 
     # Insere novo registro
-    cursor.execute("INSERT INTO historico (data, tempo, valor, ativo) VALUES (?, ?, ?, ?)",
+    cursor.execute(f"INSERT INTO {tabela} (data, tempo, valor, ativo) VALUES (?, ?, ?, ?)",
                    (data_atual, tempo_atual, valor, sigla))
     conn.commit()
     conn.close()
@@ -88,7 +88,7 @@ def ler_historico(sufixo):
         conn = conectar_sqlite()
         cursor = conn.cursor()
         
-        log_info(f"Sufixo recebido: {sufixo}")
+        #log_info(f"Sufixo recebido: {sufixo}")
         if sufixo.startswith("alert:"):
             ativo = sufixo.split("alert:")[1].lower()
             log_debug(f"Consultando alertas para: {ativo}")
