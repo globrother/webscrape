@@ -2041,7 +2041,7 @@ def atualizar_graficos_periodicamente():
             ativos = [row[0] for row in cursor.fetchall()]
             conn.close()
             # Gera os gráficos (chame sua função que gera todos)
-            #gerar_todos_os_graficos(ativos)
+            gerar_todos_os_graficos(ativos)
             log_info("✅ Gráficos atualizados com sucesso.")
         except Exception as e:
             log_error(f"Erro ao atualizar gráficos agendados: {e}")
