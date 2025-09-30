@@ -43,7 +43,7 @@ def gravar_historico(sigla, valor, tabela="historico", var_fii_telegram=None):
 
     data_atual = datetime.datetime.now(brt_tz).strftime("%d/%m/%Y")
     tempo_atual = datetime.datetime.now(brt_tz).strftime("%H:%M")
-
+    log_debug(f"Tentando gravar na tabela: {tabela}, ativo: {sigla}, valor: {valor}")
     # Verifica se o valor já existe
     cursor.execute(f"""
         SELECT valor FROM {tabela}
