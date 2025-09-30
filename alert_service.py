@@ -138,7 +138,9 @@ def tratar_alerta(session_attr: dict, slots: dict) -> dict:
     valor_formatado = limpar_valor(alert_value)
     log_info(f"SIGLA NORMALIZADA: {sigla_normalizada}")
     log_info(f"VALOR FORMATADO: {valor_formatado}")
-    grava_historico.gravar_historico(sigla_normalizada, valor_formatado)
+    tabela="alertas"
+    log_debug(f"Tentando gravar na tabela: {tabela}, ativo: {sigla_normalizada}, valor: {valor_formatado}")
+    grava_historico.gravar_historico(sigla_normalizada, valor_formatado, tabela="alertas")
     historico = grava_historico.ler_historico(key)
     texto_hist = grava_historico.gerar_texto_historico(historico, "alert")
     log_info(f"[Service] Histórico gerado: {texto_hist}")
