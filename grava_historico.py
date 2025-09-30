@@ -36,7 +36,7 @@ def conectar_sqlite():
 #def conectar_sqlite():
     #return sqlite3.connect("finance.db")
 
-def gravar_historico(sigla, valor, tabela="historico", var_fii_telegram=None):
+def gravar_historico(sigla, valor, var_fii_telegram=None, tabela="historico"):
     log_debug("Agora no método gravar_historico")
     conn = conectar_sqlite()
     cursor = conn.cursor()
