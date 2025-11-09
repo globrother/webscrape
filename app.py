@@ -336,7 +336,7 @@ class LaunchIntentHandler(AbstractRequestHandler):
         #session_attr["select_in_progress"] = True
 
         if fund_name:
-            log_debug(f"[LaunchIntent] fundo recebido na invocação: {fund_name}")
+            log_debug(f"[LaunchIntent] ativo recebido na invocação: {fund_name}")
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["contexto_atual"] = "select_in_progress"
             session_attr["select_in_progress"] = True
@@ -412,7 +412,7 @@ class MonitorIntentHandler(AbstractRequestHandler):
         #session_attr["select_in_progress"] = True
 
         if fund_name:
-            log_debug(f"[MonitorIntent] fundo recebido na invocação: {fund_name}")
+            log_debug(f"[MonitorIntent] ativo recebido na invocação: {fund_name}")
             session_attr = handler_input.attributes_manager.session_attributes
             session_attr["contexto_atual"] = "monitor_in_progress"
             session_attr["select_in_progress"] = True
@@ -1091,7 +1091,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
             log_info(f"idx: {idx}")
             log_info(f"idx (posição do fundo atual): {idx}")
             fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
-            log_info(f"Fundo selecionado: {fundo}")
+            log_info(f"ativo selecionado: {fundo}")
 
             # Obtenha o fundo atual do mapeamento
             fundo = self.state_asset_mapping[ativos_ids[idx]]["codigo"]
@@ -1145,9 +1145,9 @@ class DynamicScreenHandler(AbstractRequestHandler):
             
             # Verificando dados_info
             if not isinstance(dados_info, dict) or not dados_info:
-                log_error(f"❌ dados_info inválido para fundo {fundo}. Ignorando entrada.")
+                log_error(f"❌ dados_info inválido para ativo {fundo}. Ignorando entrada.")
                 handler_input.response_builder.speak(
-                    f"O fundo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
+                    f"O ativo {fundo.upper()} está indisponível no momento. Pulando para o próximo."
                 ).set_should_end_session(False)
                 
                 handler_input.response_builder.add_directive(
@@ -1204,7 +1204,7 @@ class DynamicScreenHandler(AbstractRequestHandler):
                 handler_input.response_builder.speak(f"<break time='1s'/>\n{voz}")
 
             # Se houver um próximo estado, agende a navegação automática.
-            log_debug(f"🧪 Renderizando fundo: {fundo}")
+            log_debug(f"🧪 Renderizando ativo: {fundo}")
             #log_debug(f"Dados enviados: {json.dumps(dados_info, ensure_ascii=False)}")
             session_attr.pop("manual_selection", None)
             
@@ -1328,31 +1328,31 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         log_info(f"Fundos permitidos: {allowed_funds}")
 
         # Tentativa de reconhecimento por voz
-        tentativas = session_attr.get("tentativas_fundo", 0)
+        tentativas = session_attr.get("tentativas_ativo", 0)
 
         if not fund_name:
             # Se a intent for explicitamente SelectFundIntent sem slot, abre a tela de input imediatamente
             if intent_name == "SelectFundIntent":
-                session_attr["tentativas_fundo"] = 0
+                session_attr["tentativas_ativo"] = 0
                 session_attr["select_in_progress"] = True
                 apl_doc = _load_apl_document("apl_select_ativo.json")
                 handler_input.response_builder.add_directive(RenderDocumentDirective(
                     token="inputScreenToken", document=apl_doc))
-                speech = "Por favor, digite o nome do fundo na tela."
+                speech = "Por favor, digite o nome do ativo na tela."
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
 
             # Comportamento para outros casos (repetir tentativa antes de abrir o APL)
-            session_attr["tentativas_fundo"] = tentativas + 1
+            session_attr["tentativas_ativo"] = tentativas + 1
             if tentativas < 2:
                 speech = "Desculpe, não entendi o nome do ativo. Tente falar: mostrar ativo seguido do nome do ativo sem o número?"
                 return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
             else:
-                session_attr["tentativas_fundo"] = 0
+                session_attr["tentativas_ativo"] = 0
                 session_attr["select_in_progress"] = True
                 apl_doc = _load_apl_document("apl_select_ativo.json")
                 handler_input.response_builder.add_directive(RenderDocumentDirective(
                     token="inputScreenToken", document=apl_doc))
-                speech = "Não consegui entender. Por favor, digite o nome do fundo na tela."
+                speech = "Não consegui entender. Por favor, digite o nome do ativo na tela."
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
         sigla_normalizada = limpar_asset_name(fund_name)
@@ -1440,7 +1440,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 ))
 
                 # 3. Fala algo ao usuário
-                handler_input.response_builder.speak(f"Monitorando o fundo {fund_name.upper()} com atualizações automáticas.")
+                handler_input.response_builder.speak(f"Monitorando o ativo {fund_name.upper()} com atualizações automáticas.")
                 return handler_input.response_builder.set_should_end_session(False).response
 
             log_info(f"Contexto da Sessão 3: {session_attr['contexto_atual']}")
@@ -1533,7 +1533,7 @@ class SelectInputHandler(APLUserEventHandler):
             fundo_full = None
             fundo_state_id = None
 
-            log_debug(f"[SelectFund] procurando fundo para sigla: '{sigla}' (normalizada: '{sigla_normalizada}')")
+            log_debug(f"[SelectFund] procurando ativo para sigla: '{sigla}' (normalizada: '{sigla_normalizada}')")
             # Tentativa 1: busca exata por normalização
             for state_id, dados in state_asset_mapping.items():
                 try:
@@ -1560,9 +1560,9 @@ class SelectInputHandler(APLUserEventHandler):
 
             # Log final para depuração
             if fundo_full:
-                log_info(f"[SelectFund] Encontrado fundo: {fundo_full} (state_id={fundo_state_id}) para sigla '{sigla}'")
+                log_info(f"[SelectFund] Encontrado ativo: {fundo_full} (state_id={fundo_state_id}) para sigla '{sigla}'")
             else:
-                log_warning(f"[SelectFund] NÃO encontrou fundo para sigla '{sigla}' — allowed_funds={ [limpar_asset_name(v.get('codigo','')) for v in state_asset_mapping.values()] }")
+                log_warning(f"[SelectFund] NÃO encontrou ativo para sigla '{sigla}' — allowed_funds={ [limpar_asset_name(v.get('codigo','')) for v in state_asset_mapping.values()] }")
 
             if not fundo_full:
                 handler_input.response_builder.speak(
@@ -1622,13 +1622,13 @@ class TouchHandler(APLUserEventHandler):
         # Obtenha o fundo atual do mapeamento
         fundo = self.state_asset_mapping.get(current_state, {}).get("codigo")
         if not fundo:
-            log_error(f"[TouchHandler] Fundo não encontrado para state {current_state}.")
+            log_error(f"[TouchHandler] ativo não encontrado para state {current_state}.")
             handler_input.response_builder.speak("Não foi possível exibir o ativo. Reiniciando a navegação.").set_should_end_session(False)
             session_attr["state"] = 1
             handler_input.attributes_manager.session_attributes = session_attr
             return handler_input.response_builder.response
 
-        log_info(f"[TouchHandler] Fundo selecionado: {fundo}")
+        log_info(f"[TouchHandler] ativo selecionado: {fundo}")
 
         """# Verifica se é o último estado
         if current_state == 1:
@@ -1806,7 +1806,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
         if contexto_atual == "alerta_preco":
             log_warning("FallbackIntent: Contexto de Alerta de Preço")
             apl_document = _load_apl_document("apl_add_alerta.json")
-            speech_text = "Desculpe não entendi o nome do fundo. Por favor,  digite manualmente na tela."
+            speech_text = "Desculpe não entendi o nome do ativo. Por favor,  digite manualmente na tela."
 
         elif contexto_atual == "selecao_ativo":
             log_warning("FallbackIntent: Contexto de Seleção de Ativo")
@@ -1940,7 +1940,7 @@ class CatchAllRequestHandler(AbstractRequestHandler):
         if contexto == "alerta_preco":
             log_warning("CatchAll: Contexto de Alerta de Preço.")
             apl_document = _load_apl_document("apl_add_alerta.json")
-            speech = "Desculpe, não entendi o nome do fundo. Por favor, digite na tela."
+            speech = "Desculpe, não entendi o nome do ativo. Por favor, digite na tela."
 
         elif contexto == "selecao_ativo":
             log_warning("CatchAll: Contexto de Seleção de Ativo.")
