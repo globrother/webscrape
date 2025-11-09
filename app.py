@@ -1331,9 +1331,20 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         tentativas = session_attr.get("tentativas_fundo", 0)
 
         if not fund_name:
+            # Se a intent for explicitamente SelectFundIntent sem slot, abre a tela de input imediatamente
+            if intent_name == "SelectFundIntent":
+                session_attr["tentativas_fundo"] = 0
+                session_attr["select_in_progress"] = True
+                apl_doc = _load_apl_document("apl_select_ativo.json")
+                handler_input.response_builder.add_directive(RenderDocumentDirective(
+                    token="inputScreenToken", document=apl_doc))
+                speech = "Por favor, digite o nome do fundo na tela."
+                return handler_input.response_builder.speak(speech).set_should_end_session(False).response
+
+            # Comportamento para outros casos (repetir tentativa antes de abrir o APL)
             session_attr["tentativas_fundo"] = tentativas + 1
             if tentativas < 2:
-                speech = "Desculpe, não entendi o nome do ativo. Tente falar: mostrar ativo segido do nome do ativo sem o número?"
+                speech = "Desculpe, não entendi o nome do ativo. Tente falar: mostrar ativo seguido do nome do ativo sem o número?"
                 return handler_input.response_builder.speak(speech).ask(speech).set_should_end_session(False).response
             else:
                 session_attr["tentativas_fundo"] = 0
