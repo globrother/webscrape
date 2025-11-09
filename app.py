@@ -1314,7 +1314,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         fund_name = slots.get("fundName").value #if slots.get("fundName") else None
         log_intent_event(handler_input, f"🧠 Slot raw: {slots['fundName'].value}")
         log_info(f"🎙️ fund_name captado: {repr(fund_name)}")
-        log_intent_event(handler_input, f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+        #log_intent_event(handler_input, f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
 
         resolutions = slots["fundName"].resolutions
         if resolutions and resolutions.resolutions_per_authority:
@@ -1325,11 +1325,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                         log_info(f"🎯 Resolvido como ID: {resolved_id}")
 
         allowed_funds = [limpar_asset_name(v.get("codigo", "")) for v in state_asset_mapping.values()]
-        log_warning(f"Fundos permitidos: {allowed_funds}")
-
-        #directive = get_dynamic_entities_directive()
-        #log_info(f"/n 📦 Entidades dinâmicas carregadas: {json.dumps(directive.to_dict(), ensure_ascii=False, indent=2)}/n")
-        #handler_input.response_builder.add_directive(directive)
+        log_info(f"Fundos permitidos: {allowed_funds}")
 
         # Tentativa de reconhecimento por voz
         tentativas = session_attr.get("tentativas_fundo", 0)
@@ -1349,7 +1345,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                 return handler_input.response_builder.speak(speech).set_should_end_session(False).response
         
         sigla_normalizada = limpar_asset_name(fund_name)
-        log_warning(f"Sigla Normalizada: {sigla_normalizada}")
+        log_info(f"Sigla Normalizada: {sigla_normalizada}")
 
         if intent_name == "AMAZON.NextIntent":
             session_attr.pop("manual_selection", None)
