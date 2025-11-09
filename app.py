@@ -1528,26 +1528,28 @@ class SelectInputHandler(APLUserEventHandler):
 
             log_debug(f"[SelectFund] procurando fundo para sigla: '{sigla}' (normalizada: '{sigla_normalizada}')")
             # Tentativa 1: busca exata por normalização
-            for state_id, nome in state_asset_mapping.items():
+            for state_id, dados in state_asset_mapping.items():
                 try:
-                    if limpar_asset_name(nome) == sigla_normalizada:
-                        fundo_full = nome
+                    codigo = dados.get("codigo", "") if isinstance(dados, dict) else str(dados)
+                    if limpar_asset_name(codigo) == sigla_normalizada:
+                        fundo_full = codigo
                         fundo_state_id = state_id
                         break
                 except Exception as e:
-                    log_error(f"[SelectFund] erro ao normalizar nome '{nome}': {e}")
+                    log_error(f"[SelectFund] erro ao normalizar nome '{dados}': {e}")
 
             # Tentativa 2: fallback por startswith (ex: usuário digitou 'bbas' e existe 'bbas3')
             if not fundo_full and sigla_normalizada:
-                for state_id, nome in state_asset_mapping.items():
+                for state_id, dados in state_asset_mapping.items():
                     try:
-                        if limpar_asset_name(nome).startswith(sigla_normalizada):
-                            log_debug(f"[SelectFund] fallback startswith encontrou candidato: {nome}")
-                            fundo_full = nome
+                        codigo = dados.get("codigo", "") if isinstance(dados, dict) else str(dados)
+                        if limpar_asset_name(codigo).startswith(sigla_normalizada):
+                            log_debug(f"[SelectFund] fallback startswith encontrou candidato: {codigo}")
+                            fundo_full = codigo
                             fundo_state_id = state_id
                             break
                     except Exception as e:
-                        log_error(f"[SelectFund] erro no fallback ao normalizar '{nome}': {e}")
+                        log_error(f"[SelectFund] erro no fallback ao normalizar '{dados}': {e}")
 
             # Log final para depuração
             if fundo_full:
