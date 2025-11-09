@@ -1471,7 +1471,7 @@ class SelectInputHandler(APLUserEventHandler):
 
         if arguments[0] == "siglaSelectAtivo":
             session_attr["sigla_select_ativo"] = arguments[1].strip().lower()
-            speech_text = "Se os dados estiverem corretos, toque em Confirmar para finalizar."
+            speech_text = "Se os dados estiverem corrétos, toque em Confirmar para finalizar."
             handler_input.response_builder.speak(speech_text).ask(
                 "Você pode confirmar ou corrigir o nome do ativo.").set_should_end_session(False)
             return handler_input.response_builder.response
