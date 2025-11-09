@@ -1521,15 +1521,39 @@ class SelectInputHandler(APLUserEventHandler):
                     f"O ativo {sigla.upper()} não está cadastrado! Tente outro ativo").set_should_end_session(False)
                 return handler_input.response_builder.response
             
-            # Encontrar fundo completo e ID
-            fundo_key = sigla.lower()
+            # Encontrar fundo completo e ID (busca robusta com logs)
+            fundo_key = sigla.lower() if sigla else None
             fundo_full = None
             fundo_state_id = None
+
+            log_debug(f"[SelectFund] procurando fundo para sigla: '{sigla}' (normalizada: '{sigla_normalizada}')")
+            # Tentativa 1: busca exata por normalização
             for state_id, nome in state_asset_mapping.items():
-                if limpar_asset_name(nome) == sigla_normalizada:
-                    fundo_full = nome
-                    fundo_state_id = state_id
-                    break
+                try:
+                    if limpar_asset_name(nome) == sigla_normalizada:
+                        fundo_full = nome
+                        fundo_state_id = state_id
+                        break
+                except Exception as e:
+                    log_error(f"[SelectFund] erro ao normalizar nome '{nome}': {e}")
+
+            # Tentativa 2: fallback por startswith (ex: usuário digitou 'bbas' e existe 'bbas3')
+            if not fundo_full and sigla_normalizada:
+                for state_id, nome in state_asset_mapping.items():
+                    try:
+                        if limpar_asset_name(nome).startswith(sigla_normalizada):
+                            log_debug(f"[SelectFund] fallback startswith encontrou candidato: {nome}")
+                            fundo_full = nome
+                            fundo_state_id = state_id
+                            break
+                    except Exception as e:
+                        log_error(f"[SelectFund] erro no fallback ao normalizar '{nome}': {e}")
+
+            # Log final para depuração
+            if fundo_full:
+                log_info(f"[SelectFund] Encontrado fundo: {fundo_full} (state_id={fundo_state_id}) para sigla '{sigla}'")
+            else:
+                log_warning(f"[SelectFund] NÃO encontrou fundo para sigla '{sigla}' — allowed_funds={ [limpar_asset_name(v.get('codigo','')) for v in state_asset_mapping.values()] }")
 
             if not fundo_full:
                 handler_input.response_builder.speak(
@@ -1547,6 +1571,7 @@ class SelectInputHandler(APLUserEventHandler):
                 "manual_selection": False
             })
 
+            log_debug(f"O valor de fundo_full é: {fundo_full}")
             dados_info, _, _, _, apl_document, voz, _ = web_scrape(fundo_full)
             speech_text = f"Mostrando o ativo {sigla.upper()}."
 

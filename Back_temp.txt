@@ -15,3 +15,15 @@ def handle(self, handler_input):
         log_intent_event(handler_input, f"🧠 Slot raw: {slots['fundName'].value}")
         log_info(f"🎙️ fund_name captado: {repr(fund_name)}")
         log_intent_event(handler_input, f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
+
+
+
+        # Encontrar fundo completo e ID
+            fundo_key = sigla.lower()
+            fundo_full = None
+            fundo_state_id = None
+            for state_id, nome in state_asset_mapping.items():
+                if limpar_asset_name(nome) == sigla_normalizada:
+                    fundo_full = nome
+                    fundo_state_id = state_id
+                    break
