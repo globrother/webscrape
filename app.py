@@ -10,7 +10,6 @@ A aplicação ainda não é capaz de lidar com solicitações de eventos de usu�
 # ADICIONAR OS INICIALIZADORES DE HANDLERS: show_xxxxx_screen_handler = ShowXxxxxScreenHandler()
 # ADICIONAR OS HANDLERS AO SkillBuilder: sb.add_request_handler(show_xxxxx_screen_handler)
 
-# import locale
 from dotenv import load_dotenv
 load_dotenv()
 import time
@@ -20,21 +19,17 @@ import os
 import json
 import sqlite3
 import threading
-#import requests
-#from bs4 import BeautifulSoup
 from flask import Flask, request, send_from_directory, jsonify
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.utils import (
     is_request_type, get_supported_interfaces, is_intent_name,  get_slot_value)
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
-#from ask_sdk_model import Response
 from ask_sdk_model.interfaces.alexa.presentation.apl import (
     RenderDocumentDirective, ExecuteCommandsDirective, SendEventCommand, SetFocusCommand, SetValueCommand)
 from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model import SessionEndedRequest, IntentRequest
 from handlers import register_handlers
-# from typing import Dict, Any
 
 from utils import (
     state_asset_mapping,
@@ -429,7 +424,7 @@ class MonitorIntentHandler(AbstractRequestHandler):
 
 # ADICIONANDO NOVO ATIVO AO MAPEAMENTO map_ativo
 class GerenciarAtivoInputHandler(APLUserEventHandler):
-    log_debug("Agora no Handler LaunchRequest")
+    log_debug("Agora na Classe GerenciarAtivoInput")
     comandos_validos = {
         "siglaAtivo",
         "nomeAtivo",
@@ -1286,11 +1281,26 @@ class SelectFundIntentHandler(AbstractRequestHandler):
                is_intent_name("AMAZON.NextIntent")(handler_input)
 
     def handle(self, handler_input):
-        #log_debug(f"[{self.__class__.__name__}] can_handle chamado. Tipo de request: {handler_input.request_envelope.request.object_type}")
-        #log_debug(f"[{self.__class__.__name__}] handle chamado. Session: {handler_input.attributes_manager.session_attributes}")
-        #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        # Proteção: extrai argumentos APL (se houver) antes de usar intent
+        request = handler_input.request_envelope.request
         session_attr = handler_input.attributes_manager.session_attributes
-        intent_name = handler_input.request_envelope.request.intent.name
+
+        # Se for APL.UserEvent, tente preencher sigla_select_ativo a partir dos arguments
+        if getattr(request, "object_type", "") == "Alexa.Presentation.APL.UserEvent":
+            arguments = getattr(request, "arguments", []) or []
+            log_debug(f"[SelectFundIntentHandler] APL.UserEvent arguments: {arguments}")
+            if len(arguments) >= 2 and arguments[0] == "siglaSelectAtivo":
+                session_attr["sigla_select_ativo"] = arguments[1].strip().lower()
+            # se confirmarSelect veio antes do evento de preenchimento, tenta ler o segundo argumento
+            if len(arguments) >= 2 and arguments[0] == "confirmarSelect" and not session_attr.get("sigla_select_ativo"):
+                session_attr["sigla_select_ativo"] = arguments[1].strip().lower()
+            # continua: se for apenas preenchimento, responde silenciosamente
+            if len(arguments) >= 1 and arguments[0] == "siglaSelectAtivo":
+                # resposta silenciosa: mantém sessão aberta
+                return handler_input.response_builder.set_should_end_session(False).response
+
+        # Fluxo normal — obtém nome da intent (se existir) e marca contexto
+        intent_name = getattr(request, "intent", None).name if getattr(request, "intent", None) else None
         if session_attr.get("contexto_atual") == "monitor_in_progress":
             session_attr["contexto_atual"] = "monitor_in_progress"
         else:
@@ -1298,6 +1308,7 @@ class SelectFundIntentHandler(AbstractRequestHandler):
         session_attr["select_in_progress"] = True
         log_info(f"Intent recebido: {intent_name}")
 
+        # segue o restante do código original (mantido igual)
         intent = handler_input.request_envelope.request.intent
         slots = intent.slots
         fund_name = slots.get("fundName").value #if slots.get("fundName") else None
@@ -2044,6 +2055,7 @@ def atualizar_graficos_periodicamente():
             gerar_todos_os_graficos(ativos)
             log_info("✅ Gráficos atualizados com sucesso.")
         except Exception as e:
+            
             log_error(f"Erro ao atualizar gráficos agendados: {e}")
         # Aguarda 20 minutos (1200 segundos)
         time.sleep(1200)

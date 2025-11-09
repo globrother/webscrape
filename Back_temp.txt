@@ -1,0 +1,17 @@
+def handle(self, handler_input):
+        #handler_input.response_builder.add_directive(get_dynamic_entities_directive())
+        session_attr = handler_input.attributes_manager.session_attributes
+        intent_name = handler_input.request_envelope.request.intent.name
+        if session_attr.get("contexto_atual") == "monitor_in_progress":
+            session_attr["contexto_atual"] = "monitor_in_progress"
+        else:
+            session_attr["contexto_atual"] = "selecao_ativo"
+        session_attr["select_in_progress"] = True
+        log_info(f"Intent recebido: {intent_name}")
+
+        intent = handler_input.request_envelope.request.intent
+        slots = intent.slots
+        fund_name = slots.get("fundName").value #if slots.get("fundName") else None
+        log_intent_event(handler_input, f"🧠 Slot raw: {slots['fundName'].value}")
+        log_info(f"🎙️ fund_name captado: {repr(fund_name)}")
+        log_intent_event(handler_input, f"SelectFundIntentHandler acionado. Slots recebidos: {slots}")
