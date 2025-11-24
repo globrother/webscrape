@@ -59,7 +59,7 @@ def get_cached_image(ticker):
 
 def gerar_grafico(ticker):
     print("Gerando Gráfico")
-    log_debug("GERANDO GRÁFICO")
+    #log_debug("GERANDO GRÁFICO")
     ticker = (ticker.upper() + ".SA")
     output_filename = f"{CACHE_DIR}/grafico-{ticker}-100dias.png"
     # 🔹 Verifica se já há imagem recente no cache
