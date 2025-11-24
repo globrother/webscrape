@@ -10,7 +10,7 @@ import time
 #import json
 import os
 
-from log_utils import log_info, log_error, log_warning
+from log_utils import log_debug, log_info, log_error, log_warning
 
 # sslify = SSLify(app)
 OUTPUT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -59,6 +59,7 @@ def get_cached_image(ticker):
 
 def gerar_grafico(ticker):
     print("Gerando Gráfico")
+    log_debug("GERANDO GRÁFICO")
     ticker = (ticker.upper() + ".SA")
     output_filename = f"{CACHE_DIR}/grafico-{ticker}-100dias.png"
     # 🔹 Verifica se já há imagem recente no cache
@@ -317,7 +318,7 @@ def gerar_grafico(ticker):
             raise FileNotFoundError("Gráfico não foi salvo. Verifique Kaleido ou permissões.")
         if not os.path.exists(output_filename):
             raise RuntimeError("Arquivo não foi gerado.")
-        print("Gráfico Gerado com Sucesso")
+        log_debug("Gráfico Gerado com Sucesso")
         return output_filename 
     except FileNotFoundError as e:
         raise FileNotFoundError(f"Falha ao salvar gráfico: {e}")
