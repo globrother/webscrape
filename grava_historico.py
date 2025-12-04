@@ -55,7 +55,7 @@ def gravar_historico(sigla, valor, var_fii_telegram=None, tabela="historico"):
     #cursor.execute("SELECT valor FROM historico WHERE ativo = ? ORDER BY data DESC, tempo DESC LIMIT 1", (sufixo,))
     resultado = cursor.fetchone()
     if resultado and resultado[0] == valor:
-        log_warning("Valor igual ao último registrado. Abortando gravar.")
+        log_info("Valor igual ao último registrado. Abortando gravar.")
         conn.close()
         return
 
