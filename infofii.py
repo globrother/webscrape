@@ -71,6 +71,7 @@ def get_dadosfii(fii):
         }
 
         #response = requests.get(url, headers=headers)
+        log_info(f"URL: {url}")
         session = requests.Session(impersonate="chrome")
         response = session.get(url, headers=headers)
         #response = requests.get(url, headers=headers, impersonate="chrome")
