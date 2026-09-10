@@ -80,7 +80,7 @@ def web_scrape(fundo):
     # ,_ significa que a variável variac_xpml11 não será utilizada
     cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv = get_dadosfii(fii)
     
-    log_info(f"DADOS: {cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv}")
+    #log_info(f"DADOS: {cota_fii, card_fii, variac_fii, hist_text_fii, logo_url_atv}")
 
     voz = card_fii.replace('<br>', '\n<break time="500ms"/>')
 
