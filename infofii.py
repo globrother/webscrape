@@ -3,7 +3,8 @@
 """
 ===== ::: OBTENDO DADOS WEB DO FII XPML11 ::: ========================================
 """
-import requests
+#import requests
+from curl_cffi import requests
 from bs4 import BeautifulSoup
 from utils import limpar_asset_name, limpar_valor
 from time import time
@@ -69,7 +70,8 @@ def get_dadosfii(fii):
             'https': 'http://183.234.215.11:8443',
         }
 
-        response = requests.get(url, headers=headers)
+        #response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, impersonate="chrome")
         log_info(f"Status Code: {response.status_code}")
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
